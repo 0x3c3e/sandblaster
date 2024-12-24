@@ -7,7 +7,7 @@ def extract_sandbox_operations(binary):
 
     # Get strings from the __cstring (string table)
     for section in binary.sections:
-        if section.type == lief.MachO.SECTION_TYPES.CSTRING_LITERALS:
+        if section.type == lief.MachO.Section.TYPE.CSTRING_LITERALS:
             strings_bytes = section.content.tobytes()
             strings = strings_bytes.decode('utf-8', errors='ignore')
             extracted_strings.extend(strings.split('\x00'))
