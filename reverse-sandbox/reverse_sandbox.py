@@ -23,8 +23,6 @@ PROFILE_OPS_OFFSET = 4
 OPERATION_NODE_SIZE = 8
 INDEX_SIZE = 2
 
-macos15_2_struct = struct.Struct("<HHBBBxHHHH")
-
 
 @dataclass
 class SandboxData:
@@ -68,8 +66,7 @@ class SandboxData:
         )
         self.operation_nodes_size = self.op_nodes_count * OPERATION_NODE_SIZE
         self.operation_nodes_offset = self.profiles_end_offset
-        if not self.type:  # non-bundle file
-            self.operation_nodes_offset += self.sb_ops_count * INDEX_SIZE
+        self.operation_nodes_offset += self.sb_ops_count * INDEX_SIZE
         align_delta = self.operation_nodes_offset & 7
         if align_delta != 0:
             self.operation_nodes_offset += 8 - align_delta
@@ -78,28 +75,19 @@ class SandboxData:
 
 def parse_profile(infile):
     infile.seek(0)
-    (
-        header,
-        op_nodes_count,
-        sb_ops_count,
-        vars_count,
-        states_count,
-        num_profiles,
-        entitlements_count,
-        re_count,
-        instructions_count,
-    ) = macos15_2_struct.unpack(infile.read(macos15_2_struct.size))
+    macos15_2_struct = struct.Struct("<HHBBBxHHHH")
+    values = macos15_2_struct.unpack(infile.read(macos15_2_struct.size))
     sandbox_data = SandboxData(
-        macos15_2_struct.size,
-        header,
-        op_nodes_count,
-        sb_ops_count,
-        vars_count,
-        states_count,
-        num_profiles,
-        re_count,
-        entitlements_count,
-        instructions_count,
+        header_size=macos15_2_struct.size,
+        type=values[0],
+        op_nodes_count=values[1],
+        sb_ops_count=values[2],
+        vars_count=values[3],
+        states_count=values[4],
+        num_profiles=values[5],
+        regex_count=values[7],
+        entitlements_count=values[6],
+        instructions_count=values[8],
     )
     sandbox_data.data_file = infile
     print(sandbox_data)
