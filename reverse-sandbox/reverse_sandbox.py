@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 import operation_node
 import sandbox_filter
 import sandbox_regex
-from filters import Filters
 
 logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
@@ -129,16 +128,9 @@ def create_operation_nodes(infile, sandbox_data, keep_builtin_filters):
     return sandbox_data.operation_nodes
 
 
-def process_profile(
-    infile, outfname, sb_ops, ops_to_reverse, op_table, operation_nodes, c_output, macho
-):
-    if macho:
-        c_output = True
-    if c_output:
-        outfile = open(outfname.strip() + ".c", "wt")
-    else:
-        out_fname = os.path.join(outfname.strip() + ".sb")
-        outfile = open(out_fname, "wt")
+def process_profile(outfname, sb_ops, ops_to_reverse, op_table, operation_nodes):
+    out_fname = os.path.join(outfname.strip() + ".sb")
+    outfile = open(out_fname, "wt")
 
     default_node = operation_node.find_operation_node_by_offset(
         operation_nodes, op_table[0]
@@ -146,21 +138,8 @@ def process_profile(
     if not default_node.terminal:
         return
 
-    if c_output:
-        outfile.write("extern long allow(const char *);\n")
-        outfile.write("extern long deny(const char *);\n")
-        outfile.write("extern long unparsed_filter();\n")
-        outfile.write("extern long subpath();\n")
-        outfile.write("extern long subpath_prefix();\n")
-        for fdef in Filters.filters.values():
-            name = fdef["name"] if fdef["name"] else "literal"
-            for suffix in ["", "_regex", "_literal", "_prefix"]:
-                outfile.write(
-                    "extern long %s%s();\n" % (name.replace("-", "_"), suffix)
-                )
-    else:
-        outfile.write("(version 1)\n")
-        outfile.write("(%s default)\n" % (default_node.terminal))
+    outfile.write("(version 1)\n")
+    outfile.write("(%s default)\n" % (default_node.terminal))
 
     for idx in range(1, len(op_table)):
         offset = op_table[idx]
@@ -250,9 +229,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="path to the binary sandbox profile")
     parser.add_argument(
-        "-r", "--release", required=True, help="iOS release version for sandbox profile"
-    )
-    parser.add_argument(
         "-o", "--operations_file", required=True, help="file with list of operations"
     )
     parser.add_argument(
@@ -262,10 +238,7 @@ def main():
     parser.add_argument(
         "-d", "--directory", help="directory for reversed profiles output"
     )
-    parser.add_argument("-psb", "--print_sandbox_profiles", action="store_true")
     parser.add_argument("-kbf", "--keep_builtin_filters", action="store_true")
-    parser.add_argument("-c", "--c_output", action="store_true")
-    parser.add_argument("-m", "--macho", action="store_true")
     args = parser.parse_args()
 
     if not args.filename:
@@ -311,14 +284,11 @@ def main():
         out_dir, os.path.splitext(os.path.basename(args.filename))[0]
     )
     process_profile(
-        infile,
         out_fname,
         sandbox_data.sb_ops,
         sandbox_data.ops_to_reverse,
         op_table,
         operation_nodes,
-        args.c_output,
-        args.macho,
     )
 
     infile.close()
