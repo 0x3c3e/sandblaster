@@ -1,5 +1,5 @@
-{"modifiers":
-    [
+{
+    "modifiers": [
         {
             "name": "send-signal",
             "action": 3,
@@ -10,8 +10,7 @@
         },
         {
             "name": "errno",
-            "aliases":
-            [
+            "aliases": [
                 {
                     "name": "EPERM",
                     "id": 1

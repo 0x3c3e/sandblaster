@@ -8,7 +8,8 @@ from regex_parser import RegexParser
 logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
-class Node():
+
+class Node:
     """Representation of a node inside a regex non-deterministic automaton
 
     The most important attribute is the node type, which may be any of
@@ -27,7 +28,7 @@ class Node():
     value = None
     flag = "white"
 
-    def __init__(self, name=None, type=None, value=''):
+    def __init__(self, name=None, type=None, value=""):
         self.name = name
         self.type = type
         self.value = value
@@ -52,7 +53,9 @@ class Node():
         return self.type == self.TYPE_END
 
     def is_type_jump(self):
-        return self.type == self.TYPE_JUMP_BACKWARD or self.type == self.TYPE_JUMP_FORWARD
+        return (
+            self.type == self.TYPE_JUMP_BACKWARD or self.type == self.TYPE_JUMP_FORWARD
+        )
 
     def is_type_jump_backward(self):
         return self.type == self.TYPE_JUMP_BACKWARD
@@ -86,7 +89,7 @@ class Node():
             return "(%s: %s)" % (self.name, self.value)
 
 
-class Graph():
+class Graph:
     """Representation of a regex NDA (Non-Deterministic Automaton)
 
     Use this class to convert a regex list of items into its canonical
@@ -125,7 +128,7 @@ class Graph():
                 max = int(node.name)
 
         # Create graph list for ordered listing of nodes.
-        graph_list = [None] * (max+1)
+        graph_list = [None] * (max + 1)
         for node in self.graph_dict.keys():
             actual_string = str(node) + ":"
             for next_node in self.graph_dict[node]:
@@ -161,7 +164,7 @@ class Graph():
             if item["pos"] == pos:
                 return idx
         for idx, item in enumerate(regex_list):
-            if item["pos"]-1 == pos:
+            if item["pos"] - 1 == pos:
                 return idx
         return -1
 
@@ -186,24 +189,28 @@ class Graph():
         for idx, node in enumerate(self.node_list):
             # If node is end node ignore.
             if node.is_type_end():
-                 self.graph_dict[node] = []
+                self.graph_dict[node] = []
             elif node.is_type_character():
-                next = self.get_node_for_idx(idx+1)
+                next = self.get_node_for_idx(idx + 1)
                 if next:
-                    self.graph_dict[node] = [ next ]
+                    self.graph_dict[node] = [next]
                 else:
                     self.graph_dict[node] = []
             # Node is jump node.
             elif node.is_type_jump_backward():
-                next_idx = self.get_re_index_for_pos(regex_list, regex_list[idx]["value"])
+                next_idx = self.get_re_index_for_pos(
+                    regex_list, regex_list[idx]["value"]
+                )
                 next = self.get_node_for_idx(next_idx)
                 if next:
                     self.graph_dict[node] = [next]
                 else:
                     self.graph_dict[node] = []
             elif node.is_type_jump_forward():
-                next_idx1 = idx+1
-                next_idx2 = self.get_re_index_for_pos(regex_list, regex_list[idx]["value"])
+                next_idx1 = idx + 1
+                next_idx2 = self.get_re_index_for_pos(
+                    regex_list, regex_list[idx]["value"]
+                )
                 next1 = self.get_node_for_idx(next_idx1)
                 next2 = self.get_node_for_idx(next_idx2)
                 self.graph_dict[node] = []
@@ -270,7 +277,7 @@ class Graph():
         for node in self.graph_dict.keys():
             if node.name == "0":
                 self.start_state = -1
-                self.canon_graph_dict[-1] = [ (node.value, 0) ]
+                self.canon_graph_dict[-1] = [(node.value, 0)]
         logger.debug(self.canon_graph_dict)
         logger.debug("end_states:")
         logger.debug(self.end_states)
@@ -295,20 +302,20 @@ class Graph():
     def unify_two_strings(self, s1, s2):
         # Find largest common starting substring.
         lcss = ""
-        for i in range(1, len(s1)+1):
+        for i in range(1, len(s1) + 1):
             if s2.find(s1[:i], 0, i) != -1:
                 lcss = s1[:i]
         if lcss:
-            s1 = s1[len(lcss):]
-            s2 = s2[len(lcss):]
+            s1 = s1[len(lcss) :]
+            s2 = s2[len(lcss) :]
         # Find largest common ending substring.
         lces = ""
-        for i in range(1, len(s1)+1):
-            if s2.find(s1[-i:], len(s2)-i, len(s2)) != -1:
+        for i in range(1, len(s1) + 1):
+            if s2.find(s1[-i:], len(s2) - i, len(s2)) != -1:
                 lces = s1[-i:]
         if lces:
-            s1 = s1[:len(s1)-len(lces)]
-            s2 = s2[:len(s2)-len(lces)]
+            s1 = s1[: len(s1) - len(lces)]
+            s2 = s2[: len(s2) - len(lces)]
 
         if not s1 and not s2:
             return lcss + lces
@@ -322,13 +329,13 @@ class Graph():
             s1 = s2
             s2 = aux
 
-        if s2[-1] == '+':
-            s2 = s2[:-1] + '*'
+        if s2[-1] == "+":
+            s2 = s2[:-1] + "*"
         else:
             if len(s2) > 1:
                 s2 = "(" + s2 + ")?"
             else:
-                s2 = s2 + '?'
+                s2 = s2 + "?"
 
         return lcss + s2 + lces
 
@@ -346,7 +353,7 @@ class Graph():
 
     def remove_state(self, state_to_remove):
         itself_string = ""
-        for (next_string, next_state) in self.canon_graph_dict[state_to_remove]:
+        for next_string, next_state in self.canon_graph_dict[state_to_remove]:
             if next_state == state_to_remove:
                 if len(next_string) > 1:
                     itself_string = "(%s)*" % next_string
@@ -359,7 +366,7 @@ class Graph():
             to_strings[to_state] = []
             if to_state == state_to_remove:
                 continue
-            for (iter_to_string, iter_to_state) in self.canon_graph_dict[state_to_remove]:
+            for iter_to_string, iter_to_state in self.canon_graph_dict[state_to_remove]:
                 if iter_to_state == to_state:
                     to_strings[to_state].append(iter_to_string)
 
@@ -374,7 +381,7 @@ class Graph():
             if from_state == state_to_remove:
                 continue
             items_to_remove_list = []
-            for (next_string, next_state) in self.canon_graph_dict[from_state]:
+            for next_string, next_state in self.canon_graph_dict[from_state]:
                 # Only if edge points to state_to_remove.
                 if next_state != state_to_remove:
                     continue
@@ -384,16 +391,20 @@ class Graph():
                     if len(to_strings[to_state]) == 0:
                         continue
                     to_string = unified_to_string[to_state]
-                #for (to_string, to_state) in self.canon_graph_dict[state_to_remove]:
-                #    # If state points to itself, do not add edge.
-                #    if to_state == state_to_remove:
-                #        continue
+                    # for (to_string, to_state) in self.canon_graph_dict[state_to_remove]:
+                    #    # If state points to itself, do not add edge.
+                    #    if to_state == state_to_remove:
+                    #        continue
                     # Add new edge, consider if state points to itself.
                     if self.need_use_plus(next_string, itself_string):
-                        self.canon_graph_dict[from_state].append((next_string + "+" + to_string, to_state))
+                        self.canon_graph_dict[from_state].append(
+                            (next_string + "+" + to_string, to_state)
+                        )
                         continue
-                    self.canon_graph_dict[from_state].append((next_string + itself_string + to_string, to_state))
-            for (next_string, next_state) in items_to_remove_list:
+                    self.canon_graph_dict[from_state].append(
+                        (next_string + itself_string + to_string, to_state)
+                    )
+            for next_string, next_state in items_to_remove_list:
                 self.canon_graph_dict[from_state].remove((next_string, next_state))
 
         del self.canon_graph_dict[state_to_remove]
@@ -412,11 +423,13 @@ class Graph():
             string_added = False
             initial_strings = working_strings
             working_strings = []
-            for (start_string, start_next_state) in initial_strings:
+            for start_string, start_next_state in initial_strings:
                 if not start_next_state in self.end_states:
                     continue
                 if self.canon_graph_dict[start_next_state]:
-                    for (next_string, next_state) in self.canon_graph_dict[start_next_state]:
+                    for next_string, next_state in self.canon_graph_dict[
+                        start_next_state
+                    ]:
                         if next_state == start_next_state:
                             next_string = "(%s)*" % next_string
                             if self.need_use_plus(start_string, next_string):
@@ -425,7 +438,9 @@ class Graph():
                                 final_strings.append((start_string + next_string, None))
                         else:
                             final_strings.append((start_string + next_string, None))
-                            working_strings.append((start_string + next_string, next_state))
+                            working_strings.append(
+                                (start_string + next_string, next_state)
+                            )
                 else:
                     final_strings.append((start_string, None))
                 string_added = True
@@ -443,7 +458,9 @@ def create_regex_list(re):
 
     regex_list = []
 
-    logger.debug("re.type: 0x%x", ((re[0] >> 24) + (re[1] >> 16) + (re[2] >> 8) + re[3]))
+    logger.debug(
+        "re.type: 0x%x", ((re[0] >> 24) + (re[1] >> 16) + (re[2] >> 8) + re[3])
+    )
     logger.debug("re.length: 0x%x", (re[4] + (re[5] >> 8)))
 
     i = 6
@@ -469,30 +486,4 @@ def parse_regex(re):
     g.combine_start_end_nodes()
     logger.debug(g)
     return g.regex
-    #return [ g.unified_regex ]
 
-
-import sys
-import struct
-
-
-def main():
-    """Parse regular expressions in binary file."""
-
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: %s <regex-binary-file>" % (sys.argv[0])
-        sys.exit(1)
-
-    with open(sys.argv[1]) as f:
-        re_count = struct.unpack("<H", f.read(2))[0]
-        for i in range(re_count):
-            re_length = struct.unpack("<H", f.read(2))[0]
-            re = struct.unpack("<%dB" % re_length, f.read(re_length))
-            logger.info("total_re_length: 0x%x", re_length)
-            re_debug_str = "re: [", ", ".join([hex(i) for i in re]), "]"
-            logger.info(re_debug_str)
-            print (parse_regex(re))
-
-
-if __name__ == "__main__":
-    sys.exit(main())

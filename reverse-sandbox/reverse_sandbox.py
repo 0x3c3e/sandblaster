@@ -133,7 +133,9 @@ def process_profile(
             operation_nodes, op_table[0]
         )
         if not default_node or not default_node.terminal:
-            logger.warning("Default node or terminal not found; skipping profile processing.")
+            logger.warning(
+                "Default node or terminal not found; skipping profile processing."
+            )
             return
 
         outfile.write("(version 1)\n")
@@ -232,11 +234,22 @@ def parse_regex_list(infile: object, sandbox_data: SandboxData):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="Path to the binary sandbox profile.")
-    parser.add_argument("-o", "--operations_file", required=True, help="File with list of operations.")
-    parser.add_argument("-p", "--profile", nargs="+", help="Profile(s) to reverse (for bundles).")
+    parser.add_argument(
+        "-o", "--operations_file", required=True, help="File with list of operations."
+    )
+    parser.add_argument(
+        "-p", "--profile", nargs="+", help="Profile(s) to reverse (for bundles)."
+    )
     parser.add_argument("-n", "--operation", nargs="+", help="Operation(s) to reverse.")
-    parser.add_argument("-d", "--directory", help="Directory for reversed profiles output.")
-    parser.add_argument("-kbf", "--keep_builtin_filters", action="store_true", help="Keep builtin filters.")
+    parser.add_argument(
+        "-d", "--directory", help="Directory for reversed profiles output."
+    )
+    parser.add_argument(
+        "-kbf",
+        "--keep_builtin_filters",
+        action="store_true",
+        help="Keep builtin filters.",
+    )
     args = parser.parse_args()
 
     if not args.filename:
@@ -252,7 +265,9 @@ def main():
         read_sandbox_operations(parser, args, sandbox_data)
         parse_regex_list(infile, sandbox_data)
 
-        logger.info(f"{sandbox_data.vars_count} global vars at offset {hex(sandbox_data.vars_offset)}")
+        logger.info(
+            f"{sandbox_data.vars_count} global vars at offset {hex(sandbox_data.vars_offset)}"
+        )
         sandbox_data.global_vars = get_global_vars(
             infile,
             sandbox_data.vars_offset,
@@ -275,7 +290,9 @@ def main():
         )
 
         infile.seek(sandbox_data.operation_nodes_offset)
-        out_fname = os.path.join(out_dir, os.path.splitext(os.path.basename(args.filename))[0])
+        out_fname = os.path.join(
+            out_dir, os.path.splitext(os.path.basename(args.filename))[0]
+        )
         process_profile(
             out_fname,
             sandbox_data.sb_ops,
