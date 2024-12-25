@@ -18,7 +18,7 @@ def extract_data_between_variables(file_path, output_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python script.py <file_path> <output_path> [<target_arch>]")
+        print("Usage: python script.py <file_path> <output_path>")
         exit(1)
     file_path = sys.argv[1]
     output_path = sys.argv[2]
