@@ -38,6 +38,7 @@ class SandboxData:
     entitlements_count: int
     instructions_count: int
     data_file: Optional[object] = field(default=None)
+    op_table: int = field(default=None)
 
     regex_table_offset: int = field(init=False)
     vars_offset: int = field(init=False)
@@ -49,10 +50,10 @@ class SandboxData:
     operation_nodes_offset: int = field(init=False)
     base_addr: int = field(init=False)
 
-    regex_list: Optional[List[str]] = field(default=None)
-    global_vars: Optional[List[str]] = field(default=None)
+    regex_list: Optional[List[str]] = field(default_factory=list)
+    global_vars: Optional[List[str]] = field(default_factory=list)
     policies: Optional[Tuple[int]] = field(default=None)
-    sb_ops: Optional[List[str]] = field(default=None)
+    sb_ops: Optional[List[str]] = field(default_factory=list)
     operation_nodes: Optional[List[object]] = field(default=None)
     ops_to_reverse: Optional[List[str]] = field(default_factory=list)
 
@@ -107,8 +108,6 @@ def create_operation_nodes(
     sandbox_data.operation_nodes = operation_node.build_operation_nodes(
         infile, sandbox_data.op_nodes_count
     )
-    logger.info(f"Built {len(sandbox_data.operation_nodes)} operation nodes")
-
     for node in sandbox_data.operation_nodes:
         node.convert_filter(
             sandbox_filter.convert_filter_callback,
@@ -116,21 +115,12 @@ def create_operation_nodes(
             sandbox_data,
             keep_builtin_filters,
         )
-    logger.info("Operation nodes after filter conversion")
-    return sandbox_data.operation_nodes
 
 
-def process_profile(
-    outfname: str,
-    sb_ops: List[str],
-    ops_to_reverse: List[str],
-    op_table: List[int],
-    operation_nodes: List[object],
-):
-    out_fname = f"{outfname.strip()}.sb"
-    with open(out_fname, "wt") as outfile:
+def process_profile(outfname: str, sandbox_data: SandboxData):
+    with open(outfname, "wt") as outfile:
         default_node = operation_node.find_operation_node_by_offset(
-            operation_nodes, op_table[0]
+            sandbox_data.operation_nodes, sandbox_data.op_table[0]
         )
         if not default_node or not default_node.terminal:
             logger.warning(
@@ -141,13 +131,17 @@ def process_profile(
         outfile.write("(version 1)\n")
         outfile.write(f"({default_node.terminal} default)\n")
 
-        for idx in range(1, len(op_table)):
-            offset = op_table[idx]
-            operation = sb_ops[idx]
-            if ops_to_reverse and (operation not in ops_to_reverse):
+        for idx in range(1, len(sandbox_data.op_table)):
+            offset = sandbox_data.op_table[idx]
+            operation = sandbox_data.sb_ops[idx]
+            if sandbox_data.ops_to_reverse and (
+                operation not in sandbox_data.ops_to_reverse
+            ):
                 continue
 
-            node = operation_node.find_operation_node_by_offset(operation_nodes, offset)
+            node = operation_node.find_operation_node_by_offset(
+                sandbox_data.operation_nodes, offset
+            )
             if not node:
                 continue
 
@@ -169,35 +163,31 @@ def process_profile(
                         outfile.write(f"({node.terminal} {operation})\n")
 
 
-def get_global_vars(
-    f: object, vars_offset: int, num_vars: int, base_address: int
-) -> List[str]:
-    global_vars = []
-    next_var_pointer = vars_offset
+def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
+    next_var_pointer = sandbox_data.vars_offset
 
-    for _ in range(num_vars):
+    for _ in range(sandbox_data.vars_count):
         f.seek(next_var_pointer)
         var_offset = struct.unpack("<H", f.read(2))[0]
-        f.seek(base_address + (var_offset * 8))
+        f.seek(sandbox_data.base_addr + (var_offset * 8))
         string_len = struct.unpack("H", f.read(2))[0]
         var_string = f.read(string_len - 1).decode("utf-8")
-        global_vars.append(var_string)
+        sandbox_data.global_vars.append(var_string)
         next_var_pointer += 2
 
-    logger.info(f"Global variables are: {', '.join(global_vars)}")
-    return global_vars
 
-
-def get_policies(f: object, offset: int, count: int) -> Tuple[int]:
-    f.seek(offset)
-    return struct.unpack(f"<{count}H", f.read(2 * count))
+def parse_policies(f: object, sandbox_data: SandboxData) -> Tuple[int]:
+    f.seek(sandbox_data.entitlements_offset)
+    sandbox_data.policies = struct.unpack(
+        f"<{sandbox_data.entitlements_count}H",
+        f.read(2 * sandbox_data.entitlements_count),
+    )
 
 
 def read_sandbox_operations(operations_file, sandbox_data: SandboxData):
     with open(operations_file) as file:
-        sb_ops = [line.strip() for line in file.readlines()]
-        sandbox_data.sb_ops = sb_ops
-        logger.info(f"Read {len(sb_ops)} sandbox operations")
+        sandbox_data.sb_ops = [line.strip() for line in file.readlines()]
+
 
 def filter_sandbox_operations(operation, sandbox_data):
     for op in operation:
@@ -208,23 +198,27 @@ def filter_sandbox_operations(operation, sandbox_data):
 
 
 def parse_regex_list(infile: object, sandbox_data: SandboxData):
-    regex_list = []
+    if not sandbox_data.regex_count:
+        return
 
-    if sandbox_data.regex_count > 0:
-        infile.seek(sandbox_data.regex_table_offset)
-        offsets_table = struct.unpack(
-            f"<{sandbox_data.regex_count}H",
-            infile.read(2 * sandbox_data.regex_count),
-        )
+    infile.seek(sandbox_data.regex_table_offset)
+    offsets_table = struct.unpack(
+        f"<{sandbox_data.regex_count}H",
+        infile.read(2 * sandbox_data.regex_count),
+    )
 
-        for offset in offsets_table:
-            infile.seek(offset * 8 + sandbox_data.base_addr)
-            re_length = struct.unpack("<H", infile.read(2))[0]
-            regex_data = struct.unpack(f"<{re_length}B", infile.read(re_length))
-            regex_list.append(sandbox_regex.parse_regex(regex_data))
+    for offset in offsets_table:
+        infile.seek(offset * 8 + sandbox_data.base_addr)
+        re_length = struct.unpack("<H", infile.read(2))[0]
+        regex_data = struct.unpack(f"<{re_length}B", infile.read(re_length))
+        sandbox_data.regex_list.append(sandbox_regex.parse_regex(regex_data))
 
-    logger.info(f"Regex list: {regex_list}")
-    sandbox_data.regex_list = regex_list
+
+def parse_op_table(infile: object, sandbox_data: SandboxData):
+    sandbox_data.op_table = struct.unpack(
+        f"<{sandbox_data.sb_ops_count}H",
+        infile.read(2 * sandbox_data.sb_ops_count),
+    )
 
 
 def main():
@@ -233,13 +227,8 @@ def main():
     parser.add_argument(
         "-o", "--operations_file", required=True, help="File with list of operations."
     )
-    parser.add_argument(
-        "-p", "--profile", nargs="+", help="Profile(s) to reverse (for bundles)."
-    )
     parser.add_argument("-n", "--operation", nargs="+", help="Operation(s) to reverse.")
-    parser.add_argument(
-        "-d", "--directory", help="Directory for reversed profiles output."
-    )
+    parser.add_argument("--output", help="Output path", required=True)
     parser.add_argument(
         "-kbf",
         "--keep_builtin_filters",
@@ -248,52 +237,36 @@ def main():
     )
     args = parser.parse_args()
 
-    out_dir = args.directory or os.getcwd()
-
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxData.from_file(infile)
 
         read_sandbox_operations(args.operations_file, sandbox_data)
+        logger.info(f"Read {len(sandbox_data.sb_ops)} sandbox operations")
+
         if args.operation:
             filter_sandbox_operations(args.operation, sandbox_data)
-        
+            logger.info(f"Filtered by {args.operation} sandbox operations")
+
         parse_regex_list(infile, sandbox_data)
+        logger.info(f"Regex list: {sandbox_data.regex_list}")
 
         logger.info(
             f"{sandbox_data.vars_count} global vars at offset {hex(sandbox_data.vars_offset)}"
         )
-        sandbox_data.global_vars = get_global_vars(
-            infile,
-            sandbox_data.vars_offset,
-            sandbox_data.vars_count,
-            sandbox_data.base_addr,
-        )
+        parse_global_vars(infile, sandbox_data)
+        logger.info(f"Global variables are: {sandbox_data.global_vars}")
 
-        sandbox_data.policies = get_policies(
-            infile, sandbox_data.entitlements_offset, sandbox_data.entitlements_count
-        )
+        parse_policies(infile, sandbox_data)
 
         infile.seek(sandbox_data.operation_nodes_offset)
         logger.info(f"Number of operation nodes: {sandbox_data.op_nodes_count}")
         create_operation_nodes(infile, sandbox_data, args.keep_builtin_filters)
 
         infile.seek(sandbox_data.profiles_offset)
-        op_table = struct.unpack(
-            f"<{sandbox_data.sb_ops_count}H",
-            infile.read(2 * sandbox_data.sb_ops_count),
-        )
+        parse_op_table(infile, sandbox_data)
 
         infile.seek(sandbox_data.operation_nodes_offset)
-        out_fname = os.path.join(
-            out_dir, os.path.splitext(os.path.basename(args.filename))[0]
-        )
-        process_profile(
-            out_fname,
-            sandbox_data.sb_ops,
-            sandbox_data.ops_to_reverse,
-            op_table,
-            sandbox_data.operation_nodes,
-        )
+        process_profile(args.output, sandbox_data)
 
     logger.info("Processing complete.")
 
