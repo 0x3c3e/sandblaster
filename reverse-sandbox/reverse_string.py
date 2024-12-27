@@ -2,7 +2,6 @@ import struct
 import logging
 
 
-logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
 
@@ -291,6 +290,8 @@ class SandboxString:
                 if all_ascii == False:
                     token = "[UNSUPPORTED]"
                     # (b1, b2) = b_array[0]
+                    # if len(b_array) < 2:
+                    #     continue
                     # (b3, b4) = b_array[1]
                     # if b2 == 0xff and b3 == 0x00:
                     #     if b1-1 == b4+1:    # single char exclude

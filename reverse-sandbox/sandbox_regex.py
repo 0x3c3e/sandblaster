@@ -5,7 +5,6 @@ import logging.config
 
 from regex_parser import RegexParser
 
-logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
 
@@ -486,4 +485,3 @@ def parse_regex(re):
     g.combine_start_end_nodes()
     logger.debug(g)
     return g.regex
-

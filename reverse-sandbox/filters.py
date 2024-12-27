@@ -1,10 +1,12 @@
 import json
+import os
 
 
 def read_filters():
     temp = {}
     filters = {}
-    with open("misc/filters.json") as data:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(script_dir, "misc/filters.json")) as data:
         temp = json.load(data)
 
         for key, value in temp.items():

@@ -12,7 +12,6 @@ import operation_node
 import sandbox_filter
 import sandbox_regex
 
-logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
 REGEX_TABLE_OFFSET = 2

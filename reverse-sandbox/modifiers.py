@@ -1,9 +1,11 @@
 import json
+import os
 
 
 def read_modifiers():
     modifiers = {}
-    with open("misc/modifiers_functions.json") as data:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(script_dir, "misc/modifiers_functions.json")) as data:
         temp = json.load(data)
 
         for key, value in temp.items():

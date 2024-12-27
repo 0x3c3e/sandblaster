@@ -10,7 +10,6 @@ from filters import Filters
 from modifiers import Modifiers
 
 
-logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
 keep_builtin_filters = False

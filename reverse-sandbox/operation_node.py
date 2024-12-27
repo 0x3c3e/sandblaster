@@ -5,9 +5,9 @@ import re
 import logging
 import logging.config
 import json
+import os
 import sandbox_filter
 
-logging.config.fileConfig("logger.config")
 logger = logging.getLogger(__name__)
 
 
@@ -110,7 +110,8 @@ class TerminalNode:
 
     def load_modifiers_db(self):
         if not self.modifiers_db:
-            with open("misc/modifiers.json") as data:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            with open(os.path.join(script_dir, "misc/modifiers.json")) as data:
                 temp = json.load(data)
             self.modifiers_db = temp["modifiers"]
 
