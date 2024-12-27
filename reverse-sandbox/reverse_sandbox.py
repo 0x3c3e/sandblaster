@@ -54,7 +54,7 @@ class SandboxData:
     policies: Optional[Tuple[int]] = field(default=None)
     sb_ops: Optional[List[str]] = field(default=None)
     operation_nodes: Optional[List[object]] = field(default=None)
-    ops_to_reverse: Optional[List[str]] = field(default=None)
+    ops_to_reverse: Optional[List[str]] = field(default_factory=list)
 
     def __post_init__(self):
         self.regex_table_offset = self.header_size
@@ -193,22 +193,18 @@ def get_policies(f: object, offset: int, count: int) -> Tuple[int]:
     return struct.unpack(f"<{count}H", f.read(2 * count))
 
 
-def read_sandbox_operations(
-    parser: argparse.ArgumentParser, args: argparse.Namespace, sandbox_data: SandboxData
-):
-    sb_ops = [line.strip() for line in open(args.operations_file)]
-    sandbox_data.sb_ops = sb_ops
-    logger.info(f"Read {len(sb_ops)} sandbox operations")
+def read_sandbox_operations(operations_file, sandbox_data: SandboxData):
+    with open(operations_file) as file:
+        sb_ops = [line.strip() for line in file.readlines()]
+        sandbox_data.sb_ops = sb_ops
+        logger.info(f"Read {len(sb_ops)} sandbox operations")
 
-    ops_to_reverse = []
-    if args.operation:
-        for op in args.operation:
-            if op not in sb_ops:
-                parser.print_usage()
-                logger.error(f"Unavailable operation: {op}")
-                sys.exit(1)
-            ops_to_reverse.append(op)
-        sandbox_data.ops_to_reverse = ops_to_reverse
+def filter_sandbox_operations(operation, sandbox_data):
+    for op in operation:
+        if op not in sandbox_data.sb_ops:
+            logger.error(f"Unavailable operation: {op}")
+            sys.exit(1)
+        sandbox_data.ops_to_reverse.append(op)
 
 
 def parse_regex_list(infile: object, sandbox_data: SandboxData):
@@ -252,17 +248,15 @@ def main():
     )
     args = parser.parse_args()
 
-    if not args.filename:
-        parser.print_usage()
-        logger.error("No sandbox profile/bundle file specified.")
-        sys.exit(1)
-
     out_dir = args.directory or os.getcwd()
 
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxData.from_file(infile)
 
-        read_sandbox_operations(parser, args, sandbox_data)
+        read_sandbox_operations(args.operations_file, sandbox_data)
+        if args.operation:
+            filter_sandbox_operations(args.operation, sandbox_data)
+        
         parse_regex_list(infile, sandbox_data)
 
         logger.info(
