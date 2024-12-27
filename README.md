@@ -17,11 +17,11 @@ The `extractors` folder contains tools for extracting sandbox profile data and o
 Use the following commands to extract sandbox operations and profile data:
 
 ```sh
-python3 extractors/extract_sandbox_operations.py Sandbox.kext/Contents/MacOS/Sandbox .profiles/sandbox_operations
+python extractors/extract_sandbox_operations.py Sandbox.kext/Contents/MacOS/Sandbox profiles/sandbox_operations
 ```
 
 ```sh
-python3 extractors/extract_profile_data_from_kext.py Sandbox.kext/Contents/MacOS/Sandbox .profiles/profile_data
+python extractors/extract_profile_data_from_kext.py Sandbox.kext/Contents/MacOS/Sandbox profiles/profile_data
 ```
 
 ### Reversing the Sandbox
@@ -29,12 +29,12 @@ python3 extractors/extract_profile_data_from_kext.py Sandbox.kext/Contents/MacOS
 After extracting the necessary data, run the following command to reverse the sandbox profile:
 
 ```sh
-python3 reverse_sandbox.py -o .profiles/sandbox_operations .profiles/profile_data
+python reverse-sandbox/reverse_sandbox.py -o profiles/sandbox_operations profiles/profile_data --output profiles/profile_data_reversed
 ```
 
 ## Credits
 
-- [SandBlaster by Cellebrite Labs](https://github.com/cellebrite-labs/sandblaster), authored by Yarden Hamami.
+- [SandBlaster by Cellebrite Labs by Yarden Hamami](https://github.com/cellebrite-labs/sandblaster)
 - [Malus Security SandBlaster Repository](https://github.com/malus-security/sandblaster)
 - [XNUSandbox by Dionysus Blazakis](https://github.com/dionthegod/XNUSandbox)
 - [Sandbox Toolkit by Stefan Esser](https://github.com/sektioneins/sandbox_toolkit)
