@@ -121,10 +121,8 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             return
 
         outfile.write("(version 1)\n")
-        outfile.write(f"({default_node.terminal} default)\n")
 
-        for idx in range(1, len(sandbox_data.op_table)):
-            offset = sandbox_data.op_table[idx]
+        for idx, offset in enumerate(sandbox_data.op_table):
             operation = sandbox_data.sb_ops[idx]
             if sandbox_data.ops_to_reverse and (
                 operation not in sandbox_data.ops_to_reverse
@@ -136,7 +134,8 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             )
             if not node:
                 continue
-
+            
+            node.parse_terminal()
             graph = operation_node.build_operation_node_graph(node, default_node)
             if graph:
                 reduced_graph = operation_node.reduce_operation_node_graph(graph)
@@ -145,11 +144,8 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                     operation, default_node.terminal.is_allow(), outfile
                 )
             else:
-                node.parse_terminal()
-                node.parse_non_terminal()
-                if node.terminal.type != default_node.terminal.type:
-                    outfile.write(f"({node.terminal} {operation})\n")
-                elif node.terminal.db_modifiers:
+                outfile.write(f"({node.terminal} {operation})\n")
+                if node.terminal.db_modifiers:
                     modifiers_type = [
                         key for key, val in node.terminal.db_modifiers.items() if val
                     ]

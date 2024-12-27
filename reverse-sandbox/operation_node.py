@@ -40,6 +40,15 @@ class TerminalNode:
     INLINE_MODIFIERS = "inline_modifiers"
     FLAGS_MODIFIERS = "flags_modifiers"
 
+    @staticmethod
+    def load_modifiers_db():
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(script_dir, "misc/modifiers.json")) as data:
+            temp = json.load(data)
+        return temp["modifiers"]
+
+    modifiers_db = load_modifiers_db()
+
     def __init__(self):
         self.type = None
         self.flags = None
@@ -49,7 +58,6 @@ class TerminalNode:
         self.inline_modifier = None
         self.modifier = None
         self.inline_operation_node = None
-        self.modifiers_db = None
         self.ss = None
         self.db_modifiers = {self.INLINE_MODIFIERS: [], self.FLAGS_MODIFIERS: []}
         self.parsed = False
@@ -108,21 +116,12 @@ class TerminalNode:
 
         return ret
 
-    def load_modifiers_db(self):
-        if not self.modifiers_db:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            with open(os.path.join(script_dir, "misc/modifiers.json")) as data:
-                temp = json.load(data)
-            self.modifiers_db = temp["modifiers"]
-
     def get_modifier(self, key_value, key_name):
-        self.load_modifiers_db()
         for i in self.modifiers_db:
             if i[key_name] == key_value:
                 return i
 
     def get_modifiers_by_flag(self, flags):
-        self.load_modifiers_db()
         modifiers = []
         for modifier in self.modifiers_db:
             # should be if modifier['action_mask'] ... currently ignoring 'no-report' modifier
