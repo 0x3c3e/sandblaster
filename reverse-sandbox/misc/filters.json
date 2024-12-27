@@ -157,11 +157,11 @@
     },
     "0x28": {
         "name": "rootless-boot-device-filter",
-        "arg_process_fn": "get_none"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x29": {
         "name": "rootless-file-filter",
-        "arg_process_fn": "get_none"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x2a": {
         "name": "privilege-id",
@@ -354,6 +354,14 @@
     "0x59": {
         "name": "task-special-port",
         "arg_process_fn": "get_filter_arg_task_special_port"
+    },
+    "0x5a": {
+        "name": "fileprovider-syncroot",
+        "arg_process_fn": "get_filter_arg_string_by_offset"
+    },
+    "0x5b": {
+        "name": "mount-root",
+        "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x81": {
         "name": "regex",

@@ -144,7 +144,9 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 reduced_graph.print_vertices_with_operation_metanodes(
                     operation, default_node.terminal.is_allow(), outfile
                 )
-            elif node.terminal:
+            else:
+                node.parse_terminal()
+                node.parse_non_terminal()
                 if node.terminal.type != default_node.terminal.type:
                     outfile.write(f"({node.terminal} {operation})\n")
                 elif node.terminal.db_modifiers:
