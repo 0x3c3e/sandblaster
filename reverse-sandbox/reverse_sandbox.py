@@ -4,7 +4,7 @@ import sys
 import struct
 import logging.config
 import argparse
-import os
+import pprint
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
@@ -32,12 +32,11 @@ class SandboxData:
     op_nodes_count: int
     sb_ops_count: int
     vars_count: int
-    states_count: int
-    num_profiles: int
     regex_count: int
-    entitlements_count: int
-    instructions_count: int
-    data_file: Optional[object] = field(default=None)
+    states_count: int = field(default=0)
+    num_profiles: int = field(default=0)
+    entitlements_count: int = field(default=0)
+    instructions_count: int = field(default=0)
     op_table: int = field(default=None)
 
     regex_table_offset: int = field(init=False)
@@ -78,8 +77,7 @@ class SandboxData:
 
     @classmethod
     def from_file(cls, infile: object) -> "SandboxData":
-        infile.seek(0)
-        macos15_2_struct = struct.Struct("<HHBBBxHHHH")
+        macos15_2_struct = struct.Struct("<HHBB6xHH")
         values = macos15_2_struct.unpack(infile.read(macos15_2_struct.size))
         return cls(
             header_size=macos15_2_struct.size,
@@ -87,12 +85,7 @@ class SandboxData:
             op_nodes_count=values[1],
             sb_ops_count=values[2],
             vars_count=values[3],
-            states_count=values[4],
-            num_profiles=values[5],
-            regex_count=values[7],
-            entitlements_count=values[6],
-            instructions_count=values[8],
-            data_file=infile,
+            regex_count=values[4],
         )
 
 
@@ -239,6 +232,7 @@ def main():
 
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxData.from_file(infile)
+        pprint.pprint(sandbox_data)
 
         read_sandbox_operations(args.operations_file, sandbox_data)
         logger.info(f"Read {len(sandbox_data.sb_ops)} sandbox operations")
@@ -248,11 +242,8 @@ def main():
             logger.info(f"Filtered by {args.operation} sandbox operations")
 
         parse_regex_list(infile, sandbox_data)
-        logger.info(f"Regex list: {sandbox_data.regex_list}")
+        logger.info(f"Regex list length: {len(sandbox_data.regex_list)}")
 
-        logger.info(
-            f"{sandbox_data.vars_count} global vars at offset {hex(sandbox_data.vars_offset)}"
-        )
         parse_global_vars(infile, sandbox_data)
         logger.info(f"Global variables are: {sandbox_data.global_vars}")
 
