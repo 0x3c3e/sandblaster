@@ -59,7 +59,7 @@ class NonTerminalNode:
                         if len(self.argument) == 1:
                             ret_str = ""
                         else:
-                            ret_str = "(require-any "
+                            ret_str = "(require-any\n"
                     for s in self.argument:
                         curr_filter = self.filter
                         regex_added = False

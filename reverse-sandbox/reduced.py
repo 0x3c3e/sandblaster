@@ -4,6 +4,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+INDENT = " " * 2
+
+
 class ReducedVertice:
     TYPE_SINGLE = "single"
     TYPE_START = "start"
@@ -104,7 +107,7 @@ class ReducedVertice:
         result_str = ""
         if self.is_type_single():
             if self.is_not and not recursive_is_not:
-                result_str += "(require-not " + str(self.value) + ")"
+                result_str += "(require-not" + str(self.value) + "\n)"
             else:
                 result_str += str(self.value)
         elif self.is_type_require_entitlement():
@@ -115,14 +118,14 @@ class ReducedVertice:
             else:
                 ent_str += str(n.value)[:-1] + " "
                 ent_str += i.recursive_str(level, self.is_not)
-                ent_str += ")"
+                ent_str += "\n)"
             if self.is_not:
-                result_str += "(require-not " + ent_str + ")"
+                result_str += "(require-not" + ent_str + "\n)"
             else:
                 result_str += ent_str
         else:
             if level == 1:
-                result_str += "\n" + 13 * " "
+                result_str += "\n" + level * " "
             result_str += "(" + self.type
             level += 1
             for i, v in enumerate(self.value):
@@ -130,61 +133,33 @@ class ReducedVertice:
                     result_str += " " + v.recursive_str(level, recursive_is_not)
                 else:
                     result_str += (
-                        "\n"
-                        + 13 * level * " "
-                        + v.recursive_str(level, recursive_is_not)
+                        "\n" + level * " " + v.recursive_str(level, recursive_is_not)
                     )
-            result_str += ")"
+            result_str += "\n)"
         return result_str
 
     def __str__(self):
         return self.recursive_str(1, False)
 
-    def str_simple(self):
-        if self.is_type_single():
-            return str(self.value)
-        elif self.is_type_require_any():
-            return "require-any"
-        elif self.is_type_require_all():
-            return "require-all"
-        elif self.is_type_require_entitlement():
-            return self.value[1:-1]
-        elif self.is_type_start():
-            return "start"
-        else:
-            return "unknown-type"
-
     def str_print(self):
         if self.is_type_single():
             return (str(self.value), None)
         elif self.is_type_require_any():
-            return ("(require-any", ")")
+            return ("(require-any", "\n)")
         elif self.is_type_require_all():
-            return ("(require-all", ")")
+            return ("(require-all", "\n)")
         elif self.is_type_require_entitlement():
-            return (str(self.value)[:-1], ")")
+            return (str(self.value)[:-1], "\n)")
         elif self.is_type_start():
             return (None, None)
         else:
             return ("unknown-type", None)
-
-    def str_print_not(self):
-        result_str = ""
-        if self.is_type_single():
-            if self.is_not:
-                result_str += "(require-not " + str(self.value) + ")"
-        return result_str
 
 
 class ReducedEdge:
     def __init__(self, start=None, end=None):
         self.start = start
         self.end = end
-
-    def str_simple(self):
-        # print "start: %s" % (self.start.str_simple())
-        # print "end: %s" % (self.end.str_simple())
-        return "%s -----> %s" % (self.start.str_simple(), self.end.str_simple())
 
     def __str__(self):
         return str(self.start) + " -> " + str(self.end)
@@ -457,7 +432,6 @@ class ReducedGraph:
     def reduce_graph(self):
         self.set_final_vertices()
 
-        logger.debug("before everything:\n" + self.str_simple())
         # Do until no more changes.
         while True:
             self.reduce_changes_occurred = False
@@ -466,7 +440,6 @@ class ReducedGraph:
                 self.reduce_next_vertices(v)
             if self.reduce_changes_occurred == False:
                 break
-        logger.debug("after next:\n" + self.str_simple())
         # Do until no more changes.
         while True:
             self.reduce_changes_occurred = False
@@ -475,7 +448,6 @@ class ReducedGraph:
                 self.reduce_prev_vertices(v)
             if self.reduce_changes_occurred == False:
                 break
-        logger.debug("after next/prev:\n" + self.str_simple())
 
         # Reduce graph starting from final vertices. Keep going until
         # final vertices don't change during an iteration.
@@ -488,7 +460,6 @@ class ReducedGraph:
         for e in self.edges:
             v = e.end
             self.reduce_vertice_single_prev(v)
-        logger.debug("after everything:\n" + self.str_simple())
 
     def reduce_graph_with_metanodes(self):
         # Add require-any metanode if current node has multiple successors.
@@ -660,20 +631,6 @@ class ReducedGraph:
         self.remove_builtin_filters()
         self.aggregate_require_entitlement_nodes()
 
-    def remove_builtin_filters_with_metanodes(self):
-        copy_vertices = list(self.vertices)
-        for v in copy_vertices:
-            if re.search("###\$\$\$\*\*\*", v.str_simple()):
-                self.remove_vertice(v)
-            elif re.search("entitlement-value #t", v.str_simple()):
-                self.remove_vertice(v)
-            elif re.search('entitlement-value-regex #"\."', v.str_simple()):
-                v.value.non_terminal.argument = '#".+"'
-            elif re.search('global-name-regex #"\."', v.str_simple()):
-                v.value.non_terminal.argument = '#".+"'
-            elif re.search('local-name-regex #"\."', v.str_simple()):
-                v.value.non_terminal.argument = '#".+"'
-
     def replace_require_entitlement_with_metanodes(self, v):
         prev_list = self.get_prev_vertices(v)
         next_list = self.get_next_vertices(v)
@@ -694,7 +651,6 @@ class ReducedGraph:
                 self.replace_require_entitlement_with_metanodes(v)
 
     def cleanup_filters_with_metanodes(self):
-        self.remove_builtin_filters_with_metanodes()
         self.aggregate_require_entitlement_with_metanodes()
 
     def print_vertices_with_operation(self, operation, out_f):
@@ -739,25 +695,31 @@ class ReducedGraph:
                 break
             (cnode, indent) = vlist.pop(0)
             if not cnode:
-                out_f.write(")")
+                out_f.write("\n" + indent * INDENT + ")")
                 continue
             (first, last) = cnode.str_print()
             if first:
                 if cnode.is_not:
-                    if cnode.str_print_not() != "":
-                        out_f.write("\n" + indent * "\t" + cnode.str_print_not())
-                    else:
-                        out_f.write("\n" + indent * "\t" + "(require-not " + first)
-                        if (
-                            cnode.is_type_require_any()
-                            or cnode.is_type_require_all()
-                            or cnode.is_type_require_entitlement()
-                        ):
-                            vlist.insert(0, (None, indent))
+                    out_f.write("\n" + indent * INDENT + "(require-not ")
+                    for i, line in enumerate(first.splitlines()):
+                        if i == 0:
+                            out_f.write("\n" + (indent + 1) * INDENT + line)
                         else:
-                            out_f.write(")")
+                            out_f.write("\n" + (indent + 2) * INDENT + line)
+                    if (
+                        cnode.is_type_require_any()
+                        or cnode.is_type_require_all()
+                        or cnode.is_type_require_entitlement()
+                    ):
+                        vlist.insert(0, (None, indent))
+                    else:
+                        out_f.write("\n" + indent * INDENT + ")")
                 else:
-                    out_f.write("\n" + indent * "\t" + first)
+                    for i, line in enumerate(first.splitlines()):
+                        if i == 0:
+                            out_f.write("\n" + (indent) * INDENT + line)
+                            continue
+                        out_f.write("\n" + (indent + 1) * INDENT + line)
             if last:
                 vlist.insert(0, (None, indent))
             next_vertices_list = self.get_next_vertices(cnode)
@@ -772,10 +734,7 @@ class ReducedGraph:
                 if cnode.is_type_require_entitlement():
                     pos = 0
                     for n in next_vertices_list:
-                        if (
-                            n.is_type_single()
-                            and not re.search("entitlement-value", n.str_simple())
-                        ) or n.is_type_require_entitlement():
+                        if (n.is_type_single()) or n.is_type_require_entitlement():
                             vlist.insert(pos + 1, (n, indent - 1))
                         else:
                             vlist.insert(0, (n, indent))
