@@ -108,14 +108,6 @@ class OperationNode:
             ret += str(self.non_terminal)
         return ret
 
-    def str_not(self):
-        ret = ""
-        if self.is_terminal():
-            ret += str(self.terminal)
-        if self.is_non_terminal():
-            ret += self.non_terminal.str_not()
-        return ret
-
     def values(self):
         if self.is_terminal():
             return (None, None)

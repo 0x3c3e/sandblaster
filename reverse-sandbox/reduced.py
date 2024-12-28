@@ -104,11 +104,7 @@ class ReducedVertice:
         result_str = ""
         if self.is_type_single():
             if self.is_not and not recursive_is_not:
-                value = str(self.value)
-                if "(require-any" in value:
-                    result_str = self.value.str_not()
-                else:
-                    result_str += "(require-not " + str(self.value) + ")"
+                result_str += "(require-not " + str(self.value) + ")"
             else:
                 result_str += str(self.value)
         elif self.is_type_require_entitlement():
@@ -176,11 +172,7 @@ class ReducedVertice:
         result_str = ""
         if self.is_type_single():
             if self.is_not:
-                value = str(self.value)
-                if "(require-any" in value:
-                    result_str = self.value.str_not()
-                else:
-                    result_str += "(require-not " + str(self.value) + ")"
+                result_str += "(require-not " + str(self.value) + ")"
         return result_str
 
 
