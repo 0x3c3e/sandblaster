@@ -8,9 +8,10 @@ import pprint
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-import operation_node
 import sandbox_filter
 import sandbox_regex
+import reduced
+from nodes import operation_node_builder
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class SandboxData:
     entitlements_count: int = field(default=0)
     instructions_count: int = field(default=0)
     op_table: int = field(default=None)
+    builder: int = field(default=None)
 
     regex_table_offset: int = field(init=False)
     vars_offset: int = field(init=False)
@@ -97,7 +99,8 @@ def extract_string_from_offset(f: object, offset: int, base_addr: int) -> str:
 def create_operation_nodes(
     infile: object, sandbox_data: SandboxData, keep_builtin_filters: bool
 ) -> List[object]:
-    sandbox_data.operation_nodes = operation_node.build_operation_nodes(
+    sandbox_data.builder = operation_node_builder.OperationNodeGraphBuilder()
+    sandbox_data.operation_nodes = sandbox_data.builder.build_operation_nodes(
         infile, sandbox_data.op_nodes_count
     )
     for node in sandbox_data.operation_nodes:
@@ -111,7 +114,7 @@ def create_operation_nodes(
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
-        default_node = operation_node.find_operation_node_by_offset(
+        default_node = sandbox_data.builder.find_operation_node_by_offset(
             sandbox_data.operation_nodes, sandbox_data.op_table[0]
         )
         if not default_node or not default_node.terminal:
@@ -129,17 +132,16 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             ):
                 continue
 
-            node = operation_node.find_operation_node_by_offset(
+            node = sandbox_data.builder.find_operation_node_by_offset(
                 sandbox_data.operation_nodes, offset
             )
             if not node:
                 continue
-            
+
             node.parse_terminal()
-            graph = operation_node.build_operation_node_graph(node, default_node)
+            graph = sandbox_data.builder.build_operation_node_graph(node, default_node)
             if graph:
-                reduced_graph = operation_node.reduce_operation_node_graph(graph)
-                reduced_graph.str_simple_with_metanodes()
+                reduced_graph = reduced.reduce_operation_node_graph(graph)
                 reduced_graph.print_vertices_with_operation_metanodes(
                     operation, default_node.terminal.is_allow(), outfile
                 )
