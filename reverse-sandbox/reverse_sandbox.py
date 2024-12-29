@@ -137,10 +137,13 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             )
             if not node:
                 continue
-
+            
             node.parse_terminal()
+            sandbox_data.builder.terminals = set()
             graph = sandbox_data.builder.build_operation_node_graph(node, default_node)
             if graph:
+                for terminal in sandbox_data.builder.terminals:
+                    outfile.write(f"({terminal} {operation})\n")
                 reduced_graph = reduced.reduce_operation_node_graph(graph)
                 reduced_graph.print_vertices_with_operation_metanodes(
                     operation, default_node.terminal.is_allow(), outfile

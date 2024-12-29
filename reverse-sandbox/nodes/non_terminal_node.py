@@ -1,13 +1,4 @@
 class NonTerminalNode:
-    """Intermediary node consisting of a filter to match
-
-    The non-terminal node, when matched, points to a new node, and
-    when unmatched, to another node.
-
-    A non-terminal node consists of the filter to match, its argument and
-    the match and unmatch nodes.
-    """
-
     def __init__(self):
         self.filter_id = None
         self.filter = None
@@ -130,20 +121,6 @@ class NonTerminalNode:
         if self.filter:
             return (self.filter, self.argument)
         return ("%02x" % self.filter_id, "%04x" % (self.argument_id))
-
-    def is_entitlement_start(self):
-        return self.filter_id == 0x1E or self.filter_id == 0xA0
-
-    def is_entitlement(self):
-        return (
-            self.filter_id == 0x1E
-            or self.filter_id == 0x1F
-            or self.filter_id == 0x20
-            or self.filter_id == 0xA0
-        )
-
-    def is_last_regular_expression(self):
-        return self.filter_id == 0x81 and self.argument_id == num_regex - 1
 
     def convert_filter(self, convert_fn, f, sandbox_data, keep_builtin_filters):
         (self.filter, self.argument) = convert_fn(

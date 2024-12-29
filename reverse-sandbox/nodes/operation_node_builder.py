@@ -6,22 +6,12 @@ logger = logging.getLogger(__name__)
 
 
 class OperationNodeGraphBuilder:
-    """
-    This class encapsulates the logic for:
-      - building operation nodes from file data,
-      - constructing and cleaning up the operation node graph,
-      - and collecting paths.
-
-    It removes reliance on global variables by storing them as instance
-    attributes (e.g. processed_nodes, paths, current_path).
-    """
-
     def __init__(self):
         self.processed_nodes = []
-        # The following attributes were previously globals:
         self.paths = []
         self.current_path = []
         self.nodes_traversed_for_removal = []
+        self.terminals = set()
 
     def has_been_processed(self, node):
         return node in self.processed_nodes
@@ -178,6 +168,9 @@ class OperationNodeGraphBuilder:
                 elif current_node.non_terminal.is_allow_deny():
                     self.ong_mark_not(g, current_node, parent_node)
                     self.ong_end_path(g, current_node, parent_node)
+                else:
+                    if current_node.non_terminal.unmatch.is_terminal():
+                        self.terminals.add(current_node.non_terminal.unmatch)
             else:
                 raise RuntimeError("terminal is neither deny or allow")
 
@@ -195,14 +188,15 @@ class OperationNodeGraphBuilder:
             return
         message = ""
         for node_iter in g.keys():
-            message += "0x%x (%s) (%s) (decision: %s): [ " % (
+            message += "0x%x (%s) (%s) (decision: %s not: %d): [ " % (
                 node_iter.offset,
                 str(node_iter),
                 g[node_iter]["type"],
                 g[node_iter]["decision"],
+                g[node_iter]["not"]
             )
             for edge in g[node_iter]["list"]:
-                message += "0x%x (%s) " % (edge.offset, str(edge))
+                message += "\n0x%x (%s) " % (edge.offset, str(edge))
             message += "]\n"
         logger.debug(message)
 

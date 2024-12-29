@@ -1,4 +1,8 @@
 {
+    "0x09": {
+        "name": "user-approval",
+        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
+    },
     "0x0A": {
         "name": "message",
         "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
