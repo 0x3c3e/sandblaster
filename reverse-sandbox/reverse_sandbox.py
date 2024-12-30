@@ -114,9 +114,7 @@ def create_operation_nodes(
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
-        default_node = sandbox_data.builder.find_operation_node_by_offset(
-            sandbox_data.operation_nodes, sandbox_data.op_table[0]
-        )
+        default_node = sandbox_data.builder.find_operation_node_by_offset(sandbox_data.op_table[0])
         if not default_node or not default_node.terminal:
             logger.warning(
                 "Default node or terminal not found; skipping profile processing."
@@ -132,9 +130,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             ):
                 continue
 
-            node = sandbox_data.builder.find_operation_node_by_offset(
-                sandbox_data.operation_nodes, offset
-            )
+            node = sandbox_data.builder.find_operation_node_by_offset(offset)
             if not node:
                 continue
             

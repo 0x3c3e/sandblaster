@@ -40,6 +40,7 @@ class OperationNode:
         self.type = None
         self.terminal = None
         self.non_terminal = None
+        self.processed = False
 
     def is_terminal(self):
         return self.type == self.OPERATION_NODE_TYPE_TERMINAL
