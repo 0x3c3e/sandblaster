@@ -12,6 +12,7 @@ import sandbox_filter
 import sandbox_regex
 import reduced
 from nodes import operation_node_builder
+from nodes import operation_node_parser
 
 logger = logging.getLogger(__name__)
 
@@ -100,10 +101,11 @@ def create_operation_nodes(
     infile: object, sandbox_data: SandboxData, keep_builtin_filters: bool
 ) -> List[object]:
     sandbox_data.builder = operation_node_builder.OperationNodeGraphBuilder()
-    sandbox_data.operation_nodes = sandbox_data.builder.build_operation_nodes(
+    sandbox_data.operation_nodes = operation_node_parser.OperionNodeParser()
+    sandbox_data.operation_nodes.build_operation_nodes(
         infile, sandbox_data.op_nodes_count
     )
-    for node in sandbox_data.operation_nodes:
+    for node in sandbox_data.operation_nodes.operation_nodes:
         node.convert_filter(
             sandbox_filter.convert_filter_callback,
             infile,
@@ -114,7 +116,7 @@ def create_operation_nodes(
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
-        default_node = sandbox_data.builder.find_operation_node_by_offset(sandbox_data.op_table[0])
+        default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(sandbox_data.op_table[0])
         if not default_node or not default_node.terminal:
             logger.warning(
                 "Default node or terminal not found; skipping profile processing."
@@ -130,7 +132,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             ):
                 continue
 
-            node = sandbox_data.builder.find_operation_node_by_offset(offset)
+            node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
             

@@ -1,6 +1,4 @@
 import logging
-import struct
-from nodes.operation_node import OperationNode
 
 logger = logging.getLogger(__name__)
 
@@ -11,35 +9,6 @@ class OperationNodeGraphBuilder:
         self.current_path = []
         self.nodes_traversed_for_removal = []
         self.terminals = set()
-        self.cache = {}
-
-    def build_operation_node(self, raw, index):
-        node = OperationNode(index, raw)
-        node.parse_raw()
-        return node
-
-    def build_operation_nodes(self, f, num_operation_nodes):
-        operation_nodes = []
-        for i in range(num_operation_nodes):
-            raw = struct.unpack("<8B", f.read(8))
-            node = self.build_operation_node(raw, i)
-            operation_nodes.append(node)
-            self.cache[node.offset] = node
-        for op_node in operation_nodes:
-            if not op_node.is_non_terminal():
-                continue
-            if op_node.non_terminal.match_offset in self.cache:
-                op_node.non_terminal.match = self.cache[
-                    op_node.non_terminal.match_offset
-                ]
-            if op_node.non_terminal.unmatch_offset in self.cache:
-                op_node.non_terminal.unmatch = self.cache[
-                    op_node.non_terminal.unmatch_offset
-                ]
-        return operation_nodes
-
-    def find_operation_node_by_offset(self, offset):
-        return self.cache[offset]
 
     def ong_mark_not(self, g, node):
         g[node]["not"] = True
@@ -79,9 +48,7 @@ class OperationNodeGraphBuilder:
         nodes_to_process.add((None, node))
         return g, nodes_to_process
 
-    def process_current_node(
-        self, g, parent_node, current_node, nodes_to_process, allow_mode
-    ):
+    def process_current_node(self, g, parent_node, current_node, nodes_to_process, allow_mode):
         def add_to_path():
             self.ong_add_to_path(g, current_node, nodes_to_process)
 
@@ -96,63 +63,32 @@ class OperationNodeGraphBuilder:
 
         non_terminal = current_node.non_terminal
 
-        if non_terminal.is_non_terminal_deny():
-            if allow_mode:
-                mark_not()
-                end_path()
-                add_to_parent_path()
-            else:
-                add_to_path()
+        match_is_terminal = non_terminal.match.is_terminal()
+        unmatch_is_terminal = non_terminal.unmatch.is_terminal()
 
-        elif non_terminal.is_non_terminal_allow():
-            if allow_mode:
-                add_to_path()
-            else:
-                mark_not()
-                end_path()
-                add_to_parent_path()
-
-        elif non_terminal.is_non_terminal_non_terminal():
+        if not match_is_terminal and not unmatch_is_terminal:
             add_to_path()
             add_to_parent_path()
-
-        elif non_terminal.is_allow_non_terminal():
-            if allow_mode:
+        elif not match_is_terminal and unmatch_is_terminal:
+            if allow_mode == non_terminal.unmatch.terminal.is_allow():
+                add_to_path()
+            else:
+                mark_not()
+                end_path()
+                add_to_parent_path()
+        elif match_is_terminal and not unmatch_is_terminal:
+            if allow_mode == non_terminal.match.terminal.is_allow():
                 mark_not()
                 add_to_path()
             else:
                 end_path()
                 add_to_parent_path()
-
-        elif non_terminal.is_deny_non_terminal():
-            if allow_mode:
-                end_path()
-                add_to_parent_path()
-            else:
+        elif match_is_terminal and unmatch_is_terminal:
+            print(non_terminal, non_terminal.unmatch.terminal)
+            if allow_mode == non_terminal.match.terminal.is_allow():
                 mark_not()
-                add_to_path()
+            end_path()
 
-        elif non_terminal.is_deny_allow():
-            if allow_mode:
-                end_path()
-            else:
-                mark_not()
-                end_path()
-
-        elif non_terminal.is_allow_deny():
-            if allow_mode:
-                mark_not()
-                end_path()
-            else:
-                end_path()
-
-        else:
-            if (
-                allow_mode
-                and non_terminal.unmatch
-                and non_terminal.unmatch.is_terminal()
-            ):
-                self.terminals.add(non_terminal.unmatch)
 
     def _process_current_node(
         self, g, parent_node, current_node, nodes_to_process, default_node
@@ -190,7 +126,7 @@ class OperationNodeGraphBuilder:
         g, nodes_to_process = self._initialize_graph(node)
         self._process_all_nodes(g, nodes_to_process, default_node)
         node.processed = True
-        g = self.clean_edges_in_operation_node_graph(g)
+        # g = self.clean_edges_in_operation_node_graph(g)
         return g
 
     def remove_edge_in_operation_node_graph(self, g, node_start, node_end):
