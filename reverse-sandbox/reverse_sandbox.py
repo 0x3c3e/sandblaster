@@ -10,7 +10,6 @@ from typing import List, Optional, Tuple
 
 import sandbox_filter
 import sandbox_regex
-import reduced
 from nodes import operation_node_builder
 from nodes import operation_node_parser
 
@@ -140,12 +139,19 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             sandbox_data.builder.terminals = set()
             graph = sandbox_data.builder.build_operation_node_graph(node, default_node)
             if graph:
-                for terminal in sandbox_data.builder.terminals:
-                    outfile.write(f"({terminal} {operation})\n")
-                reduced_graph = reduced.reduce_operation_node_graph(graph)
-                reduced_graph.print_vertices_with_operation_metanodes(
-                    operation, default_node.terminal.is_allow(), outfile
-                )
+                print(operation, graph)
+                # exit(1)
+                outfile.write(f"({node.terminal} {operation})\n")
+                if not len(graph.edges):
+                    for node in graph.nodes:
+                        outfile.write(f"{node}\n")
+                    continue
+                # print("HERE")
+                # exit(1)
+                # sandbox_data.builder.print_recursive_edges(graph, node.offset, 0, outfile)
+                sandbox_data.builder.print_digraph(graph)
+                
+                sandbox_data.builder.visualize_graph(graph)
             else:
                 outfile.write(f"({node.terminal} {operation})\n")
                 if node.terminal.db_modifiers:
