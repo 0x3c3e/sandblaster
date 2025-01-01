@@ -13,6 +13,7 @@ import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
 import graph as gparse
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -136,34 +137,21 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
-            
+
             node.parse_terminal()
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
             if graph:
                 print(operation, graph)
-                # sandbox_data.builder.print_recursive_edges(graph, node.offset, 0, outfile)
-                # graph_builder.print(sandbox_data.operation_nodes)
-                import networkx as nx
 
                 g = graph_builder.build_subgraph_with_edge_style("solid")
-                print(g)
                 for i, p in enumerate(gparse.get_subgraphs(g)):
-                    print(i, p)
                     p = gparse.reduce_graph(p)
-                    print(i, p)
-                    pydot_graph = nx.drawing.nx_pydot.to_pydot(p)
-                    pydot_graph.write_dot(f"gr/graph_{i}.dot")
-                # graph_builder.visualize()
-                graph_builder.print(g, sandbox_data.operation_nodes)
-            else:
-                outfile.write(f"({node.terminal} {operation})\n")
-                if node.terminal.db_modifiers:
-                    modifiers_type = [
-                        key for key, val in node.terminal.db_modifiers.items() if val
-                    ]
-                    if modifiers_type:
-                        outfile.write(f"({node.terminal} {operation})\n")
+                    graph_builder.print(
+                        p, sandbox_data.operation_nodes, outfile, operation
+                    )
+                    # pydot_graph = nx.drawing.nx_pydot.to_pydot(p)
+                    # pydot_graph.write_dot(f"gr/graph_{i}.dot")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:

@@ -4,6 +4,7 @@ import networkx as nx
 logger = logging.getLogger(__name__)
 
 import networkx as nx
+import graph as graphng
 
 
 class OperationNodeGraphBuilder:
@@ -55,9 +56,34 @@ class OperationNodeGraphBuilder:
             self.decide_and_add_paths()
         return self.graph
 
-    def print(self, graph, nodes):
-        for node, data in graph.nodes(data=True):
-            print(node, nodes.find_operation_node_by_offset(node))
+    def print(self, graph, nodes, outfile, operation):
+        outfile.write("\n" * 2)
+
+        def walk(node):
+            if isinstance(node, graphng.ReducedOperation):
+                outfile.write(f"({node.operation}" + "(\n")
+                for operand in node.operands:
+                    walk(operand)
+                outfile.write("))\n")
+            else:
+                node = nodes.find_operation_node_by_offset(node)
+                if node.is_terminal():
+                    outfile.write(f"({operation} {node})" + "\n")
+                else:
+                    outfile.write(str(node) + "\n")
+
+        start_node = None
+        end_node = None
+        for node in graph.nodes():
+            if graph.in_degree(node) == 0:
+                start_node = node
+            if graph.out_degree(node) == 0:
+                end_node = node
+        if len(graph.nodes()) <= 3:
+            for node in nx.shortest_path(graph, start_node, end_node):
+                walk(node)
+        else:
+            print("SKIPPED", len(graph.nodes()))
 
     def visualize(self):
         pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)
@@ -77,10 +103,16 @@ class OperationNodeGraphBuilder:
                 subgraph.add_edge(u, v, **edge_data)
         source_nodes = [node for node, deg in subgraph.in_degree() if deg == 0]
         for node in source_nodes:
-            shortest_path = list(reversed(nx.shortest_path(self.graph, start_node, node)))
+            shortest_path = list(
+                reversed(nx.shortest_path(self.graph, start_node, node))
+            )
             for i in range(len(shortest_path) - 1):
-                edge_data = self.graph.get_edge_data(shortest_path[i + 1], shortest_path[i])
-                if edge_data["style"] == style_value and subgraph.has_node(shortest_path[i + 1]):
+                edge_data = self.graph.get_edge_data(
+                    shortest_path[i + 1], shortest_path[i]
+                )
+                if edge_data["style"] == style_value and subgraph.has_node(
+                    shortest_path[i + 1]
+                ):
                     subgraph.add_edge(shortest_path[i + 1], node)
                     break
 
