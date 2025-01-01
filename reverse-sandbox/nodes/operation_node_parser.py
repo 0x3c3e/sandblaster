@@ -9,7 +9,7 @@ class OperionNodeParser:
     def __init__(self):
         self.cache = {}
         self.operation_nodes = []
-    
+
     def find_operation_node_by_offset(self, offset):
         return self.cache[offset]
 

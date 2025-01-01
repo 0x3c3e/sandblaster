@@ -99,7 +99,6 @@ def extract_string_from_offset(f: object, offset: int, base_addr: int) -> str:
 def create_operation_nodes(
     infile: object, sandbox_data: SandboxData, keep_builtin_filters: bool
 ) -> List[object]:
-    sandbox_data.builder = operation_node_builder.OperationNodeGraphBuilder()
     sandbox_data.operation_nodes = operation_node_parser.OperionNodeParser()
     sandbox_data.operation_nodes.build_operation_nodes(
         infile, sandbox_data.op_nodes_count
@@ -115,7 +114,9 @@ def create_operation_nodes(
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
-        default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(sandbox_data.op_table[0])
+        default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(
+            sandbox_data.op_table[0]
+        )
         if not default_node or not default_node.terminal:
             logger.warning(
                 "Default node or terminal not found; skipping profile processing."
@@ -134,10 +135,12 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
-            
+
             node.parse_terminal()
-            sandbox_data.builder.terminals = set()
-            graph = sandbox_data.builder.build_operation_node_graph(node, default_node)
+            graph_builder = operation_node_builder.OperationNodeGraphBuilder(
+                node
+            )
+            graph = graph_builder.build_operation_node_graph()
             if graph:
                 print(operation, graph)
                 # exit(1)
@@ -149,9 +152,9 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 # print("HERE")
                 # exit(1)
                 # sandbox_data.builder.print_recursive_edges(graph, node.offset, 0, outfile)
-                sandbox_data.builder.print_digraph(graph)
-                
-                sandbox_data.builder.visualize_graph(graph)
+                graph_builder.print_digraph(sandbox_data.operation_nodes)
+
+                graph_builder.visualize_graph()
             else:
                 outfile.write(f"({node.terminal} {operation})\n")
                 if node.terminal.db_modifiers:
