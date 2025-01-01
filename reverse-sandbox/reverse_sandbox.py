@@ -10,9 +10,10 @@ from typing import List, Optional, Tuple
 
 import sandbox_filter
 import sandbox_regex
-import reduced
 from nodes import operation_node_builder
 from nodes import operation_node_parser
+import graph as gparse
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +101,6 @@ def extract_string_from_offset(f: object, offset: int, base_addr: int) -> str:
 def create_operation_nodes(
     infile: object, sandbox_data: SandboxData, keep_builtin_filters: bool
 ) -> List[object]:
-    sandbox_data.builder = operation_node_builder.OperationNodeGraphBuilder()
     sandbox_data.operation_nodes = operation_node_parser.OperionNodeParser()
     sandbox_data.operation_nodes.build_operation_nodes(
         infile, sandbox_data.op_nodes_count
@@ -116,7 +116,9 @@ def create_operation_nodes(
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
-        default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(sandbox_data.op_table[0])
+        default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(
+            sandbox_data.op_table[0]
+        )
         if not default_node or not default_node.terminal:
             logger.warning(
                 "Default node or terminal not found; skipping profile processing."
@@ -135,25 +137,18 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
-            
-            node.parse_terminal()
-            sandbox_data.builder.terminals = set()
-            graph = sandbox_data.builder.build_operation_node_graph(node, default_node)
+
+            graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
+            graph = graph_builder.build_operation_node_graph()
             if graph:
-                for terminal in sandbox_data.builder.terminals:
-                    outfile.write(f"({terminal} {operation})\n")
-                reduced_graph = reduced.reduce_operation_node_graph(graph)
-                reduced_graph.print_vertices_with_operation_metanodes(
-                    operation, default_node.terminal.is_allow(), outfile
-                )
-            else:
-                outfile.write(f"({node.terminal} {operation})\n")
-                if node.terminal.db_modifiers:
-                    modifiers_type = [
-                        key for key, val in node.terminal.db_modifiers.items() if val
-                    ]
-                    if modifiers_type:
-                        outfile.write(f"({node.terminal} {operation})\n")
+                g = graph_builder.build_subgraph_with_edge_style("solid")
+                for i, p in enumerate(gparse.get_subgraphs(g)):
+                    p = gparse.reduce_graph(p)
+                    graph_builder.print(
+                        p, sandbox_data.operation_nodes, outfile, operation
+                    )
+                    # pydot_graph = nx.drawing.nx_pydot.to_pydot(p)
+                    # pydot_graph.write_dot(f"gr/graph_{i}.dot")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
