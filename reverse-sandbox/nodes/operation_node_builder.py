@@ -59,18 +59,20 @@ class OperationNodeGraphBuilder:
     def print(self, graph, nodes, outfile, operation):
         outfile.write("\n" * 2)
 
-        def walk(node):
+        def walk(node, deep=0):
+            prefix = "  " * deep
             if isinstance(node, graphng.ReducedOperation):
-                outfile.write(f"({node.operation}" + "(\n")
+                outfile.write(prefix + f"({node.operation}" + "(\n")
                 for operand in node.operands:
-                    walk(operand)
-                outfile.write("))\n")
+                    walk(operand, deep+1)
+                outfile.write(prefix + "))\n")
             else:
                 node = nodes.find_operation_node_by_offset(node)
                 if node.is_terminal():
-                    outfile.write(f"({operation} {node})" + "\n")
+                    outfile.write(prefix + f"({operation} {node})" + "\n")
                 else:
-                    outfile.write(str(node) + "\n")
+                    for line in str(node).splitlines():
+                        outfile.write(prefix + str(line) + "\n")
 
         start_node = None
         end_node = None
@@ -80,7 +82,7 @@ class OperationNodeGraphBuilder:
             if graph.out_degree(node) == 0:
                 end_node = node
         if len(graph.nodes()) <= 3:
-            for node in nx.shortest_path(graph, start_node, end_node):
+            for node in reversed(nx.shortest_path(graph, start_node, end_node)):
                 walk(node)
         else:
             print("SKIPPED", len(graph.nodes()))

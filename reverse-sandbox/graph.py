@@ -63,7 +63,7 @@ def merge_chains(G, chains):
                 flag = True
         if flag:
             continue
-        new_label = ReducedOperation("and", chain)
+        new_label = ReducedOperation("require-all", chain)
         start_node = chain[0]
         end_node = chain[-1]
         G.add_node(new_label)
@@ -106,7 +106,7 @@ def merge_or_nodes(G: nx.DiGraph) -> nx.DiGraph:
         if len(nodes_with_sig) < 2:
             continue
         preds, succs = signature
-        merged_label = ReducedOperation("or", nodes_with_sig)
+        merged_label = ReducedOperation("require-any", nodes_with_sig)
         H.add_node(merged_label)
         for p in preds:
             H.add_edge(p, merged_label)
