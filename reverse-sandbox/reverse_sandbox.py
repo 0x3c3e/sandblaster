@@ -135,26 +135,22 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
-
+            
             node.parse_terminal()
-            graph_builder = operation_node_builder.OperationNodeGraphBuilder(
-                node
-            )
+            graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
             if graph:
                 print(operation, graph)
-                # exit(1)
-                outfile.write(f"({node.terminal} {operation})\n")
-                if not len(graph.edges):
-                    for node in graph.nodes:
-                        outfile.write(f"{node}\n")
-                    continue
-                # print("HERE")
-                # exit(1)
                 # sandbox_data.builder.print_recursive_edges(graph, node.offset, 0, outfile)
-                graph_builder.print_digraph(sandbox_data.operation_nodes)
+                # graph_builder.print(sandbox_data.operation_nodes)
+                import networkx as nx
 
-                graph_builder.visualize_graph()
+                g = graph_builder.build_subgraph_with_edge_style("solid")
+                print(g)
+                pydot_graph = nx.drawing.nx_pydot.to_pydot(g)
+                pydot_graph.write_dot(f"graph_.dot")
+                # graph_builder.visualize()
+                # graph_builder.print(g, sandbox_data.operation_nodes)
             else:
                 outfile.write(f"({node.terminal} {operation})\n")
                 if node.terminal.db_modifiers:
