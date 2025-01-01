@@ -12,6 +12,7 @@ import sandbox_filter
 import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
+import graph as gparse
 
 logger = logging.getLogger(__name__)
 
@@ -147,10 +148,14 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
 
                 g = graph_builder.build_subgraph_with_edge_style("solid")
                 print(g)
-                pydot_graph = nx.drawing.nx_pydot.to_pydot(g)
-                pydot_graph.write_dot(f"graph_.dot")
+                for i, p in enumerate(gparse.get_subgraphs(g)):
+                    print(i, p)
+                    p = gparse.reduce_graph(p)
+                    print(i, p)
+                    pydot_graph = nx.drawing.nx_pydot.to_pydot(p)
+                    pydot_graph.write_dot(f"gr/graph_{i}.dot")
                 # graph_builder.visualize()
-                # graph_builder.print(g, sandbox_data.operation_nodes)
+                graph_builder.print(g, sandbox_data.operation_nodes)
             else:
                 outfile.write(f"({node.terminal} {operation})\n")
                 if node.terminal.db_modifiers:
