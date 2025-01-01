@@ -138,12 +138,9 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             if not node:
                 continue
 
-            node.parse_terminal()
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
             if graph:
-                print(operation, graph)
-
                 g = graph_builder.build_subgraph_with_edge_style("solid")
                 for i, p in enumerate(gparse.get_subgraphs(g)):
                     p = gparse.reduce_graph(p)

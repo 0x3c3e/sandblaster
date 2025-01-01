@@ -57,8 +57,6 @@ class OperationNodeGraphBuilder:
         return self.graph
 
     def print(self, graph, nodes, outfile, operation):
-        outfile.write("\n" * 2)
-
         def walk(node, deep=0):
             prefix = "  " * deep
             if isinstance(node, graphng.ReducedOperation):
@@ -71,8 +69,12 @@ class OperationNodeGraphBuilder:
                 if node.is_terminal():
                     outfile.write(prefix + f"({operation} {node})" + "\n")
                 else:
-                    for line in str(node).splitlines():
-                        outfile.write(prefix + str(line) + "\n")
+                    length = len(str(node).splitlines()) - 1
+                    for i, line in enumerate(str(node).splitlines()):
+                        if i != 0 and i != length:
+                            outfile.write("  " * (deep + 1) + str(line) + "\n")
+                        else:
+                            outfile.write(prefix + str(line) + "\n")
 
         start_node = None
         end_node = None
@@ -86,7 +88,7 @@ class OperationNodeGraphBuilder:
                 walk(node)
         else:
             print("SKIPPED", len(graph.nodes()))
-
+        outfile.write("\n")
     def visualize(self):
         pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)
         pydot_graph.write_dot("graph.dot")

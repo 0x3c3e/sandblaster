@@ -92,7 +92,7 @@ class NonTerminalNode:
                     if len(self.argument) == 1:
                         ret_str = ret_str[:-1]
                     else:
-                        ret_str = ret_str[:-1] + ")"
+                        ret_str = ret_str[:-1] + "\n)"
                     return ret_str
                 s = self.argument
                 curr_filter = self.filter
