@@ -4,7 +4,7 @@ import networkx as nx
 logger = logging.getLogger(__name__)
 
 import networkx as nx
-import graph as graphng
+from graphs.graph import ReducedOperation
 
 
 class OperationNodeGraphBuilder:
@@ -59,10 +59,10 @@ class OperationNodeGraphBuilder:
     def print(self, graph, nodes, outfile, operation):
         def walk(node, deep=0):
             prefix = "  " * deep
-            if isinstance(node, graphng.ReducedOperation):
+            if isinstance(node, ReducedOperation):
                 outfile.write(prefix + f"({node.operation}" + "(\n")
                 for operand in node.operands:
-                    walk(operand, deep+1)
+                    walk(operand, deep + 1)
                 outfile.write(prefix + "))\n")
             else:
                 node = nodes.find_operation_node_by_offset(node)
@@ -83,12 +83,12 @@ class OperationNodeGraphBuilder:
                 start_node = node
             if graph.out_degree(node) == 0:
                 end_node = node
-        if len(graph.nodes()) <= 3:
-            for node in reversed(nx.shortest_path(graph, start_node, end_node)):
-                walk(node)
-        else:
-            print("SKIPPED", len(graph.nodes()))
+        if not nx.has_path(graph, start_node, end_node) or len(graph.nodes()) > 3:
+            return
+        for node in reversed(nx.shortest_path(graph, start_node, end_node)):
+            walk(node)
         outfile.write("\n")
+
     def visualize(self):
         pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)
         pydot_graph.write_dot("graph.dot")
