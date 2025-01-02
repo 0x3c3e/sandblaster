@@ -57,7 +57,7 @@ class OperationNodeGraphBuilder:
         return self.graph
 
     def print(self, graph, nodes, outfile, operation):
-        def walk(node, deep=0):
+        def walk(node, deep=1):
             prefix = "  " * deep
             if isinstance(node, ReducedOperation):
                 outfile.write(prefix + f"({node.operation}" + "(\n")
@@ -67,7 +67,8 @@ class OperationNodeGraphBuilder:
             else:
                 node = nodes.find_operation_node_by_offset(node)
                 if node.is_terminal():
-                    outfile.write(prefix + f"({operation} {node})" + "\n")
+                    outfile.write(f"({operation} {node})" + "\n")
+                    outfile.write("(require-all\n")
                 else:
                     length = len(str(node).splitlines()) - 1
                     for i, line in enumerate(str(node).splitlines()):
@@ -87,7 +88,7 @@ class OperationNodeGraphBuilder:
             return
         for node in reversed(nx.shortest_path(graph, start_node, end_node)):
             walk(node)
-        outfile.write("\n")
+        outfile.write(")\n")
 
     def visualize(self):
         pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)

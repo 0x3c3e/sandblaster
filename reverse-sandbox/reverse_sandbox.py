@@ -12,7 +12,6 @@ import sandbox_filter
 import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
-import graph as gparse
 import networkx as nx
 from graphs import graph as ggg
 
@@ -143,7 +142,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
             if graph:
                 g = graph_builder.build_subgraph_with_edge_style("solid")
-                for i, p in enumerate(gparse.get_subgraphs(g)):
+                for i, p in enumerate(ggg.get_subgraphs(g)):
                     print(operation, p)
                     gr = ggg.Graph(p)
                     gr.reduce()
@@ -152,13 +151,8 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                         gr.graph, sandbox_data.operation_nodes, outfile, operation
                     )
                     if len(gr.graph.nodes()) > 3:
-                        try:
-                            pydot_graph = nx.drawing.nx_pydot.to_pydot(gr.graph)
-                            pydot_graph.write_dot(f"gr/graph_{operation}_{i}.dot")
-                            print(f"gr/graph_{operation}_{i}.dot")
-                            exit(1)
-                        except AssertionError:
-                            pass
+                        print(gr.graph(), "TOO MANY NODES")
+                        exit(1)
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
