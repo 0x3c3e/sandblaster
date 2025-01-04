@@ -126,30 +126,3 @@ class NonTerminalNode:
         (self.filter, self.argument) = convert_fn(
             f, sandbox_data, keep_builtin_filters, self.filter_id, self.argument_id
         )
-
-    def is_non_terminal_deny(self):
-        if self.match.is_non_terminal() and self.unmatch.is_terminal():
-            return self.unmatch.terminal.is_deny()
-
-    def is_non_terminal_allow(self):
-        if self.match.is_non_terminal() and self.unmatch.is_terminal():
-            return self.unmatch.terminal.is_allow()
-
-    def is_non_terminal_non_terminal(self):
-        return self.match.is_non_terminal() and self.unmatch.is_non_terminal()
-
-    def is_allow_non_terminal(self):
-        if self.match.is_terminal() and self.unmatch.is_non_terminal():
-            return self.match.terminal.is_allow()
-
-    def is_deny_non_terminal(self):
-        if self.match.is_terminal() and self.unmatch.is_non_terminal():
-            return self.match.terminal.is_deny()
-
-    def is_deny_allow(self):
-        if self.match.is_terminal() and self.unmatch.is_terminal():
-            return self.match.terminal.is_deny() and self.unmatch.terminal.is_allow()
-
-    def is_allow_deny(self):
-        if self.match.is_terminal() and self.unmatch.is_terminal():
-            return self.match.terminal.is_allow() and self.unmatch.terminal.is_deny()
