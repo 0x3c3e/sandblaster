@@ -36,14 +36,14 @@ def get_booleans(graph):
             if data["style"] == "solid":
                 if graph.out_degree(b) != 0:
                     expr = simplify_logic(
-                        And(a, sympy.Symbol(str(b))), force=True, form="dnf"
+                        And(a, sympy.Symbol(str(b))), form="dnf"
                     )
                 else:
                     expr = a
             else:
                 if graph.out_degree(b) != 0:
                     expr = simplify_logic(
-                        And(Not(a), sympy.Symbol(str(b))), force=True, form="dnf"
+                        And(Not(a), sympy.Symbol(str(b))), form="dnf"
                     )
                 else:
                     expr = Not(a)
@@ -54,13 +54,13 @@ def get_booleans(graph):
                     memos[b] = expr
                 else:
                     memos[b] = simplify_logic(
-                        Or(existing_b, expr), force=True, form="dnf"
+                        Or(existing_b, expr), form="dnf"
                     )
             else:
                 if out is None:
                     out = expr
                 else:
-                    out = simplify_logic(Or(out, expr), force=True, form="dnf")
+                    out = simplify_logic(Or(out, expr), form="dnf")
     return out
 
 

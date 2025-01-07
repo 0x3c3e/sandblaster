@@ -142,13 +142,19 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
 
             for sink, p in ggg.get_subgraphs(graph):
+                if (p.number_of_nodes() > 130):
+                    print("skip", operation, p)
+                    continue
+                print(p)
+
                 out = ggg.get_booleans(p)
                 sbpl = ggg.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                print(
+                outfile.write(
                     f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"
                     + "\n"
                 )
-                print(json.dumps(sbpl, indent=2))
+                json.dump(sbpl, outfile, indent=2)
+                outfile.write("\n")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
