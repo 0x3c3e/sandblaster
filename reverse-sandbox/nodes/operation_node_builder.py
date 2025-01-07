@@ -4,7 +4,6 @@ import networkx as nx
 logger = logging.getLogger(__name__)
 
 import networkx as nx
-from graphs.graph import ReducedOperation
 
 
 class OperationNodeGraphBuilder:
@@ -56,69 +55,6 @@ class OperationNodeGraphBuilder:
             self.decide_and_add_paths()
         return self.graph
 
-    def print(self, graph, nodes, outfile, operation):
-        def walk(node, deep=1):
-            prefix = "  " * deep
-            if isinstance(node, ReducedOperation):
-                outfile.write(prefix + f"({node.operation}" + "(\n")
-                for operand in node.operands:
-                    walk(operand, deep + 1)
-                outfile.write(prefix + "))\n")
-            else:
-                node = nodes.find_operation_node_by_offset(node)
-                if node.is_terminal():
-                    outfile.write(f"({operation} {node})" + "\n")
-                    outfile.write("(require-all\n")
-                else:
-                    length = len(str(node).splitlines()) - 1
-                    for i, line in enumerate(str(node).splitlines()):
-                        if i != 0 and i != length:
-                            outfile.write("  " * (deep + 1) + str(line) + "\n")
-                        else:
-                            outfile.write(prefix + str(line) + "\n")
-
-        start_node = None
-        end_node = None
-        for node in graph.nodes():
-            if graph.in_degree(node) == 0:
-                start_node = node
-            if graph.out_degree(node) == 0:
-                end_node = node
-        if not nx.has_path(graph, start_node, end_node) or len(graph.nodes()) > 3:
-            return
-        for node in reversed(nx.shortest_path(graph, start_node, end_node)):
-            walk(node)
-        outfile.write(")\n")
-
     def visualize(self):
         pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)
         pydot_graph.write_dot("graph.dot")
-
-    def build_subgraph_with_edge_style(self, style_value: str) -> nx.DiGraph:
-        for node, data in self.graph.nodes(data=True):
-            if data.get("start"):
-                start_node = node
-                break
-
-        subgraph = nx.DiGraph()
-        subgraph.add_nodes_from(self.graph.nodes(data=True))
-
-        for u, v, edge_data in self.graph.edges(data=True):
-            if edge_data.get("style") == style_value:
-                subgraph.add_edge(u, v, **edge_data)
-        source_nodes = [node for node, deg in subgraph.in_degree() if deg == 0]
-        for node in source_nodes:
-            shortest_path = list(
-                reversed(nx.shortest_path(self.graph, start_node, node))
-            )
-            for i in range(len(shortest_path) - 1):
-                edge_data = self.graph.get_edge_data(
-                    shortest_path[i + 1], shortest_path[i]
-                )
-                if edge_data["style"] == style_value and subgraph.has_node(
-                    shortest_path[i + 1]
-                ):
-                    subgraph.add_edge(shortest_path[i + 1], node)
-                    break
-
-        return subgraph

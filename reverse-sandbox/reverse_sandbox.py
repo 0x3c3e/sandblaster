@@ -12,8 +12,8 @@ import sandbox_filter
 import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
-import networkx as nx
 from graphs import graph as ggg
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -140,19 +140,15 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
 
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
-            if graph:
-                g = graph_builder.build_subgraph_with_edge_style("solid")
-                for i, p in enumerate(ggg.get_subgraphs(g)):
-                    print(operation, p)
-                    gr = ggg.Graph(p)
-                    gr.reduce()
-                    print("REDUCED", gr.graph)
-                    graph_builder.print(
-                        gr.graph, sandbox_data.operation_nodes, outfile, operation
-                    )
-                    if len(gr.graph.nodes()) > 3:
-                        print(gr.graph(), "TOO MANY NODES")
-                        exit(1)
+
+            for sink, p in ggg.get_subgraphs(graph):
+                out = ggg.get_booleans(p)
+                sbpl = ggg.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
+                print(
+                    f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"
+                    + "\n"
+                )
+                print(json.dumps(sbpl, indent=2))
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
