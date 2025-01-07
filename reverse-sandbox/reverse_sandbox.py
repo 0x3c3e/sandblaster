@@ -183,7 +183,7 @@ def read_sandbox_operations(operations_file, sandbox_data: SandboxData):
 def filter_sandbox_operations(operation, sandbox_data):
     for op in operation:
         if op not in sandbox_data.sb_ops:
-            logger.error(f"Unavailable operation: {op}")
+            logging.error(f"Unavailable operation: {op}")
             sys.exit(1)
         sandbox_data.ops_to_reverse.append(op)
 
