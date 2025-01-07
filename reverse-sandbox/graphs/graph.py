@@ -100,18 +100,13 @@ def sbpl_to_string(data, indent=0, indent_size=4):
 
     elif isinstance(data, str):
         lines = data.splitlines()
-        # If it's a single line, just print normally
         if len(lines) == 1:
             return f"{current_indent}{lines[0]}\n"
 
-        # Multi-line string formatting
         sbpl_str = ""
-        # First line: current indent
         sbpl_str += f"{current_indent}{lines[0]}\n"
-        # Middle lines: current indent + one extra indent
         for line in lines[1:-1]:
             sbpl_str += f"{current_indent}{' ' * indent_size}{line}\n"
-        # Last line: current indent
         sbpl_str += f"{current_indent}{lines[-1]}\n"
         return sbpl_str
 
