@@ -1,6 +1,7 @@
 import networkx as nx
-import sympy
+
 from sympy.logic.boolalg import And, Or, Not, simplify_logic, BooleanTrue, BooleanFalse
+from sympy import Symbol
 
 
 def get_subgraph_from_start_to_end(graph, start, end):
@@ -25,36 +26,32 @@ def get_subgraphs(graph):
 def get_booleans(graph):
     out = None
     memos = {}
+
     for node in nx.topological_sort(graph):
         for a, b, data in graph.out_edges(node, data=True):
-            a_val = memos.get(a, None)
-            if a_val is not None:
-                a = a_val
-            else:
-                a = sympy.Symbol(str(a))
-
+            a_expr = memos.get(a, Symbol(str(a)))
             if data["style"] == "solid":
                 if graph.out_degree(b) != 0:
-                    expr = simplify_logic(And(a, sympy.Symbol(str(b))), form="dnf")
+                    expr = simplify_logic(And(a_expr, Symbol(str(b))), form="dnf")
                 else:
-                    expr = a
+                    expr = a_expr
             else:
                 if graph.out_degree(b) != 0:
-                    expr = simplify_logic(And(Not(a), sympy.Symbol(str(b))), form="dnf")
+                    expr = simplify_logic(And(Not(a_expr), Symbol(str(b))), form="dnf")
                 else:
-                    expr = Not(a)
+                    expr = Not(a_expr)
 
-            existing_b = memos.get(b, None)
             if graph.out_degree(b) != 0:
-                if existing_b is None:
+                if b not in memos:
                     memos[b] = expr
                 else:
-                    memos[b] = simplify_logic(Or(existing_b, expr), form="dnf")
+                    memos[b] = simplify_logic(Or(memos[b], expr), form="dnf")
             else:
                 if out is None:
                     out = expr
                 else:
                     out = simplify_logic(Or(out, expr), form="dnf")
+
     return out
 
 
