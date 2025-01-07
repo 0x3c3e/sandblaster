@@ -10,7 +10,7 @@ import sandbox_filter
 import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
-from graphs import graph as ggg
+from graphs import graph as graph_tools
 import json
 
 
@@ -138,14 +138,14 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
 
-            for sink, p in ggg.get_subgraphs(graph):
+            for sink, p in graph_tools.get_subgraphs(graph):
                 if p.number_of_nodes() > 130:
                     print("skip", operation, p)
                     continue
                 print(p)
 
-                out = ggg.get_booleans(p)
-                sbpl = ggg.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
+                out = graph_tools.get_booleans(p)
+                sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 outfile.write(
                     f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"
                     + "\n"
