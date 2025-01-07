@@ -1,11 +1,5 @@
-#!/usr/bin/python3
-
-import logging
-import logging.config
 from nodes.terminal_node import TerminalNode
 from nodes.non_terminal_node import NonTerminalNode
-
-logger = logging.getLogger(__name__)
 
 
 class InlineModifier:
@@ -24,13 +18,6 @@ class Modifier:
 
 
 class OperationNode:
-    """A rule item in the binary sandbox profile
-
-    It may either be a teminal node (end node) or a non-terminal node
-    (intermediary node). Each node type uses another class, as defined
-    above.
-    """
-
     OPERATION_NODE_TYPE_NON_TERMINAL = 0x00
     OPERATION_NODE_TYPE_TERMINAL = 0x01
 

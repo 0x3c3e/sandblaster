@@ -4,13 +4,6 @@ import sandbox_filter
 
 
 class TerminalNode:
-    """Allow or Deny end node in binary sandbox format
-
-    A terminal node, when reached, either denies or allows the rule.
-    A node has a type (allow or deny) and a set of flags. Flags are
-    currently unused.
-    """
-
     TERMINAL_NODE_TYPE_ALLOW = 0x00
     TERMINAL_NODE_TYPE_DENY = 0x01
 

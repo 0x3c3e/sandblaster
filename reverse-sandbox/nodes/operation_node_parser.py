@@ -1,8 +1,5 @@
-import logging
 import struct
 from nodes.operation_node import OperationNode
-
-logger = logging.getLogger(__name__)
 
 
 class OperionNodeParser:

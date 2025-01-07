@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
 import sys
 import struct
-import logging.config
+import logging
 import argparse
 import pprint
 from dataclasses import dataclass, field
@@ -15,7 +13,6 @@ from nodes import operation_node_parser
 from graphs import graph as ggg
 import json
 
-logger = logging.getLogger(__name__)
 
 REGEX_TABLE_OFFSET = 2
 REGEX_COUNT_OFFSET = 4
@@ -120,7 +117,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             sandbox_data.op_table[0]
         )
         if not default_node or not default_node.terminal:
-            logger.warning(
+            logging.warning(
                 "Default node or terminal not found; skipping profile processing."
             )
             return
@@ -142,7 +139,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
 
             for sink, p in ggg.get_subgraphs(graph):
-                if (p.number_of_nodes() > 130):
+                if p.number_of_nodes() > 130:
                     print("skip", operation, p)
                     continue
                 print(p)
@@ -236,22 +233,22 @@ def main():
         pprint.pprint(sandbox_data)
 
         read_sandbox_operations(args.operations_file, sandbox_data)
-        logger.info(f"Read {len(sandbox_data.sb_ops)} sandbox operations")
+        logging.info(f"Read {len(sandbox_data.sb_ops)} sandbox operations")
 
         if args.operation:
             filter_sandbox_operations(args.operation, sandbox_data)
-            logger.info(f"Filtered by {args.operation} sandbox operations")
+            logging.info(f"Filtered by {args.operation} sandbox operations")
 
         parse_regex_list(infile, sandbox_data)
-        logger.info(f"Regex list length: {len(sandbox_data.regex_list)}")
+        logging.info(f"Regex list length: {len(sandbox_data.regex_list)}")
 
         parse_global_vars(infile, sandbox_data)
-        logger.info(f"Global variables are: {sandbox_data.global_vars}")
+        logging.info(f"Global variables are: {sandbox_data.global_vars}")
 
         parse_policies(infile, sandbox_data)
 
         infile.seek(sandbox_data.operation_nodes_offset)
-        logger.info(f"Number of operation nodes: {sandbox_data.op_nodes_count}")
+        logging.info(f"Number of operation nodes: {sandbox_data.op_nodes_count}")
         create_operation_nodes(infile, sandbox_data, args.keep_builtin_filters)
 
         infile.seek(sandbox_data.profiles_offset)
@@ -260,7 +257,7 @@ def main():
         infile.seek(sandbox_data.operation_nodes_offset)
         process_profile(args.output, sandbox_data)
 
-    logger.info("Processing complete.")
+    logging.info("Processing complete.")
 
 
 if __name__ == "__main__":
