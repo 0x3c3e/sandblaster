@@ -147,10 +147,12 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 if out is None:
                     continue
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                outfile.write(
-                    f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"
-                    + "\n"
+                terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
+                    sink
                 )
+                if terminal.terminal.is_deny():
+                    continue
+                outfile.write(f"({operation} {terminal})" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write("\n")
 
