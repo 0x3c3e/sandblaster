@@ -139,12 +139,15 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
 
             for sink, p in graph_tools.get_subgraphs(graph):
-                if p.number_of_nodes() > 130:
+                if p.number_of_nodes() > 50:
                     print("skip", operation, p)
                     continue
                 print(p)
 
                 out = graph_tools.get_booleans(p)
+                if out is None:
+                    continue
+                print(out)
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 outfile.write(
                     f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"

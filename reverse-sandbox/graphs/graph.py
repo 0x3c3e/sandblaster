@@ -1,6 +1,6 @@
 import networkx as nx
 import sympy
-from sympy.logic.boolalg import And, Or, Not, simplify_logic
+from sympy.logic.boolalg import And, Or, Not, simplify_logic, BooleanTrue, BooleanFalse
 
 
 def get_subgraph_from_start_to_end(graph, start, end):
@@ -78,7 +78,10 @@ def sympy_expr_to_sbpl(expr, operation_nodes):
                 sympy_expr_to_sbpl(arg, operation_nodes) for arg in expr.args
             ]
         }
-
+    if isinstance(expr, BooleanTrue):
+        return "true"
+    if isinstance(expr, BooleanFalse):
+        return "false"
     raise ValueError(f"Unsupported expression type: {expr}")
 
 
@@ -109,7 +112,6 @@ def sbpl_to_string(data, indent=0, indent_size=4):
             sbpl_str += f"{current_indent}{' ' * indent_size}{line}\n"
         sbpl_str += f"{current_indent}{lines[-1]}\n"
         return sbpl_str
-
     else:
         raise TypeError(f"Unsupported data type: {type(data)} => {data}")
 
