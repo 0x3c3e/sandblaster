@@ -11,7 +11,6 @@ import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
 from graphs import graph as graph_tools
-import json
 
 
 REGEX_TABLE_OFFSET = 2
@@ -140,14 +139,13 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
 
             for sink, p in graph_tools.get_subgraphs(graph):
                 if p.number_of_nodes() > 50:
-                    print("skip", operation, p)
+                    logging.warning(f"skip {operation} {p}")
                     continue
-                print(p)
+                logging.info(f"parse {operation} {p}")
 
                 out = graph_tools.get_booleans(p)
                 if out is None:
                     continue
-                print(out)
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 outfile.write(
                     f"({operation} {sandbox_data.operation_nodes.find_operation_node_by_offset(sink)})"
