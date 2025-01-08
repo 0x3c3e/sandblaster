@@ -108,7 +108,7 @@ def create_operation_nodes(
             sandbox_data,
             keep_builtin_filters,
         )
-
+    
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile:
@@ -143,11 +143,13 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
                     sink
                 )
-                if terminal.terminal.is_deny():
-                    continue
                 expr = graph_tools.get_booleans_pyeda(p, sink)
                 if not expr:
                     continue
+                if p.number_of_nodes() > 120 or operation in ["system-privilege"]:
+                    expr = expr.to_dnf()
+                else:
+                    expr = expr.to_cnf()
                 sbpl = graph_tools.pyeda_expr_to_sbpl(
                     expr, sandbox_data.operation_nodes
                 )

@@ -88,13 +88,16 @@ def get_booleans_pyeda(graph, sink):
                 else:
                     out = out | expr
     if out:
-        return bdd2expr(out).to_dnf()
+        return bdd2expr(out)
 
 
 def pyeda_expr_to_sbpl(expr, operation_nodes):
     if isinstance(expr, Variable):
-        offset = int(expr.name)
-        return str(operation_nodes.find_operation_node_by_offset(offset))
+        try:
+            offset = int(expr.name)
+            return str(operation_nodes.find_operation_node_by_offset(offset))
+        except:
+            return str(expr)
     if expr == One:
         return "true"
     if expr == Zero:
