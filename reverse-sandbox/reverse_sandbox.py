@@ -138,20 +138,23 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
 
             for sink, p in graph_tools.get_subgraphs(graph):
-                if p.number_of_nodes() > 50:
+                if p.number_of_nodes() > 100:
                     logging.warning(f"skip {operation} {p}")
                     continue
-                logging.info(f"parse {operation} {p}")
+                logging.warning(f"parse {operation} {p}")
 
-                out = graph_tools.get_booleans(p)
-                if out is None:
-                    continue
-                sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
                     sink
                 )
                 if terminal.terminal.is_deny():
                     continue
+                expr = graph_tools.get_booleans_pyeda(p)
+                if not expr:
+                    continue
+                sbpl = graph_tools.pyeda_expr_to_sbpl(
+                    expr, sandbox_data.operation_nodes
+                )
+
                 outfile.write(f"({operation} {terminal})" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write("\n")

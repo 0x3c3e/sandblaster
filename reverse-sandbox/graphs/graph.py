@@ -55,6 +55,68 @@ def get_booleans(graph):
     return out
 
 
+def get_booleans_pyeda(graph):
+    from pyeda import inter
+
+    var_cache = {}
+    out = None
+    for node in nx.topological_sort(graph):
+        for a, b, data in graph.out_edges(node, data=True):
+            if a not in var_cache:
+                var_cache[a] = inter.exprvar(str(a))
+            if b not in var_cache:
+                var_cache[b] = inter.exprvar(str(b))
+            if data["style"] == "solid":
+                if graph.out_degree(b) != 0:
+                    expr = var_cache[a] & var_cache[b]
+                else:
+                    expr = var_cache[a]
+            else:
+                if graph.out_degree(b) != 0:
+                    expr = ~var_cache[a] & var_cache[b]
+                else:
+                    expr = ~var_cache[a]
+            if graph.out_degree(b) == 0:
+                if out is None:
+                    out = expr
+                else:
+                    out = out | expr
+            else:
+                var_cache[b] = var_cache[b] | expr
+    if out:
+        return out.to_dnf()
+
+
+from pyeda.boolalg.expr import Variable, OrOp, AndOp, NotOp, Complement, Zero, One
+
+
+def pyeda_expr_to_sbpl(expr, operation_nodes):
+    if isinstance(expr, Variable):
+        offset = int(expr.name)
+        return str(operation_nodes.find_operation_node_by_offset(offset))
+    if expr == One:
+        return "true"
+    if expr == Zero:
+        return "false"
+    if isinstance(expr, Complement):
+        return {"require-not": [pyeda_expr_to_sbpl(expr.__invert__(), operation_nodes)]}
+
+    if isinstance(expr, NotOp):
+        return {"require-not": [pyeda_expr_to_sbpl(expr.x, operation_nodes)]}
+
+    if isinstance(expr, AndOp):
+        return {
+            "require-all": [pyeda_expr_to_sbpl(arg, operation_nodes) for arg in expr.xs]
+        }
+
+    if isinstance(expr, OrOp):
+        return {
+            "require-any": [pyeda_expr_to_sbpl(arg, operation_nodes) for arg in expr.xs]
+        }
+
+    raise ValueError(f"Unsupported expression type: {expr}")
+
+
 def sympy_expr_to_sbpl(expr, operation_nodes):
     if expr.is_Symbol:
         return str(operation_nodes.find_operation_node_by_offset(int(str(expr))))
