@@ -1,6 +1,9 @@
 import networkx as nx
 
 from sympy.logic.boolalg import And, Or, Not, simplify_logic, BooleanTrue, BooleanFalse
+from pyeda.boolalg.expr import Variable, OrOp, AndOp, NotOp, Complement, Zero, One
+from pyeda import inter
+
 from sympy import Symbol
 
 
@@ -55,18 +58,20 @@ def get_booleans(graph):
     return out
 
 
-def get_booleans_pyeda(graph):
-    from pyeda import inter
-
+def get_booleans_pyeda(graph, sink):
+    from pyeda.boolalg.bdd import bddvar, bdd2expr
     var_cache = {}
     out = None
     for node in nx.topological_sort(graph):
         for a, b, data in graph.out_edges(node, data=True):
             if a not in var_cache:
-                var_cache[a] = inter.exprvar(str(a))
+                var_cache[a] = bddvar(str(a))
             if b not in var_cache:
-                var_cache[b] = inter.exprvar(str(b))
-            if data["style"] == "solid":
+                var_cache[b] = bddvar(str(b))
+            style = data.get('style', 'solid')
+
+            # Build an expression for this particular edge
+            if style == 'solid':
                 if graph.out_degree(b) != 0:
                     expr = var_cache[a] & var_cache[b]
                 else:
@@ -76,18 +81,14 @@ def get_booleans_pyeda(graph):
                     expr = ~var_cache[a] & var_cache[b]
                 else:
                     expr = ~var_cache[a]
-            if graph.out_degree(b) == 0:
-                if out is None:
+
+            if b == sink:
+                if not out:
                     out = expr
                 else:
                     out = out | expr
-            else:
-                var_cache[b] = var_cache[b] | expr
     if out:
-        return out.to_dnf()
-
-
-from pyeda.boolalg.expr import Variable, OrOp, AndOp, NotOp, Complement, Zero, One
+        return bdd2expr(out).to_dnf()
 
 
 def pyeda_expr_to_sbpl(expr, operation_nodes):
