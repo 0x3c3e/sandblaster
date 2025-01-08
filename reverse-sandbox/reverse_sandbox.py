@@ -147,8 +147,6 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
                     sink
                 )
-                if terminal.terminal.is_deny():
-                    continue
                 outfile.write(f"({operation} {terminal})" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write("\n")
