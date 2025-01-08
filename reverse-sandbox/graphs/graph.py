@@ -41,12 +41,7 @@ def get_booleans(graph):
                 else:
                     expr = Not(a_expr)
 
-            if graph.out_degree(b) != 0:
-                if b not in memos:
-                    memos[b] = expr
-                else:
-                    memos[b] = simplify_logic(Or(memos[b], expr), form="dnf")
-            else:
+            if graph.out_degree(b) == 0:
                 if out is None:
                     out = expr
                 else:

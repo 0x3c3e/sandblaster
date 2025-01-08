@@ -138,10 +138,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
 
             for sink, p in graph_tools.get_subgraphs(graph):
-                if p.number_of_nodes() > 50:
-                    logging.warning(f"skip {operation} {p}")
-                    continue
-                logging.info(f"parse {operation} {p}")
+                logging.warning(f"parse {operation} {p}")
 
                 out = graph_tools.get_booleans(p)
                 if out is None:
