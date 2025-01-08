@@ -32,20 +32,25 @@ def get_booleans(graph):
             a_expr = memos.get(a, Symbol(str(a)))
             if data["style"] == "solid":
                 if graph.out_degree(b) != 0:
-                    expr = simplify_logic(And(a_expr, Symbol(str(b))), form="cnf")
+                    expr = simplify_logic(And(a_expr, Symbol(str(b))), form="dnf")
                 else:
                     expr = a_expr
             else:
                 if graph.out_degree(b) != 0:
-                    expr = simplify_logic(And(Not(a_expr), Symbol(str(b))), form="cnf")
+                    expr = simplify_logic(And(Not(a_expr), Symbol(str(b))), form="dnf")
                 else:
                     expr = Not(a_expr)
 
-            if graph.out_degree(b) == 0:
+            if graph.out_degree(b) != 0:
+                if b not in memos:
+                    memos[b] = expr
+                else:
+                    memos[b] = simplify_logic(Or(memos[b], expr), form="dnf")
+            else:
                 if out is None:
                     out = expr
                 else:
-                    out = simplify_logic(Or(out, expr), form="cnf", force=True)
+                    out = simplify_logic(Or(out, expr), form="dnf")
 
     return out
 
