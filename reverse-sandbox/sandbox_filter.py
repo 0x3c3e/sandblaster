@@ -275,7 +275,7 @@ def get_filter_arg_file_attribute(f, arg):
         22: "app-bundle",
         23: "app-bundle-containing-responsible-binary",
     }
-    return f'{arg}'
+    return f"{arg}"
 
 
 def get_filter_arg_iokit_usb(f, arg):
@@ -310,6 +310,7 @@ def get_filter_arg_storage_class_extension(f, arg):
         return "#t"
     else:
         return "#f"
+
 
 def get_filter_arg_iokit_usb_subclass(f, arg):
     """Convert integer to iokit_usb subclass type string."""

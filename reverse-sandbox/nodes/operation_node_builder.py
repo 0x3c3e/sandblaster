@@ -10,10 +10,10 @@ class OperationNodeGraphBuilder:
 
     def add_path(self, reverse: bool) -> None:
         if reverse:
-            match_node = self.node.non_terminal.unmatch
+            match_node = self.node.node.unmatch
             edge_style = "dashed"
         else:
-            match_node = self.node.non_terminal.match
+            match_node = self.node.node.match
             edge_style = "solid"
         if not match_node:
             return
@@ -25,18 +25,18 @@ class OperationNodeGraphBuilder:
         self.nodes_to_process.add(match_node)
 
     def decide_and_add_paths(self) -> None:
-        non_terminal = self.node.non_terminal
+        non_terminal = self.node.node
         match_is_terminal = non_terminal.match.is_terminal()
         unmatch_is_terminal = non_terminal.unmatch.is_terminal()
         if not match_is_terminal and not unmatch_is_terminal:
             self.add_path(False)
             self.add_path(True)
         elif not match_is_terminal and unmatch_is_terminal:
-            self.add_path(non_terminal.unmatch.terminal.is_allow())
-            self.add_path(not non_terminal.unmatch.terminal.is_allow())
+            self.add_path(non_terminal.unmatch.node.is_allow())
+            self.add_path(not non_terminal.unmatch.node.is_allow())
         elif match_is_terminal and not unmatch_is_terminal:
-            self.add_path(non_terminal.match.terminal.is_allow())
-            self.add_path(not non_terminal.match.terminal.is_allow())
+            self.add_path(non_terminal.match.node.is_allow())
+            self.add_path(not non_terminal.match.node.is_allow())
         elif match_is_terminal and unmatch_is_terminal:
             self.add_path(True)
             self.add_path(False)
@@ -49,7 +49,3 @@ class OperationNodeGraphBuilder:
             self.graph.add_node(self.node.offset)
             self.decide_and_add_paths()
         return self.graph
-
-    def visualize(self):
-        pydot_graph = nx.drawing.nx_pydot.to_pydot(self.graph)
-        pydot_graph.write_dot("graph.dot")

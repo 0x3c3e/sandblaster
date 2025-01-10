@@ -25,9 +25,7 @@ class OperationNode:
         self.offset = offset
         self.raw = raw
         self.type = None
-        self.terminal = None
-        self.non_terminal = None
-        self.processed = False
+        self.node = None
 
     def is_terminal(self):
         return self.type == self.OPERATION_NODE_TYPE_TERMINAL
@@ -36,37 +34,35 @@ class OperationNode:
         return self.type == self.OPERATION_NODE_TYPE_NON_TERMINAL
 
     def parse_terminal(self):
-        # end node
-        self.terminal = TerminalNode()
-        self.terminal.parent = self
+        self.node = TerminalNode()
+        self.node.parent = self
 
-        self.terminal.type = self.raw[1] & 1
+        self.node.type = self.raw[1] & 1
 
-        self.terminal.modifier_flags = (
+        self.node.modifier_flags = (
             self.raw[1] | (self.raw[2] << 8) | (self.raw[3] << 16)
         )
-        self.terminal.action_inline = self.terminal.modifier_flags & 0x800000 != 0
+        self.node.action_inline = self.node.modifier_flags & 0x800000 != 0
 
-        if self.terminal.action_inline:
-            self.terminal.inline_modifier = InlineModifier(
+        if self.node.action_inline:
+            self.node.inline_modifier = InlineModifier(
                 self.raw[4], self.raw[5], self.raw[6] + (self.raw[7] << 8)
             )
 
-        self.terminal.modifier = Modifier(
-            self.terminal.modifier_flags,
+        self.node.modifier = Modifier(
+            self.node.modifier_flags,
             self.raw[4],
             self.raw[5],
             self.raw[6] + (self.raw[7] << 8),
         )
 
     def parse_non_terminal(self):
-        # intermediary node
-        self.non_terminal = NonTerminalNode()
-        self.non_terminal.parent = self
-        self.non_terminal.filter_id = self.raw[1]
-        self.non_terminal.argument_id = self.raw[2] + (self.raw[3] << 8)
-        self.non_terminal.match_offset = self.raw[4] + (self.raw[5] << 8)
-        self.non_terminal.unmatch_offset = self.raw[6] + (self.raw[7] << 8)
+        self.node = NonTerminalNode()
+        self.node.parent = self
+        self.node.filter_id = self.raw[1]
+        self.node.argument_id = self.raw[2] + (self.raw[3] << 8)
+        self.node.match_offset = self.raw[4] + (self.raw[5] << 8)
+        self.node.unmatch_offset = self.raw[6] + (self.raw[7] << 8)
 
     def parse_raw(self):
         self.type = self.raw[0]
@@ -77,30 +73,23 @@ class OperationNode:
 
     def convert_filter(self, convert_fn, f, sandbox_data, keep_builtin_filters):
         if self.is_non_terminal():
-            self.non_terminal.convert_filter(
-                convert_fn, f, sandbox_data, keep_builtin_filters
-            )
-        elif self.terminal:
-            self.terminal.convert_filter(
-                self.terminal.terminal_convert_function,
+            self.node.convert_filter(convert_fn, f, sandbox_data, keep_builtin_filters)
+        elif self.is_terminal():
+            self.node.convert_filter(
+                self.node.terminal_convert_function,
                 f,
                 sandbox_data,
                 keep_builtin_filters,
             )
 
     def __str__(self):
-        ret = ""
-        if self.is_terminal():
-            ret += str(self.terminal)
-        if self.is_non_terminal():
-            ret += str(self.non_terminal)
-        return ret
+        return str(self.node)
 
     def values(self):
         if self.is_terminal():
             return (None, None)
         else:
-            return self.non_terminal.values()
+            return self.node.values()
 
     def __eq__(self, other):
         return self.offset == other.offset

@@ -117,7 +117,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
         default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(
             sandbox_data.op_table[0]
         )
-        if not default_node or not default_node.terminal:
+        if not default_node or not default_node.node:
             logging.warning(
                 "Default node or terminal not found; skipping profile processing."
             )
@@ -152,7 +152,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                     outfile.write(f"({terminal} {operation})" + "\n")
                     continue
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                if terminal.terminal.is_deny():
+                if terminal.node.is_deny():
                     continue
                 outfile.write(f"({terminal} {operation}" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
@@ -170,7 +170,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                     outfile_reverse.write(f"({terminal} {operation})" + "\n")
                     continue
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                if terminal.terminal.is_deny():
+                if terminal.node.is_deny():
                     continue
                 outfile_reverse.write(f"({terminal} {operation}" + "\n")
                 outfile_reverse.write(graph_tools.sbpl_to_string(sbpl, 0, 2))

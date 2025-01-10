@@ -24,11 +24,7 @@ class OperionNodeParser:
         for op_node in self.operation_nodes:
             if not op_node.is_non_terminal():
                 continue
-            if op_node.non_terminal.match_offset in self.cache:
-                op_node.non_terminal.match = self.cache[
-                    op_node.non_terminal.match_offset
-                ]
-            if op_node.non_terminal.unmatch_offset in self.cache:
-                op_node.non_terminal.unmatch = self.cache[
-                    op_node.non_terminal.unmatch_offset
-                ]
+            if op_node.node.match_offset in self.cache:
+                op_node.node.match = self.cache[op_node.node.match_offset]
+            if op_node.node.unmatch_offset in self.cache:
+                op_node.node.unmatch = self.cache[op_node.node.unmatch_offset]
