@@ -16,11 +16,21 @@ def get_subgraph_to_end(graph, end):
 
 
 def get_subgraphs(graph):
-    for sink in (node for node, degree in graph.out_degree() if degree == 0):
-        subgraph = get_subgraph_to_end(graph, sink)
-        sources = [node for node, degree in subgraph.in_degree() if degree == 0]
+    g_copy = graph.copy()
+
+    sinks = [node for node in nx.topological_sort(graph) if graph.out_degree(node) == 0]
+
+    for sink in sinks:
+        subgraph = get_subgraph_to_end(g_copy, sink)
+
+        sources = [node for node, deg in subgraph.in_degree() if deg == 0]
+
         for source in sources:
-            yield sink, get_subgraph_from_start_to_end(subgraph, source, sink)
+            sub_subgraph = get_subgraph_from_start_to_end(subgraph, source, sink)
+
+            yield sink, sub_subgraph
+
+            g_copy.remove_nodes_from(sub_subgraph.nodes())
 
 
 def get_booleans(graph):
