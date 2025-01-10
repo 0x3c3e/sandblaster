@@ -111,7 +111,9 @@ def create_operation_nodes(
 
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
-    with open(outfname, "wt") as outfile:
+    with open(outfname, "wt") as outfile, open(
+        f"reverse.{outfname}", "wt"
+    ) as outfile_reverse:
         default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(
             sandbox_data.op_table[0]
         )
@@ -122,6 +124,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             return
 
         outfile.write("(version 1)\n")
+        outfile_reverse.write("(version 1)\n")
 
         for idx, offset in enumerate(sandbox_data.op_table):
             operation = sandbox_data.sb_ops[idx]
@@ -151,9 +154,27 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 if terminal.terminal.is_deny():
                     continue
-                outfile.write(f"({terminal} {operation})" + "\n")
+                outfile.write(f"({terminal} {operation}" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
-                outfile.write("\n")
+                outfile.write(")\n")
+            for sink, p in graph_tools.get_subgraphs(graph, reverse=True):
+                if p.number_of_nodes() > 100:
+                    logging.warning(f"skip {operation} {p}")
+                    continue
+                logging.warning(f"parse {operation} {p}")
+                terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
+                    sink
+                )
+                out = graph_tools.get_booleans(p)
+                if out is None:
+                    outfile_reverse.write(f"({terminal} {operation})" + "\n")
+                    continue
+                sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
+                if terminal.terminal.is_deny():
+                    continue
+                outfile_reverse.write(f"({terminal} {operation}" + "\n")
+                outfile_reverse.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
+                outfile_reverse.write(")\n")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:

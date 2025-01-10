@@ -275,10 +275,7 @@ def get_filter_arg_file_attribute(f, arg):
         22: "app-bundle",
         23: "app-bundle-containing-responsible-binary",
     }
-    if arg in arg_types.keys():
-        return "%s" % (arg_types[arg])
-    else:
-        return "%d" % arg
+    return f'{arg}'
 
 
 def get_filter_arg_iokit_usb(f, arg):
@@ -309,29 +306,10 @@ def get_filter_arg_iokit_usb(f, arg):
 
 def get_filter_arg_storage_class_extension(f, arg):
     """Convert integer to storage_class_extention type string."""
-    arg_types = {
-        1: "kUSBAudioInterfaceClass",
-        2: "kUSBCommunicationControlInterfaceClass",
-        3: "kUSBHIDInterfaceClass",
-        5: "kUSBPhysicalInterfaceClass",
-        6: "kUSBImageInterfaceClass",
-        7: "kUSBPrintingInterfaceClass",
-        8: "kUSBMassStorageInterfaceClass",
-        10: "kUSBCommunicationDataInterfaceClass",
-        11: "kUSBChipSmartCardInterfaceClass",
-        13: "kUSBContentSecurityInterfaceClass",
-        14: "kUSBVideoInterfaceClass",
-        15: "kUSBPersonalHealthcareInterfaceClass",
-        220: "kUSBDiagnosticDeviceInterfaceClass",
-        224: "kUSBWirelessControllerInterfaceClass",
-        254: "kUSBApplicationSpecificInterfaceClass",
-        255: "kUSBVendorSpecificInterfaceClass",
-    }
-    if arg in arg_types.keys():
-        return "%s" % (arg_types[arg])
+    if arg:
+        return "#t"
     else:
-        return "%d" % arg
-
+        return "#f"
 
 def get_filter_arg_iokit_usb_subclass(f, arg):
     """Convert integer to iokit_usb subclass type string."""
@@ -1774,10 +1752,7 @@ def get_filter_arg_csr(f, arg):
         64: "CSR_ALLOW_UNRESTRICTED_NVRAM",
         128: "CSR_ALLOW_DEVICE_CONFIGURATION",
     }
-    if arg in arg_types.keys():
-        return '"%s"' % (arg_types[arg])
-    else:
-        return "%d" % arg
+    return "%d" % arg
 
 
 def get_filter_arg_host_port(f, arg):
@@ -1802,10 +1777,7 @@ def get_filter_arg_host_port(f, arg):
         24: "HOST_XPC_EXCEPTION_PORT",
         25: "HOST_CONTAINERD_PORT",
     }
-    if arg in arg_types.keys():
-        return '"%s"' % (arg_types[arg])
-    else:
-        return "%d" % arg
+    return "%d" % arg
 
 
 def get_filter_arg_necp_client_action(f, arg):

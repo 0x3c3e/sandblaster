@@ -15,10 +15,12 @@ def get_subgraph_to_end(graph, end):
     return graph.subgraph(reachable_to_end).copy()
 
 
-def get_subgraphs(graph):
+def get_subgraphs(graph, reverse=False):
     g_copy = graph.copy()
 
     sinks = [node for node in nx.topological_sort(graph) if graph.out_degree(node) == 0]
+    if reverse:
+        sinks = reversed(sinks)
 
     for sink in sinks:
         subgraph = get_subgraph_to_end(g_copy, sink)
