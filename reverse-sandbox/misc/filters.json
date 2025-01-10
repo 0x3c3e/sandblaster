@@ -344,7 +344,7 @@
         "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
     },
     "0x57": {
-        "name": "entitlement-is-bool-true",
+        "name": "%entitlement-is-bool-true",
         "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
     },
     "0x58": {
@@ -434,5 +434,9 @@
     "0xa7": {
         "name": "process-name-regex",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc1": {
+        "name": "syscall-number",
+        "arg_process_fn": "get_filter_arg_wtf"
     }
 }

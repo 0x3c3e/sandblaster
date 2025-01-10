@@ -65,7 +65,7 @@ def get_filter_arg_string_by_offset_no_skip(f, offset):
         res = f.read(string_len).decode()
     except UnicodeDecodeError:
         res = "UNSUPPORTED"
-    return res
+    return f"\"{res}\""
 
 
 def get_filter_arg_network_address(f, offset):
@@ -143,6 +143,10 @@ def get_filter_arg_network_address(f, offset):
 def get_filter_arg_integer(f, arg):
     """Convert integer value to decimal string representation."""
     return "%d" % arg
+
+def get_filter_arg_wtf(f, arg):
+    print(f, arg)
+    return ""
 
 
 def get_filter_arg_octal_integer(f, arg):

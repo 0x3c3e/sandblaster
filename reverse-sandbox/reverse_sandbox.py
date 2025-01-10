@@ -152,7 +152,7 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 )
                 if terminal.terminal.is_deny():
                     continue
-                outfile.write(f"({operation} {terminal})" + "\n")
+                outfile.write(f"({terminal} {operation})" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write("\n")
 
