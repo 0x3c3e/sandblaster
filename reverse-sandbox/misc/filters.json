@@ -399,6 +399,10 @@
         "name": "xattr",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0x84": {
+        "name": "file-mode",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0x85": {
         "name": "ipc-posix-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
@@ -411,9 +415,41 @@
         "name": "local-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0x88": {
+        "name": "local",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x89": {
+        "name": "remote",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0x8a": {
         "name": "control-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x8b": {
+        "name": "socket-domain",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x8c": {
+        "name": "socket-type",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x8d": {
+        "name": "socket-protocol",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x8e": {
+        "name": "target",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x8f": {
+        "name": "fsctl-command",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x90": {
+        "name": "ioctl-command",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x91": {
         "name": "iokit-registry-entry-class",
@@ -426,6 +462,14 @@
     "0x93": {
         "name": "iokit-connection",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x94": {
+        "name": "device-major",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0x95": {
+        "name": "device-minor",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x96": {
         "name": "device-conforms-to",
@@ -443,6 +487,10 @@
         "name": "appleevent-destination",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0x9a": {
+        "name": "system-attribute",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0x9b": {
         "name": "right-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
@@ -451,9 +499,17 @@
         "name": "preference-domain",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0x9d": {
+        "name": "vnode-type",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0x9e": {
         "name": "%entitlement-load",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x9f": {
+        "name": "%entitlement-boolean",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xa0": {
         "name": "%entitlement-string",
@@ -471,6 +527,14 @@
         "name": "notification-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xa4": {
+        "name": "notification-payload",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xa5": {
+        "name": "semaphore-owner",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xa6": {
         "name": "sysctl-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
@@ -479,9 +543,37 @@
         "name": "process-path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xa8": {
+        "name": "rootless-boot-device-filter",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xa9": {
+        "name": "rootless-disk-filter",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xaa": {
+        "name": "privilege-id",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xab": {
+        "name": "process-attribute",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xac": {
+        "name": "uid",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xad": {
         "name": "nvram-variable",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xae": {
+        "name": "csr",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xaf": {
+        "name": "host-special-port",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xb0": {
         "name": "filesystem-name",
@@ -499,13 +591,45 @@
         "name": "signing-identifier",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xb4": {
+        "name": "signal-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xb5": {
         "name": "target-signing-identifier",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xb6": {
+        "name": "reboot-flags",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xb7": {
+        "name": "datavault-disk-filter",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xb8": {
+        "name": "extension-path-ancestor",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xb9": {
+        "name": "file-attribute",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xba": {
         "name": "storage-class",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xbb": {
+        "name": "storage-class-extension",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xbc": {
+        "name": "iokit-usb-interface-class",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xbd": {
+        "name": "iokit-usb-interface-subclass",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xbe": {
         "name": "ancestor-signing-identifier",
@@ -515,9 +639,25 @@
         "name": "require-ancestor-with-entitlement",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xc0": {
+        "name": "persona-type",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xc1": {
+        "name": "syscall-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xc2": {
         "name": "require-target-with-entitlement",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc3": {
+        "name": "iokit-registry-entry-attribute",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xc4": {
+        "name": "user-intent-extension",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xc5": {
         "name": "snapshot-name",
@@ -527,13 +667,61 @@
         "name": "mach-derived-port-role",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xc7": {
+        "name": "message-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xc8": {
         "name": "message-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xc9": {
+        "name": "iokit-method-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xca": {
+        "name": "iokit-trap-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xcb": {
+        "name": "machtrap-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xcc": {
+        "name": "kernel-mig-routine",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xcd": {
+        "name": "iokit-user-client-type",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xce": {
+        "name": "fcntl-command",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xcf": {
+        "name": "socket-option-level",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xd0": {
+        "name": "socket-option-name",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xd1": {
         "name": "mac-policy-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd2": {
+        "name": "mac-syscall-number",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xd3": {
+        "name": "necp-client-action",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xd4": {
+        "name": "memorystatus-control-command",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xd5": {
         "name": "state-flag",
@@ -551,6 +739,10 @@
         "name": "%entitlement-is-present",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xd9": {
+        "name": "task-special-port",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xda": {
         "name": "fileprovider-syncroot-path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
@@ -559,8 +751,20 @@
         "name": "mount-root-path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
+    "0xdc": {
+        "name": "codesigning-operation",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
     "0xdd": {
         "name": "profile-flag",
         "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xde": {
+        "name": "kas-info-selector",
+        "arg_process_fn": "get_filter_arg_octal_integer"
+    },
+    "0xdf": {
+        "name": "mach-exception-behavior",
+        "arg_process_fn": "get_filter_arg_octal_integer"
     }
 }

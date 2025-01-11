@@ -5,12 +5,12 @@ import json
 mapping = {
     1: "get_filter_arg_boolean",
     2: "get_filter_arg_octal_integer",
-    3: "get_filter_arg_socket_domain",
+    3: "get_filter_arg_octal_integer",
     4: "get_filter_arg_string_by_offset_no_skip",
     5: "get_filter_arg_string_by_offset",
     6: "get_filter_arg_string_by_offset",
     7: "get_filter_arg_string_by_offset_with_type",
-    8: "get_filter_arg_network_address",
+    8: "get_filter_arg_octal_integer",
 }
 
 
@@ -40,11 +40,9 @@ def extract_data_between_variables(file_path, output_path):
     length = len(output) - 1
     for key in range(1, length):
         new_key = hex(key + length + 0x20)
-        if "string" not in output[hex(key)]["arg_process_fn"]:
-            continue
         output[new_key] = {
             "name": output[hex(key)]["name"],
-            "arg_process_fn": "get_filter_arg_regex_by_id",
+            "arg_process_fn": "get_filter_arg_regex_by_id" if "string" in output[hex(key)]["arg_process_fn"] else "get_filter_arg_octal_integer",
         }
     with open(output_path, "w") as file:
         json.dump(output, file, indent=4)
