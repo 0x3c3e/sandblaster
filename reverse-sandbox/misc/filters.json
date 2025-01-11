@@ -29,11 +29,11 @@
     },
     "0x8": {
         "name": "local",
-        "arg_process_fn": "get_filter_arg_network_address"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x9": {
         "name": "remote",
-        "arg_process_fn": "get_filter_arg_network_address"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xa": {
         "name": "control-name",
@@ -41,27 +41,27 @@
     },
     "0xb": {
         "name": "socket-domain",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xc": {
         "name": "socket-type",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xd": {
         "name": "socket-protocol",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xe": {
         "name": "target",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0xf": {
         "name": "fsctl-command",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x10": {
         "name": "ioctl-command",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x11": {
         "name": "iokit-registry-entry-class",
@@ -77,11 +77,11 @@
     },
     "0x14": {
         "name": "device-major",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x15": {
         "name": "device-minor",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x16": {
         "name": "device-conforms-to",
@@ -101,7 +101,7 @@
     },
     "0x1a": {
         "name": "system-attribute",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x1b": {
         "name": "right-name",
@@ -113,7 +113,7 @@
     },
     "0x1d": {
         "name": "vnode-type",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x1e": {
         "name": "%entitlement-load",
@@ -145,7 +145,7 @@
     },
     "0x25": {
         "name": "semaphore-owner",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x26": {
         "name": "sysctl-name",
@@ -165,15 +165,15 @@
     },
     "0x2a": {
         "name": "privilege-id",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x2b": {
         "name": "process-attribute",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x2c": {
         "name": "uid",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x2d": {
         "name": "nvram-variable",
@@ -181,11 +181,11 @@
     },
     "0x2e": {
         "name": "csr",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x2f": {
         "name": "host-special-port",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x30": {
         "name": "filesystem-name",
@@ -205,7 +205,7 @@
     },
     "0x34": {
         "name": "signal-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x35": {
         "name": "target-signing-identifier",
@@ -225,7 +225,7 @@
     },
     "0x39": {
         "name": "file-attribute",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x3a": {
         "name": "storage-class",
@@ -237,11 +237,11 @@
     },
     "0x3c": {
         "name": "iokit-usb-interface-class",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x3d": {
         "name": "iokit-usb-interface-subclass",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x3e": {
         "name": "ancestor-signing-identifier",
@@ -253,11 +253,11 @@
     },
     "0x40": {
         "name": "persona-type",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x41": {
         "name": "syscall-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x42": {
         "name": "require-target-with-entitlement",
@@ -265,7 +265,7 @@
     },
     "0x43": {
         "name": "iokit-registry-entry-attribute",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x44": {
         "name": "user-intent-extension",
@@ -281,7 +281,7 @@
     },
     "0x47": {
         "name": "message-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x48": {
         "name": "message-name",
@@ -289,35 +289,35 @@
     },
     "0x49": {
         "name": "iokit-method-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4a": {
         "name": "iokit-trap-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4b": {
         "name": "machtrap-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4c": {
         "name": "kernel-mig-routine",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4d": {
         "name": "iokit-user-client-type",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4e": {
         "name": "fcntl-command",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x4f": {
         "name": "socket-option-level",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x50": {
         "name": "socket-option-name",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x51": {
         "name": "mac-policy-name",
@@ -325,15 +325,15 @@
     },
     "0x52": {
         "name": "mac-syscall-number",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x53": {
         "name": "necp-client-action",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x54": {
         "name": "memorystatus-control-command",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x55": {
         "name": "state-flag",
@@ -353,7 +353,7 @@
     },
     "0x59": {
         "name": "task-special-port",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x5a": {
         "name": "fileprovider-syncroot-path",
@@ -365,7 +365,7 @@
     },
     "0x5c": {
         "name": "codesigning-operation",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x5d": {
         "name": "profile-flag",
@@ -373,15 +373,15 @@
     },
     "0x5e": {
         "name": "kas-info-selector",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x5f": {
         "name": "mach-exception-behavior",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x60": {
         "name": "mach-exception-type",
-        "arg_process_fn": "get_filter_arg_socket_domain"
+        "arg_process_fn": "get_filter_arg_octal_integer"
     },
     "0x61": {
         "name": "check-operation",
