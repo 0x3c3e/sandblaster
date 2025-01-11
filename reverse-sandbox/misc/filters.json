@@ -1,70 +1,70 @@
 {
-    "0x01": {
-        "name": "",
+    "0x1": {
+        "name": "path",
         "arg_process_fn": "get_filter_arg_string_by_offset_with_type"
     },
-    "0x02": {
-        "name": "mount-relative",
+    "0x2": {
+        "name": "mount-relative-path",
         "arg_process_fn": "get_filter_arg_string_by_offset_with_type"
     },
-    "0x03": {
+    "0x3": {
         "name": "xattr",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
-    "0x04": {
+    "0x4": {
         "name": "file-mode",
         "arg_process_fn": "get_filter_arg_octal_integer"
     },
-    "0x05": {
+    "0x5": {
         "name": "ipc-posix-name",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
-    "0x06": {
+    "0x6": {
         "name": "global-name",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
-    "0x07": {
+    "0x7": {
         "name": "local-name",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
-    "0x08": {
+    "0x8": {
         "name": "local",
         "arg_process_fn": "get_filter_arg_network_address"
     },
-    "0x09": {
+    "0x9": {
         "name": "remote",
         "arg_process_fn": "get_filter_arg_network_address"
     },
-    "0x0a": {
+    "0xa": {
         "name": "control-name",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
-    "0x0b": {
+    "0xb": {
         "name": "socket-domain",
         "arg_process_fn": "get_filter_arg_socket_domain"
     },
-    "0x0c": {
+    "0xc": {
         "name": "socket-type",
-        "arg_process_fn": "get_filter_arg_socket_type"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
-    "0x0d": {
+    "0xd": {
         "name": "socket-protocol",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
-    "0x0e": {
+    "0xe": {
         "name": "target",
-        "arg_process_fn": "get_filter_arg_owner"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
-    "0x0f": {
+    "0xf": {
         "name": "fsctl-command",
-        "arg_process_fn": "get_filter_arg_ctl"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x10": {
         "name": "ioctl-command",
-        "arg_process_fn": "get_filter_arg_ctl"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x11": {
-        "name": "iokit-user-client-class",
+        "name": "iokit-registry-entry-class",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x12": {
@@ -77,11 +77,11 @@
     },
     "0x14": {
         "name": "device-major",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x15": {
         "name": "device-minor",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x16": {
         "name": "device-conforms-to",
@@ -100,8 +100,8 @@
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x1a": {
-        "name": "debug-mode",
-        "arg_process_fn": "get_none"
+        "name": "system-attribute",
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x1b": {
         "name": "right-name",
@@ -113,18 +113,18 @@
     },
     "0x1d": {
         "name": "vnode-type",
-        "arg_process_fn": "get_filter_arg_vnode_type"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x1e": {
-        "name": "entitlement-load",
-        "arg_process_fn": "get_filter_arg_integer"
+        "name": "%entitlement-load",
+        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
     },
     "0x1f": {
-        "name": "entitlement-value",
+        "name": "%entitlement-boolean",
         "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x20": {
-        "name": "entitlement-value",
+        "name": "%entitlement-string",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x21": {
@@ -141,39 +141,39 @@
     },
     "0x24": {
         "name": "notification-payload",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x25": {
         "name": "semaphore-owner",
-        "arg_process_fn": "get_filter_arg_owner"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x26": {
         "name": "sysctl-name",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x27": {
-        "name": "process-name",
-        "arg_process_fn": "get_filter_arg_string_by_offset"
+        "name": "process-path",
+        "arg_process_fn": "get_filter_arg_string_by_offset_with_type"
     },
     "0x28": {
         "name": "rootless-boot-device-filter",
         "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x29": {
-        "name": "rootless-file-filter",
+        "name": "rootless-disk-filter",
         "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x2a": {
         "name": "privilege-id",
-        "arg_process_fn": "get_filter_arg_privilege_id"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x2b": {
         "name": "process-attribute",
-        "arg_process_fn": "get_filter_arg_process_attribute"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x2c": {
         "name": "uid",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x2d": {
         "name": "nvram-variable",
@@ -181,11 +181,11 @@
     },
     "0x2e": {
         "name": "csr",
-        "arg_process_fn": "get_filter_arg_csr"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x2f": {
         "name": "host-special-port",
-        "arg_process_fn": "get_filter_arg_host_port"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x30": {
         "name": "filesystem-name",
@@ -205,7 +205,7 @@
     },
     "0x34": {
         "name": "signal-number",
-        "arg_process_fn": "get_filter_arg_signal_number"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x35": {
         "name": "target-signing-identifier",
@@ -217,15 +217,15 @@
     },
     "0x37": {
         "name": "datavault-disk-filter",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x38": {
         "name": "extension-path-ancestor",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x39": {
         "name": "file-attribute",
-        "arg_process_fn": "get_filter_arg_file_attribute"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x3a": {
         "name": "storage-class",
@@ -233,15 +233,15 @@
     },
     "0x3b": {
         "name": "storage-class-extension",
-        "arg_process_fn": "get_filter_arg_storage_class_extension"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x3c": {
         "name": "iokit-usb-interface-class",
-        "arg_process_fn": "get_filter_arg_iokit_usb"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x3d": {
         "name": "iokit-usb-interface-subclass",
-        "arg_process_fn": "get_filter_arg_iokit_usb_subclass"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x3e": {
         "name": "ancestor-signing-identifier",
@@ -253,11 +253,11 @@
     },
     "0x40": {
         "name": "persona-type",
-        "arg_process_fn": "get_filter_arg_persona_type"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x41": {
         "name": "syscall-number",
-        "arg_process_fn": "get_filter_arg_syscall_number"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x42": {
         "name": "require-target-with-entitlement",
@@ -265,11 +265,11 @@
     },
     "0x43": {
         "name": "iokit-registry-entry-attribute",
-        "arg_process_fn": "get_filter_arg_entry_attribute"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x44": {
         "name": "user-intent-extension",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_boolean"
     },
     "0x45": {
         "name": "snapshot-name",
@@ -281,7 +281,7 @@
     },
     "0x47": {
         "name": "message-number",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x48": {
         "name": "message-name",
@@ -289,35 +289,35 @@
     },
     "0x49": {
         "name": "iokit-method-number",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4a": {
         "name": "iokit-trap-number",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4b": {
         "name": "machtrap-number",
-        "arg_process_fn": "get_filter_arg_machtrap_number"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4c": {
         "name": "kernel-mig-routine",
-        "arg_process_fn": "get_filter_arg_kernel_mig_routine"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4d": {
         "name": "iokit-user-client-type",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4e": {
         "name": "fcntl-command",
-        "arg_process_fn": "get_filter_arg_fcntl"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x4f": {
         "name": "socket-option-level",
-        "arg_process_fn": "get_filter_arg_socket_option_level"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x50": {
         "name": "socket-option-name",
-        "arg_process_fn": "get_filter_arg_socket_option_name"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x51": {
         "name": "mac-policy-name",
@@ -325,15 +325,15 @@
     },
     "0x52": {
         "name": "mac-syscall-number",
-        "arg_process_fn": "get_filter_arg_integer"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x53": {
         "name": "necp-client-action",
-        "arg_process_fn": "get_filter_arg_necp_client_action"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x54": {
         "name": "memorystatus-control-command",
-        "arg_process_fn": "get_filter_arg_memorystatus_control"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x55": {
         "name": "state-flag",
@@ -353,90 +353,214 @@
     },
     "0x59": {
         "name": "task-special-port",
-        "arg_process_fn": "get_filter_arg_task_special_port"
+        "arg_process_fn": "get_filter_arg_socket_domain"
     },
     "0x5a": {
-        "name": "fileprovider-syncroot",
-        "arg_process_fn": "get_filter_arg_string_by_offset"
+        "name": "fileprovider-syncroot-path",
+        "arg_process_fn": "get_filter_arg_string_by_offset_with_type"
     },
     "0x5b": {
-        "name": "mount-root",
+        "name": "mount-root-path",
+        "arg_process_fn": "get_filter_arg_string_by_offset_with_type"
+    },
+    "0x5c": {
+        "name": "codesigning-operation",
+        "arg_process_fn": "get_filter_arg_socket_domain"
+    },
+    "0x5d": {
+        "name": "profile-flag",
+        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip"
+    },
+    "0x5e": {
+        "name": "kas-info-selector",
+        "arg_process_fn": "get_filter_arg_socket_domain"
+    },
+    "0x5f": {
+        "name": "mach-exception-behavior",
+        "arg_process_fn": "get_filter_arg_socket_domain"
+    },
+    "0x60": {
+        "name": "mach-exception-type",
+        "arg_process_fn": "get_filter_arg_socket_domain"
+    },
+    "0x61": {
+        "name": "check-operation",
         "arg_process_fn": "get_filter_arg_string_by_offset"
     },
     "0x81": {
-        "name": "regex",
+        "name": "path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x82": {
-        "name": "mount-relative-regex",
+        "name": "mount-relative-path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x83": {
-        "name": "xattr-regex",
+        "name": "xattr",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x85": {
-        "name": "ipc-posix-name-regex",
+        "name": "ipc-posix-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x86": {
-        "name": "global-name-regex",
+        "name": "global-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x87": {
-        "name": "local-name-regex",
+        "name": "local-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x8a": {
+        "name": "control-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x91": {
-        "name": "iokit-user-client-class-regex",
+        "name": "iokit-registry-entry-class",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x92": {
-        "name": "iokit-property-regex",
+        "name": "iokit-property",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x93": {
-        "name": "iokit-connection-regex",
+        "name": "iokit-connection",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x96": {
+        "name": "device-conforms-to",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x97": {
+        "name": "extension",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x98": {
-        "name": "extension-class-regex",
+        "name": "extension-class",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x99": {
-        "name": "appleevent-destination-regex",
+        "name": "appleevent-destination",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x9b": {
-        "name": "right-name-regex",
+        "name": "right-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0x9c": {
-        "name": "preference-domain-regex",
+        "name": "preference-domain",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0x9e": {
+        "name": "%entitlement-load",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0xa0": {
-        "name": "entitlement-value-regex",
+        "name": "%entitlement-string",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0xa1": {
-        "name": "kext-bundle-id-regex",
+        "name": "kext-bundle-id",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xa2": {
+        "name": "info-type",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0xa3": {
-        "name": "notification-name-regex",
+        "name": "notification-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0xa6": {
-        "name": "sysctl-name-regex",
+        "name": "sysctl-name",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
     "0xa7": {
-        "name": "process-name-regex",
+        "name": "process-path",
         "arg_process_fn": "get_filter_arg_regex_by_id"
     },
-    "0xc1": {
-        "name": "syscall-number",
-        "arg_process_fn": "get_filter_arg_wtf"
+    "0xad": {
+        "name": "nvram-variable",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xb0": {
+        "name": "filesystem-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xb1": {
+        "name": "boot-arg",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xb2": {
+        "name": "xpc-service-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xb3": {
+        "name": "signing-identifier",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xb5": {
+        "name": "target-signing-identifier",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xba": {
+        "name": "storage-class",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xbe": {
+        "name": "ancestor-signing-identifier",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xbf": {
+        "name": "require-ancestor-with-entitlement",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc2": {
+        "name": "require-target-with-entitlement",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc5": {
+        "name": "snapshot-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc6": {
+        "name": "mach-derived-port-role",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xc8": {
+        "name": "message-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd1": {
+        "name": "mac-policy-name",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd5": {
+        "name": "state-flag",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd6": {
+        "name": "require-responsible-binary-with-entitlement",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd7": {
+        "name": "%entitlement-is-bool-true",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xd8": {
+        "name": "%entitlement-is-present",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xda": {
+        "name": "fileprovider-syncroot-path",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xdb": {
+        "name": "mount-root-path",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
+    },
+    "0xdd": {
+        "name": "profile-flag",
+        "arg_process_fn": "get_filter_arg_regex_by_id"
     }
 }
