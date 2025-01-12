@@ -152,8 +152,6 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                     outfile.write(f"({terminal} {operation})" + "\n")
                     continue
                 sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                if terminal.node.is_deny():
-                    continue
                 outfile.write(f"({terminal} {operation}" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write(")\n")

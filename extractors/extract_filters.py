@@ -31,7 +31,7 @@ def extract_modifiers(target_macho, start_address):
         if offset == 0:
             break
         name = get_cstring(target_macho, offset)
-        func = target_macho.get_int_from_virtual_address(start_address + 0x8, 4)
+        func = target_macho.get_int_from_virtual_address(start_address + 0x8, 2)
         start_address += 0x10
         output[func] = name
     return output

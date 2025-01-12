@@ -133,14 +133,14 @@ class ReverseStringState:
     def get_length_minus_1(self):
         b = struct.unpack("<B", self.binary_string[self.pos - 1 : self.pos])[0]
 
-        logger.debug("b is 0x{:02x} ({:d})".format(b, b))
+        logger.warning("b is 0x{:02x} ({:d})".format(b, b))
         if b == 0x04:
             b = struct.unpack("<B", self.binary_string[self.pos : self.pos + 1])[0]
-            logger.debug("got larger length 0x{:02x} ({:d})".format(b, b))
+            logger.warning("got larger length 0x{:02x} ({:d})".format(b, b))
             self.pos += 1
             return b + 0x41
         else:
-            logger.debug("got length 0x{:02x} ({:d})".format(b, b))
+            logger.warning("got length 0x{:02x} ({:d})".format(b, b))
             if b >= 0x3F:
                 return b - 0x3F
             return b
@@ -213,15 +213,15 @@ class SandboxString:
 
         while True:
             if rss.state == rss.STATE_UNKNOWN:
-                logger.debug("state is STATE_UNKNOWN")
+                logger.warning("state is STATE_UNKNOWN")
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_TOKEN_READ:
-                logger.debug("state is STATE_TOKEN_READ")
+                logger.warning("state is STATE_TOKEN_READ")
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_TOKEN_BYTE_READ:
-                logger.debug("state is STATE_TOKEN_BYTE_READ")
+                logger.warning("state is STATE_TOKEN_BYTE_READ")
                 # String starts with length.
                 prev_state = rss.state_stack[len(rss.state_stack) - 1]
                 if prev_state != rss.STATE_TOKEN_READ:
@@ -232,14 +232,14 @@ class SandboxString:
                     logger.warn("read token byte from token state")
                     break
             elif rss.state == rss.STATE_CONSTANT_READ:
-                logger.debug("state is STATE_CONSTANT_READ")
+                logger.warning("state is STATE_CONSTANT_READ")
                 b = rss.get_last_byte()
                 if b >= 0x10 and b < 0x3F:
                     rss.token = "${" + global_vars[b - 0x10] + "}"
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_CONCAT_BYTE_READ:
-                logger.debug("state is STATE_CONCAT_BYTE_READ")
+                logger.warning("state is STATE_CONCAT_BYTE_READ")
                 if (
                     rss.state_stack[len(rss.state_stack) - 1] == rss.STATE_TOKEN_READ
                     or rss.state_stack[len(rss.state_stack) - 1]
@@ -254,7 +254,7 @@ class SandboxString:
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_CONCAT_SAVE_BYTE_READ:
-                logger.debug("state is STATE_CONCAT_SAVE_BYTE_READ")
+                logger.warning("state is STATE_CONCAT_SAVE_BYTE_READ")
                 if (
                     rss.state_stack[len(rss.state_stack) - 1] == rss.STATE_TOKEN_READ
                     or rss.state_stack[len(rss.state_stack) - 1]
@@ -269,13 +269,13 @@ class SandboxString:
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_END_BYTE_READ:
-                logger.debug("state is STATE_END_BYTE_READ")
+                logger.warning("state is STATE_END_BYTE_READ")
                 rss.end_current_token()
                 rss.reset_base()
                 b = rss.get_next_byte()
                 rss.update_state(b)
             elif rss.state == rss.STATE_RANGE_BYTE_READ:
-                logger.debug("state is STATE_RANGE_BYTE_READ")
+                logger.warning("state is STATE_RANGE_BYTE_READ")
                 rss.update_base_stack()
                 b = rss.get_next_byte()
                 b_array = []
@@ -364,8 +364,7 @@ class SandboxString:
                     rss.state_stack[len(rss.state_stack) - 1]
                 )
             )
-
-        logger.info(
+        logger.warning(
             "output_strings (num: {:d}): {:s}".format(
                 len(rss.output_strings),
                 ",".join('"{:s}"'.format(s) for s in rss.output_strings),

@@ -7,7 +7,6 @@ import reverse_string
 from filters import Filters
 from modifiers import Modifiers
 
-
 logger = logging.getLogger(__name__)
 
 keep_builtin_filters = False
@@ -23,12 +22,22 @@ def get_filter_arg_string_by_offset(f, offset, filter_id):
 
     ss = reverse_string.SandboxString()
     myss = ss.parse_byte_string(s[2:], global_vars)
-    actual_string = ""
-    for sss in myss:
-        actual_string = actual_string + sss + " "
-    actual_string = actual_string[:-1]
-    logger.info("actual string is " + actual_string)
-    return myss
+    append, actual_string = merge_strings(myss, s, Filters.get(filter_id)["name"])
+    return (append, actual_string)
+
+
+def merge_strings(myss, s, append):
+    if len(myss) > 1:
+        actual_string = "("
+        for k in sorted(list(set(myss))):
+            actual_string += f'\n({append} "{k}")'
+        actual_string += "\n)"
+        append = "require-any"
+    elif len(myss) == 1:
+        actual_string = f'"{myss[0]}"'
+    else:
+        actual_string = f"{s}"
+    return (append, actual_string)
 
 
 def get_filter_arg_string_by_offset_with_type(f, offset, filter_id):
@@ -36,19 +45,24 @@ def get_filter_arg_string_by_offset_with_type(f, offset, filter_id):
     global base_addr
 
     f.seek(offset * 8 + base_addr)
-    len = struct.unpack("<H", f.read(2))[0]
+    length = struct.unpack("<H", f.read(2))[0]
     f.seek(offset * 8 + base_addr)
-    s = f.read(2 + len)
+    s = f.read(2 + length)
     logger.info("binary string is " + s.hex())
     ss = reverse_string.SandboxString()
     myss = ss.parse_byte_string(s[2:], global_vars)
-    append = "literal"
-    actual_string = ""
-    for sss in myss:
-        actual_string = actual_string + sss + " "
-    actual_string = actual_string[:-1]
-    logger.info("actual string is " + actual_string)
-    return (append, myss)
+    filter_name = Filters.get(filter_id)["name"]
+    if s.endswith(b"\x0f\x00\x0f\n"):
+        append = f"{filter_name}-literal"
+    elif b"@" in s:
+        append = "subpath"
+    elif b"\\" in s or b"|" in s or (b"[" in s and b"]" in s) or b"+" in s:
+        append = f"{filter_name}-regex"
+    else:
+        append = f"{filter_name}-prefix"
+
+    append, actual_string = merge_strings(myss, s, append)
+    return (append, actual_string)
 
 
 def get_filter_arg_string_by_offset_no_skip(f, offset, filter_id):
@@ -68,7 +82,7 @@ def get_filter_arg_octal_integer(f, arg, filter_id):
     mods = Filters.get(filter_id).get("modifiers", None)
     if mods and arg_key in mods:
         return mods[arg_key]
-    return "#o%04o" % arg
+    return f"{arg}"
 
 
 def get_filter_arg_boolean(f, arg, filter_id):
@@ -82,7 +96,6 @@ regex_list = []
 
 
 def get_filter_arg_regex_by_id(f, regex_id, filter_id):
-    """Get regular expression by index."""
     global keep_builtin_filters
     return_string = ""
     global regex_list
@@ -114,27 +127,13 @@ def convert_filter_callback(
         return (None, None)
     filter = Filters.get(filter_id)
 
-    if not filter["arg_process_fn"]:
-        logger.warn("no function for filter {}".format(filter_id))
-        return (None, None)
-    if filter["arg_process_fn"] == "get_filter_arg_string_by_offset_with_type":
+    if filter["arg_process_fn"] in [
+        "get_filter_arg_string_by_offset_with_type",
+        "get_filter_arg_string_by_offset",
+    ]:
         (append, result) = globals()[filter["arg_process_fn"]](f, filter_arg, filter_id)
-        if filter_id == 0x01 and append == "path":
-            append = "subpath"
-        if result == None and filter["name"] != "debug-mode":
-            logger.warn(
-                "result of calling string offset for filter {} is none".format(
-                    filter_id
-                )
-            )
-            return (None, None)
-        return (filter["name"] + ("-" if len(filter["name"]) else "") + append, result)
+        return (append, result)
     result = globals()[filter["arg_process_fn"]](f, filter_arg, filter_id)
-    if result == None and filter["name"] != "debug-mode":
-        logger.warn(
-            "result of calling arg_process_fn for filter {} is none".format(filter_id)
-        )
-        return (None, None)
     return (filter["name"], result)
 
 
