@@ -2,7 +2,6 @@ import sys
 import struct
 import logging
 import argparse
-import pprint
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
@@ -110,6 +109,22 @@ def create_operation_nodes(
         )
 
 
+from sympy.logic.boolalg import (
+    And,
+    Or,
+    Not,
+    simplify_logic,
+    BooleanTrue,
+    BooleanFalse,
+    ITE,
+    Boolean,
+    to_nnf,
+    to_dnf,
+    to_cnf,
+)
+from pyeda.inter import *
+
+
 def process_profile(outfname: str, sandbox_data: SandboxData):
     with open(outfname, "wt") as outfile, open(
         f"reverse.{outfname}", "wt"
@@ -139,40 +154,28 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
 
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
+            import networkx as nx
+
             for sink, p in graph_tools.get_subgraphs(graph):
-                if p.number_of_nodes() > 100:
-                    logging.warning(f"skip {operation} {p}")
-                    continue
+                start = [
+                    node
+                    for node in nx.topological_sort(graph)
+                    if graph.in_degree(node) == 0
+                ][0]
                 logging.warning(f"parse {operation} {p}")
                 terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
                     sink
                 )
-                out = graph_tools.get_booleans(p)
+                out = graph_tools.build_ite_iterative_z3(p, start)
+                out = espresso_exprs(graph_tools.z3_to_pyeda(out).to_dnf())[0]
+                print("AFTER SIMPLIFIED\n", flush=True)
                 if out is None:
                     outfile.write(f"({terminal} {operation})" + "\n")
                     continue
-                sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
+                sbpl = graph_tools.pyeda_expr_to_sbpl(out, sandbox_data.operation_nodes)
                 outfile.write(f"({terminal} {operation}" + "\n")
                 outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
                 outfile.write(")\n")
-            for sink, p in graph_tools.get_subgraphs(graph, reverse=True):
-                if p.number_of_nodes() > 100:
-                    logging.warning(f"skip {operation} {p}")
-                    continue
-                logging.warning(f"parse {operation} {p}")
-                terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
-                    sink
-                )
-                out = graph_tools.get_booleans(p)
-                if out is None:
-                    outfile_reverse.write(f"({terminal} {operation})" + "\n")
-                    continue
-                sbpl = graph_tools.sympy_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                if terminal.node.is_deny():
-                    continue
-                outfile_reverse.write(f"({terminal} {operation}" + "\n")
-                outfile_reverse.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
-                outfile_reverse.write(")\n")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
@@ -251,7 +254,6 @@ def main():
 
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxData.from_file(infile)
-        pprint.pprint(sandbox_data)
 
         read_sandbox_operations(args.operations_file, sandbox_data)
         logging.info(f"Read {len(sandbox_data.sb_ops)} sandbox operations")
