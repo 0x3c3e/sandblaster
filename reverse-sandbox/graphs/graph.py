@@ -48,23 +48,7 @@ from sympy.logic.boolalg import to_dnf
 from sympy.parsing.sympy_parser import parse_expr
 
 
-def z3_expr_to_sympy_str(z3_expr):
-    """
-    A naive way to get a string from a Z3 expression.
-    For complex expressions, you might need a more robust translator.
-    """
-    return str(z3_expr)
-
-
-def sympy_dnf(expr_str):
-    """
-    Convert a string-based expression into Sympy, then get DNF.
-    """
-    sympy_expr = parse_expr(expr_str)
-    return simplify_logic(sympy_expr, form="dnf")
-
-
-def build_ite_iterative_z3(G, start_node):
+def build_ite_iterative_z3(G, start_node, sink):
     """
     Iteratively build a Z3 If-expression from a networkx DiGraph G,
     starting at 'start_node', without using recursion.
@@ -89,37 +73,77 @@ def build_ite_iterative_z3(G, start_node):
     for node in reversed(topo_order):
 
         # If out_degree=0, it's a leaf. Store True (or your desired leaf).
-        if G.out_degree(node) == 0:
+        if G.out_degree(node) == 0 and node == sink:
             node_to_expr[node] = z3.BoolVal(True)
             continue
-
+        if G.out_degree(node) == 0 and node != sink:
+            node_to_expr[node] = z3.BoolVal(False)
+            continue
         # Interpret the node's label as a Z3 Boolean variable.
         label_str = f"{G.nodes[node].get('label')}"
         condition = z3.Bool(label_str)
 
         # Identify the child for result=1 (true branch) and result=0 (false branch).
-        true_succ = None
-        false_succ = None
+        true_succ_expr = None
+        false_succ_expr = None
         for _, tgt, data in G.out_edges(node, data=True):
-            if data.get("result") == 1:
-                true_succ = tgt
-            elif data.get("result") == 0:
-                false_succ = tgt
+            if data["result"]:
+                true_succ_expr = node_to_expr[tgt]
+            else:
+                false_succ_expr = node_to_expr[tgt]
 
-        # Handle missing true/false successors if needed.
-        true_succ_expr = (
-            node_to_expr[true_succ] if true_succ is not None else z3.BoolVal(False)
-        )
-        false_succ_expr = (
-            node_to_expr[false_succ] if false_succ is not None else z3.BoolVal(False)
-        )
-
-        # Combine them into a Z3 If-expression.
         node_to_expr[node] = z3.If(condition, true_succ_expr, false_succ_expr)
 
     # Finally, return the expression for 'start_node' as the top-level ITE.
     return ite_expr_to_cnf_z3(node_to_expr[start_node])
 
+def remove_redundant_negations(expr):
+    """
+    If `expr` is of the form And(Not(x1), Not(x2), ..., Not(xN), y),
+    where exactly one y is a positive variable, remove the Not(...) parts.
+    
+    Example:
+      - And(Not(var_0), var_1)  => var_1
+      - And(Not(var_0), Not(var_1), var_2) => var_2
+      - etc.
+
+    If it's just a single variable (uninterpreted), keep it as-is.
+    Otherwise, return expr unchanged.
+
+    This relies on the assumption that exactly ONE variable can be true
+    (so y implies all others are false).
+    """
+
+    # If it's a single (uninterpreted) variable, we do nothing
+    if expr.decl().kind() == z3.Z3_OP_UNINTERPRETED:
+        # e.g. `var_0`
+        return expr
+
+    # Check if top-level is AND
+    if expr.decl().kind() == z3.Z3_OP_AND:
+        kids = expr.children()
+
+        positive_vars = []
+        for child in kids:
+            dk = child.decl().kind()
+            if dk == z3.Z3_OP_UNINTERPRETED:
+                # This child is a "positive" variable, e.g. `var_3`
+                positive_vars.append(child)
+            elif dk == z3.Z3_OP_NOT:
+                # A negation like Not(var_i). We'll ignore it if we find exactly one pos var.
+                pass
+            else:
+                # Some other form (another AND, ITE, eq, etc.) => not the pattern we handle.
+                return expr
+
+        # We only simplify if there's EXACTLY one positive var
+        if len(positive_vars) == 1:
+            return positive_vars[0]  # the single positive var
+        else:
+            return expr
+
+    # If it's not an AND or single variable, we leave it as is.
+    return expr
 
 import z3
 import sympy
@@ -328,209 +352,3 @@ def sbpl_list_to_string(data_list, indent=0, indent_size=4):
     for item in data_list:
         sbpl_str += sbpl_to_string(item, indent, indent_size)
     return sbpl_str
-
-
-def find_merge_candidates_for_not_and(G):
-    """
-    Find pairs (u, v) that should be merged based on an OR-like rule:
-      - There's a 'dashed' edge (u -> v) => data["result"] == False
-      - B (=v) has exactly one incoming edge
-      - u and v share at least one successor x where
-        both (u->x) and (v->x) are 'solid' => data["result"] == True
-    """
-    return {
-        (u, v)
-        for u, v, data in G.edges(data=True)
-        if (
-            not data["result"]  # 'dashed' edge (u->v)
-            and G.in_degree(v) == 1  # B must have exactly one incoming edge
-            and any(
-                G[u][x]["result"] and not G[v][x]["result"]
-                for x in set(G.successors(u)) & set(G.successors(v))
-            )
-        )
-    }
-
-
-def find_merge_candidates_for_not_or(G):
-    """
-    Find pairs (u, v) that should be merged based on a NOT-OR rule:
-      - There's a 'solid' edge (u -> v) => data["result"] == True
-      - B (=v) has exactly one incoming edge
-      - u and v share at least one successor x where:
-          (u->x) is 'dashed' => data["result"] == False
-          (v->x) is 'solid'  => data["result"] == True
-    """
-    return {
-        (u, v)
-        for u, v, data in G.edges(data=True)
-        if (
-            data["result"]  # 'solid' edge (u->v)
-            and G.in_degree(v) == 1  # B must have exactly one incoming edge
-            and any(
-                (not G[u][x]["result"]) and G[v][x]["result"]
-                for x in set(G.successors(u)) & set(G.successors(v))
-            )
-        )
-    }
-
-
-def find_merge_candidates_for_or(G):
-    """
-    Find pairs (u, v) that should be merged based on an OR-like rule:
-      - There's a 'dashed' edge (u -> v) => data["result"] == False
-      - B (=v) has exactly one incoming edge
-      - u and v share at least one successor x where
-        both (u->x) and (v->x) are 'solid' => data["result"] == True
-    """
-    return {
-        (u, v)
-        for u, v, data in G.edges(data=True)
-        if (
-            not data["result"]  # 'dashed' edge (u->v)
-            and G.in_degree(v) == 1  # B must have exactly one incoming edge
-            and any(
-                G[u][x]["result"] and G[v][x]["result"]
-                for x in set(G.successors(u)) & set(G.successors(v))
-            )
-        )
-    }
-
-
-def find_merge_candidates_for_and(G):
-    """
-    Find pairs (u, v) that should be merged based on an AND-like rule:
-      - There's a 'solid' edge (u -> v) => data["result"] == True
-      - B (=v) has exactly one incoming edge
-      - u and v share at least one successor x where
-        both (u->x) and (v->x) are 'dashed' => data["result"] == False
-    """
-    return {
-        (u, v)
-        for u, v, data in G.edges(data=True)
-        if (
-            data["result"]  # 'solid' edge (u->v)
-            and G.in_degree(v) == 1  # B must have exactly one incoming edge
-            and any(
-                (not G[u][x]["result"]) and (not G[v][x]["result"])
-                for x in set(G.successors(u)) & set(G.successors(v))
-            )
-        )
-    }
-
-
-def merge_pair(G, A, B, new_node):
-    """
-    Merge nodes A and B into a new node named new_node.
-
-    - All inbound edges to A or B become inbound edges to new_node.
-    - All outbound edges from A or B become outbound edges from new_node.
-    - Removes A and B from the graph.
-    - Removes any self-loop on new_node.
-    """
-    G.add_node(new_node)
-
-    # Redirect inbound edges
-    predecessors = set(G.predecessors(A)) | set(G.predecessors(B))
-    for p in predecessors:
-        if G.has_edge(p, A):
-            G.add_edge(p, new_node, **G[p][A])
-        if G.has_edge(p, B):
-            G.add_edge(p, new_node, **G[p][B])
-
-    # Redirect outbound edges
-    successors = set(G.successors(A)) | set(G.successors(B))
-    for s in successors:
-        if G.has_edge(A, s):
-            G.add_edge(new_node, s, **G[A][s])
-        if G.has_edge(B, s):
-            G.add_edge(new_node, s, **G[B][s])
-
-    # Remove the original nodes
-    G.remove_nodes_from([A, B])
-
-    # Remove possible self-loop
-    if G.has_edge(new_node, new_node):
-        G.remove_edge(new_node, new_node)
-
-
-def merge_candidates_into_not_or(G):
-    """
-    Keep merging nodes in G according to the NOT-OR rule until
-    no more merges are possible. Returns True if any merges happened,
-    False otherwise.
-    """
-    changed = False
-    while merge_pairs := find_merge_candidates_for_not_or(G):
-        changed = True
-        for A, B in merge_pairs:
-            if A in G and B in G:
-                merge_pair(G, A, B, new_node=f"or(not({A}),{B})")
-    return changed
-
-
-def merge_candidates_into_or(G):
-    """
-    Keep merging nodes in G according to the OR-like rule until
-    no more merges are possible. Returns True if any merges happened,
-    False otherwise.
-    """
-    changed = False
-    while merge_pairs := find_merge_candidates_for_or(G):
-        changed = True
-        for A, B in merge_pairs:
-            if A in G and B in G:
-                merge_pair(G, A, B, new_node=f"or({A},{B})")
-    return changed
-
-
-def merge_nodes_into_and(G):
-    """
-    Keep merging nodes in G according to the AND-like rule until
-    no more merges are possible. Returns True if any merges happened,
-    False otherwise.
-    """
-    changed = False
-    while candidates := find_merge_candidates_for_and(G):
-        changed = True
-        for A, B in candidates:
-            if A in G and B in G:
-                merge_pair(G, A, B, new_node=f"and({A},{B})")
-    return changed
-
-
-def merge_nodes_into_not_and(G):
-    """
-    Keep merging nodes in G according to the AND-like rule until
-    no more merges are possible. Returns True if any merges happened,
-    False otherwise.
-    """
-    changed = False
-    while candidates := find_merge_candidates_for_not_and(G):
-        changed = True
-        for A, B in candidates:
-            if A in G and B in G:
-                merge_pair(G, A, B, new_node=f"and(not({A}),{B})")
-    return changed
-
-
-# add rule for chains
-
-
-def merger(G):
-    """
-    Orchestrates repeated merges on the graph G using:
-      - OR-like rule,
-      - AND-like rule,
-      - NOT-OR rule,
-    until no further merges are possible.
-    """
-    while True:
-        # If no merges of any type happen in an iteration, we're done.
-        if not (
-            merge_candidates_into_or(G)
-            or merge_nodes_into_and(G)
-            or merge_candidates_into_not_or(G)
-            or merge_nodes_into_not_and(G)
-        ):
-            break
