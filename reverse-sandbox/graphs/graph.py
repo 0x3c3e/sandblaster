@@ -1,51 +1,18 @@
 import networkx as nx
+import z3
 
 from sympy.logic.boolalg import (
     And,
     Or,
     Not,
-    simplify_logic,
     BooleanTrue,
     BooleanFalse,
-    ITE,
-    Boolean,
-    to_nnf,
-    to_dnf,
-    to_cnf,
 )
-from sympy import Symbol, true, false
+from pyeda.boolalg.expr import Expression
 
+from sympy import And, Or, Not
 
-def get_subgraph_from_start_to_end(graph, start, end):
-    reachable_from_start = nx.descendants(graph, start) | {start}
-    reachable_to_end = nx.descendants(graph.reverse(copy=True), end) | {end}
-    return graph.subgraph(reachable_from_start & reachable_to_end).copy()
-
-
-def get_subgraph_to_end(graph, end):
-    reachable_to_end = nx.descendants(graph.reverse(copy=True), end) | {end}
-    return graph.subgraph(reachable_to_end).copy()
-
-
-def get_subgraphs(graph, reverse=False):
-    g_copy = graph.copy()
-
-    sinks = [node for node in nx.topological_sort(graph) if graph.out_degree(node) == 0]
-    for sink in sinks:
-        subgraph = get_subgraph_to_end(g_copy, sink)
-
-        yield sink, subgraph
-
-
-import networkx as nx
-from sympy import Symbol, ITE, true, false
-from sympy.logic.boolalg import Boolean
-
-import z3
-
-
-from sympy.logic.boolalg import to_dnf
-from sympy.parsing.sympy_parser import parse_expr
+from pyeda.boolalg.expr import exprvar, AndOp, OrOp, Variable, Complement
 
 
 def build_ite_iterative_z3(G, start_node, sink):
@@ -97,62 +64,6 @@ def build_ite_iterative_z3(G, start_node, sink):
     # Finally, return the expression for 'start_node' as the top-level ITE.
     return ite_expr_to_cnf_z3(node_to_expr[start_node])
 
-def remove_redundant_negations(expr):
-    """
-    If `expr` is of the form And(Not(x1), Not(x2), ..., Not(xN), y),
-    where exactly one y is a positive variable, remove the Not(...) parts.
-    
-    Example:
-      - And(Not(var_0), var_1)  => var_1
-      - And(Not(var_0), Not(var_1), var_2) => var_2
-      - etc.
-
-    If it's just a single variable (uninterpreted), keep it as-is.
-    Otherwise, return expr unchanged.
-
-    This relies on the assumption that exactly ONE variable can be true
-    (so y implies all others are false).
-    """
-
-    # If it's a single (uninterpreted) variable, we do nothing
-    if expr.decl().kind() == z3.Z3_OP_UNINTERPRETED:
-        # e.g. `var_0`
-        return expr
-
-    # Check if top-level is AND
-    if expr.decl().kind() == z3.Z3_OP_AND:
-        kids = expr.children()
-
-        positive_vars = []
-        for child in kids:
-            dk = child.decl().kind()
-            if dk == z3.Z3_OP_UNINTERPRETED:
-                # This child is a "positive" variable, e.g. `var_3`
-                positive_vars.append(child)
-            elif dk == z3.Z3_OP_NOT:
-                # A negation like Not(var_i). We'll ignore it if we find exactly one pos var.
-                pass
-            else:
-                # Some other form (another AND, ITE, eq, etc.) => not the pattern we handle.
-                return expr
-
-        # We only simplify if there's EXACTLY one positive var
-        if len(positive_vars) == 1:
-            return positive_vars[0]  # the single positive var
-        else:
-            return expr
-
-    # If it's not an AND or single variable, we leave it as is.
-    return expr
-
-import z3
-import sympy
-from sympy import Symbol, And, Or, Not, Implies, Xor, Eq
-from sympy.logic.boolalg import ITE
-
-import z3
-from pyeda.boolalg.expr import exprvar, NotOp, AndOp, OrOp, Variable, Complement
-
 
 def z3_to_pyeda(z3_expr, varcache=None):
     """
@@ -196,13 +107,6 @@ def z3_to_pyeda(z3_expr, varcache=None):
     # etc., handle Implies, Xor, ITE, etc. if needed
 
     raise NotImplementedError(f"Unsupported op kind: {op}")
-
-
-# Then you can do:
-# py_expr = z3_to_pyeda(z3_expr)
-# py_expr_sop = py_expr.to_sop()  # sum-of-products
-# minimized = espresso_exprs(py_expr_sop)[0]
-# print("Minimized:", minimized)
 
 
 def ite_expr_to_cnf_z3(ite_expr):
@@ -255,9 +159,6 @@ def sympy_expr_to_sbpl(expr, operation_nodes):
     if isinstance(expr, BooleanFalse):
         return "false"
     raise ValueError(f"Unsupported expression type: {expr}")
-
-
-from pyeda.boolalg.expr import Expression
 
 
 def pyeda_expr_to_sbpl(expr: Expression, operation_nodes):

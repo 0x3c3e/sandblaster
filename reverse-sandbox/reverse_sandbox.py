@@ -109,19 +109,6 @@ def create_operation_nodes(
         )
 
 
-from sympy.logic.boolalg import (
-    And,
-    Or,
-    Not,
-    simplify_logic,
-    BooleanTrue,
-    BooleanFalse,
-    ITE,
-    Boolean,
-    to_nnf,
-    to_dnf,
-    to_cnf,
-)
 from pyeda.inter import *
 
 
@@ -156,19 +143,25 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             graph = graph_builder.build_operation_node_graph()
             import networkx as nx
 
-            for sink, p in graph_tools.get_subgraphs(graph):
-                start = [
-                    node
-                    for node in nx.topological_sort(graph)
-                    if graph.in_degree(node) == 0
-                ][0]
-                logging.warning(f"parse {operation} {p}")
+            outs = []
+            sinks = [
+                node
+                for node in nx.topological_sort(graph)
+                if graph.out_degree(node) == 0
+            ]
+            start = [
+                node
+                for node in nx.topological_sort(graph)
+                if graph.in_degree(node) == 0
+            ][0]
+            for i, sink in enumerate(sinks):
+                out = graph_tools.build_ite_iterative_z3(graph, start, sink)
+                print(out)
+                outs.append(graph_tools.z3_to_pyeda(out).to_dnf())
+            for sink, out in zip(sinks, espresso_exprs(*outs)):
                 terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
                     sink
                 )
-                out = graph_tools.build_ite_iterative_z3(p, start)
-                out = espresso_exprs(graph_tools.z3_to_pyeda(out).to_dnf())[0]
-                print("AFTER SIMPLIFIED\n", flush=True)
                 if out is None:
                     outfile.write(f"({terminal} {operation})" + "\n")
                     continue
