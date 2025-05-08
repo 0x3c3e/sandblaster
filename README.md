@@ -2,7 +2,7 @@
 
 ## Description
 
-This fork has been updated to support macOS 15.2 kernel sandbox profile data.
+This fork has been updated to support macOS 15.2+ kernel sandbox profile data.
 
 ## Usage
 
@@ -18,7 +18,7 @@ python extractors/extract_profile_data_from_kext.py Sandbox.kext/Contents/MacOS/
 
 ### Requirements
 ```sh
-pip install sympy networkx lief
+pip install -r requirements.txt
 ```
 
 ### Reversing the Sandbox
