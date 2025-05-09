@@ -11,6 +11,8 @@ from nodes import operation_node_builder
 from nodes import operation_node_parser
 from graphs import graph as graph_tools
 
+from pyeda.inter import *
+
 
 REGEX_TABLE_OFFSET = 2
 REGEX_COUNT_OFFSET = 4
@@ -107,9 +109,6 @@ def create_operation_nodes(
             sandbox_data,
             keep_builtin_filters,
         )
-
-
-from pyeda.inter import *
 
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
