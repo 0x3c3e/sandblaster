@@ -1,19 +1,6 @@
 import networkx as nx
 import z3
 
-from sympy.logic.boolalg import (
-    And,
-    Or,
-    Not,
-    BooleanTrue,
-    BooleanFalse,
-)
-from pyeda.boolalg.expr import Expression
-
-from sympy import And, Or, Not
-
-from pyeda.boolalg.expr import exprvar, AndOp, OrOp, Variable, Complement
-
 
 def build_ite_iterative_z3(G, start_node, sink):
     """
@@ -159,62 +146,6 @@ def sympy_expr_to_sbpl(expr, operation_nodes):
     if isinstance(expr, BooleanFalse):
         return "false"
     raise ValueError(f"Unsupported expression type: {expr}")
-
-
-def pyeda_expr_to_sbpl(expr: Expression, operation_nodes):
-    """
-    Convert a PyEDA boolean expression into SBPL-like JSON,
-    ensuring we don't call is_lit() on compound expressions.
-    """
-
-    # 1) True / False
-    if expr.is_one():
-        return "true"
-    if expr.is_zero():
-        return "false"
-
-    # 2) Or / And
-    if isinstance(expr, OrOp):
-        return {
-            "require-any": [
-                pyeda_expr_to_sbpl(subexpr, operation_nodes) for subexpr in expr.xs
-            ]
-        }
-
-    if isinstance(expr, AndOp):
-        return {
-            "require-all": [
-                pyeda_expr_to_sbpl(subexpr, operation_nodes) for subexpr in expr.xs
-            ]
-        }
-
-    # 3) Complement (e.g. ~(x & y)) vs. a negated literal (~x)
-    #    If it's a single literal, PyEDA might say expr.is_neg().
-    #    But if it's a complement of a bigger expression, expr.is_complement() is True.
-    if isinstance(expr, Complement):
-        # If that uncomplemented subexpr is a literal, we'd handle it as ~x
-        # Otherwise it's ~(some compound).
-        return {"require-not": [pyeda_expr_to_sbpl(expr.__invert__(), operation_nodes)]}
-
-    # 4) Literal: x or ~x
-    #    For a literal, we can see if it's negated or not.
-    if isinstance(expr, Variable):
-        if expr.is_zero():
-            # e.g. ~x
-            var = expr.unnegate()  # => x
-            offset = int(str(var))  # parse variable name to int
-            return {
-                "require-not": [
-                    str(operation_nodes.find_operation_node_by_offset(offset))
-                ]
-            }
-        else:
-            # e.g. x
-            offset = int(str(expr))
-            return str(operation_nodes.find_operation_node_by_offset(offset))
-
-    # 5) If none of the above matched, it's an unsupported form
-    raise ValueError(f"Unsupported expression structure: {expr}")
 
 
 def sbpl_to_string(data, indent=0, indent_size=4):

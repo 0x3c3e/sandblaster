@@ -11,8 +11,6 @@ from nodes import operation_node_builder
 from nodes import operation_node_parser
 from graphs import graph as graph_tools
 
-from pyeda.inter import *
-
 
 REGEX_TABLE_OFFSET = 2
 REGEX_COUNT_OFFSET = 4
@@ -156,18 +154,6 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             for i, sink in enumerate(sinks):
                 out = graph_tools.build_ite_iterative_z3(graph, start, sink)
                 print(out)
-                outs.append(graph_tools.z3_to_pyeda(out).to_dnf())
-            for sink, out in zip(sinks, espresso_exprs(*outs)):
-                terminal = sandbox_data.operation_nodes.find_operation_node_by_offset(
-                    sink
-                )
-                if out is None:
-                    outfile.write(f"({terminal} {operation})" + "\n")
-                    continue
-                sbpl = graph_tools.pyeda_expr_to_sbpl(out, sandbox_data.operation_nodes)
-                outfile.write(f"({terminal} {operation}" + "\n")
-                outfile.write(graph_tools.sbpl_to_string(sbpl, 0, 2))
-                outfile.write(")\n")
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:

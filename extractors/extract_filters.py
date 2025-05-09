@@ -36,6 +36,7 @@ def extract_modifiers(target_macho, start_address):
         output[func] = name
     return output
 
+
 def extract_data_between_variables(file_path, output_path):
     output = {}
     fat_binary = lief.MachO.parse(file_path)
@@ -52,13 +53,21 @@ def extract_data_between_variables(file_path, output_path):
         if modifiers:
             mods = extract_modifiers(target_macho, modifiers + 0x180000000)
         start_address += 0x20
-        output[hex(key)] = {"name": name, "arg_process_fn": mapping[func], "modifiers": mods}
+        output[hex(key)] = {
+            "name": name,
+            "arg_process_fn": mapping[func],
+            "modifiers": mods,
+        }
     length = len(output) - 1
     for key in range(1, length):
         new_key = hex(key + length + 0x20)
         output[new_key] = {
             "name": output[hex(key)]["name"],
-            "arg_process_fn": "get_filter_arg_regex_by_id" if "string" in output[hex(key)]["arg_process_fn"] else "get_filter_arg_octal_integer",
+            "arg_process_fn": (
+                "get_filter_arg_regex_by_id"
+                if "string" in output[hex(key)]["arg_process_fn"]
+                else "get_filter_arg_octal_integer"
+            ),
         }
     with open(output_path, "w") as file:
         json.dump(output, file, indent=4, sort_keys=int)
