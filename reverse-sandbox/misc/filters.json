@@ -1,11 +1,402 @@
 {
-    "0x1": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_with_type",
+    "1": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_SUBPATH",
+        "category": "path",
         "modifiers": null,
-        "name": "path"
+        "name": "path",
+        "prerequisite": 0
     },
-    "0x10": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "2": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_SUBPATH",
+        "category": "path",
+        "modifiers": null,
+        "name": "mount-relative-path",
+        "prerequisite": 0
+    },
+    "3": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "xattr",
+        "modifiers": null,
+        "name": "xattr",
+        "prerequisite": 0
+    },
+    "4": {
+        "argument_type": "SB_VALUE_TYPE_BITFIELD",
+        "category": "file-mode",
+        "modifiers": null,
+        "name": "file-mode",
+        "prerequisite": 0
+    },
+    "5": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "posix-ipc",
+        "modifiers": null,
+        "name": "ipc-posix-name",
+        "prerequisite": 0
+    },
+    "6": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "mach",
+        "modifiers": null,
+        "name": "global-name",
+        "prerequisite": 0
+    },
+    "7": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "mach",
+        "modifiers": null,
+        "name": "local-name",
+        "prerequisite": 0
+    },
+    "8": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
+        "category": "network",
+        "modifiers": {
+            "1": "ip4",
+            "2": "ip6",
+            "3": "ip",
+            "5": "tcp4",
+            "6": "tcp6",
+            "7": "tcp",
+            "9": "udp4",
+            "10": "udp6",
+            "11": "udp"
+        },
+        "name": "local",
+        "prerequisite": 0
+    },
+    "9": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
+        "category": "network",
+        "modifiers": {
+            "1": "ip4",
+            "2": "ip6",
+            "3": "ip",
+            "5": "tcp4",
+            "6": "tcp6",
+            "7": "tcp",
+            "9": "udp4",
+            "10": "udp6",
+            "11": "udp"
+        },
+        "name": "remote",
+        "prerequisite": 0
+    },
+    "10": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "network",
+        "modifiers": null,
+        "name": "control-name",
+        "prerequisite": 0
+    },
+    "11": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "socket",
+        "modifiers": {
+            "0": "AF_UNSPEC",
+            "1": "AF_LOCAL",
+            "2": "AF_INET",
+            "3": "AF_IMPLINK",
+            "4": "AF_PUP",
+            "5": "AF_CHAOS",
+            "6": "AF_NS",
+            "7": "AF_OSI",
+            "8": "AF_ECMA",
+            "9": "AF_DATAKIT",
+            "10": "AF_CCITT",
+            "11": "AF_SNA",
+            "12": "AF_DECnet",
+            "13": "AF_DLI",
+            "14": "AF_LAT",
+            "15": "AF_HYLINK",
+            "16": "AF_APPLETALK",
+            "17": "AF_ROUTE",
+            "18": "AF_LINK",
+            "19": "pseudo_AF_XTP",
+            "20": "AF_COIP",
+            "21": "AF_CNT",
+            "22": "pseudo_AF_RTIP",
+            "23": "AF_IPX",
+            "24": "AF_SIP",
+            "25": "pseudo_AF_PIP",
+            "27": "AF_NDRV",
+            "28": "AF_E164",
+            "29": "pseudo_AF_KEY",
+            "30": "AF_INET6",
+            "31": "AF_NATM",
+            "32": "AF_SYSTEM",
+            "33": "AF_NETBIOS",
+            "34": "AF_PPP",
+            "35": "pseudo_AF_HDRCMPLT",
+            "36": "AF_RESERVED_36",
+            "37": "AF_IEEE80211",
+            "38": "AF_UTUN",
+            "40": "AF_VSOCK",
+            "41": "AF_MAX"
+        },
+        "name": "socket-domain",
+        "prerequisite": 0
+    },
+    "12": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "socket",
+        "modifiers": {
+            "1": "SOCK_STREAM",
+            "2": "SOCK_DGRAM",
+            "3": "SOCK_RAW",
+            "4": "SOCK_RDM",
+            "5": "SOCK_SEQPACKET"
+        },
+        "name": "socket-type",
+        "prerequisite": 0
+    },
+    "13": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "socket",
+        "modifiers": null,
+        "name": "socket-protocol",
+        "prerequisite": 0
+    },
+    "14": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "target",
+        "modifiers": {
+            "1": "self",
+            "2": "pgrp",
+            "3": "others",
+            "4": "children",
+            "5": "same-sandbox",
+            "6": "initproc"
+        },
+        "name": "target",
+        "prerequisite": 0
+    },
+    "15": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "fsctl",
+        "modifiers": {
+            "16641": "FSIOC_SYNC_VOLUME",
+            "16642": "FSIOC_SET_PACKAGE_EXTS",
+            "16643": "FSIOC_UNSUPPORTED",
+            "16650": "FSIOC_SET_FSTYPENAME_OVERRIDE",
+            "16655": "FSIOC_ROUTEFS_SETROUTEID",
+            "16656": "FSIOC_FIOSEEKHOLE",
+            "16657": "FSIOC_FIOSEEKDATA",
+            "16660": "FSIOC_CAS_BSDFLAGS",
+            "16661": "FSIOC_FD_ONLY_OPEN_ONCE",
+            "16665": "FSIOC_EXCLAVE_FS_REGISTER",
+            "16666": "FSIOC_EXCLAVE_FS_UNREGISTER",
+            "16667": "FSIOC_EXCLAVE_FS_GET_BASE_DIRS",
+            "18945": "APFSIOC_REVERT_TO_SNAPSHOT",
+            "18946": "APFSIOC_MAINTAIN_DIR_STATS",
+            "18947": "APFSIOC_GET_DIR_STATS",
+            "18948": "APFSIOC_SET_AUTO_MOUNT_UUID",
+            "18949": "APFSIOC_GET_AUTO_MOUNT_UUID",
+            "18950": "APFSIOC_SET_CONV_CTX",
+            "18951": "APFSIOC_GET_CRYPTO_IDS",
+            "18952": "APFSIOC_GET_CRYPTO_KEY",
+            "18953": "APFSIOC_IS_SPARSE",
+            "18954": "APFSIOC_NEXT_LINK",
+            "18955": "APFSIOC_GET_BOOTINFO",
+            "18956": "APFSIOC_SET_BOOTINFO",
+            "18957": "APFSIOC_GET_BULKACCESS",
+            "18958": "APFSIOC_GET_CLONE_INFO",
+            "18959": "APFSIOC_IS_BLOCK_SHARED",
+            "18960": "APFSIOC_DIFF_SNAPSHOTS",
+            "18961": "APFSIOC_SET_NEAR_LOW_DISK",
+            "18962": "APFSIOC_GET_NEAR_LOW_DISK",
+            "18963": "APFSIOC_SNAP_RANGE_PRIV_SIZE",
+            "18964": "APFSIOC_SNAP_MAKE_DATALESS",
+            "18965": "APFS_FSCTL_NX_FEATURES",
+            "18966": "APFS_FSCTL_APFS_FEATURES",
+            "18967": "APFS_FSCTL_SET_NX_DEFRAG",
+            "18968": "APFS_FSCTL_SET_APFS_DEFRAG",
+            "18969": "APFS_FSCTL_GET_DEFRAG_LIST",
+            "18970": "APFS_FSCTL_DEBUG_CHECK_DF",
+            "18973": "APFSIOC_PIN_DATA",
+            "18974": "APFSIOC_DEBUG_STATS",
+            "18976": "APFSIOC_GET_DIR_STATS_EXT",
+            "18977": "APFSIOC_FUSION_DEBUG",
+            "18978": "APFS_FSCTL_UNMOUNT_CRYPTO_HINT",
+            "18979": "APFSIOC_FUSION_MAINT_CTL",
+            "18980": "APFSIOC_WAIT_FOR_SNAPSHOT_DELETION",
+            "18981": "APFSIOC_GET_INTERNAL_FLAGS",
+            "18982": "APFSIOC_OMAP_TRACK_ENABLE",
+            "18983": "APFSIOC_OMAP_TRACK_REPORT",
+            "18984": "APFSIOC_OMAP_LOOKUP",
+            "18985": "APFSIOC_SET_CRYPTO_MNT_DATA_IV",
+            "18986": "APFSIOC_GET_KEYLOCKER_PRANGE",
+            "18987": "APFSIOC_GET_COW_STATS",
+            "18988": "APFSIOC_FAST_PROMOTE_DATA",
+            "18989": "APFSIOC_GET_FX_DEFRAG_REGIONS",
+            "18990": "APFSIOC_BC_OPTIMIZE_INODES",
+            "18991": "APFSIOC_CONTROL_FX_DEFRAG_THREAD",
+            "18992": "APFSIOC_GET_FX_DEFRAG_PROGRESS",
+            "18993": "APFSIOC_BC_GETINODENUM",
+            "18994": "APFSIOC_SNAP_TOKEN",
+            "18995": "APFSIOC_GET_FX_DEFRAG_STATS",
+            "18996": "APFSIOC_OMAP_TREE_LEAF_EXTENTS",
+            "18997": "APFSIOC_XDSTREAM_OBJ_ID",
+            "18998": "APFSIOC_USE_XATTR_MAX_EMBEDDED_SIZE",
+            "18999": "APFSIOC_CREATE_BYPASS_DEV",
+            "19000": "APFSIOC_DESTROY_BYPASS_DEV",
+            "19001": "APFSIOC_MAKE_OBJECT_DATALESS",
+            "19002": "APFSIOC_SET_ATIME_UPDATE",
+            "19003": "APFSIOC_GET_ATIME_UPDATE",
+            "19004": "APFSIOC_FIRMLINK_CTL",
+            "19005": "APFSIOC_KEY_ROLLING_OP",
+            "19006": "APFSIOC_KEY_ROLLING_STAT",
+            "19008": "APFSIOC_SET_FREE_SPACE_CHANGE_THRES",
+            "19009": "APFSIOC_GET_FREE_SPACE_CHANGE_THRES",
+            "19010": "APFSIOC_CREATE_SYNTHETIC_FOLDER",
+            "19011": "APFSIOC_SNAP_LOOKUP",
+            "19012": "APFSIOC_MARK_PURGEABLE",
+            "19013": "APFSIOC_PURGE_FILES",
+            "19014": "APFSIOC_GET_PURGEABLE_STATS",
+            "19015": "APFSIOC_GET_PURGEABLE_FILE_FLAGS",
+            "19016": "APFSIOC_SYNC_ROOT_GET_FLAG",
+            "19017": "APFSIOC_CLEAR_PURGEABLE",
+            "19018": "APFSIOC_GET_PARENT_SYNC_ROOT",
+            "19019": "APFSIOC_CREATE_SYNTHETIC_SYMLINK",
+            "19020": "APFSIOC_SHARE_RANGE",
+            "19021": "APFSIOC_HAS_OBJIDS_AFTER_BINCOMPAT",
+            "19022": "APFSIOC_CREATE_HIDDEN_SYNTHETIC_SYMLINK",
+            "19023": "APFSIOC_MARK_PURGEABLE_EXT",
+            "19024": "APFSIOC_GET_DEV_BY_ROLE",
+            "19025": "APFSIOC_SSV_DEBUG",
+            "19026": "APFSIOC_IS_VOL_LOCKED",
+            "19027": "APFSIOC_MAKE_FILE_COW_EXEMPT",
+            "19028": "APFSIOC_DROP_EXTENTS_IN_SNAP",
+            "19029": "APFSIOC_GET_FILE_HASH_RECORD",
+            "19030": "APFSIOC_CHECKSEAL",
+            "19031": "APFSIOC_VOL_BOOTABLE",
+            "19032": "APFSIOC_EVAL_ROOTHASH",
+            "19034": "APFSIOC_VOLUME_CLASSKB_OP",
+            "19035": "APFSIOC_PFKU_ROLLING_OP",
+            "19036": "APFSIOC_CHECK_MAT_OP",
+            "19037": "APFSIOC_DOC_ID_TO_FILE_ID",
+            "19038": "APFSIOC_REVOKE_CHILDREN",
+            "19039": "APFSIOC_PURGE_SINGLE_FILE",
+            "19040": "APFSIOC_GET_ABS_VOL_UUID",
+            "19041": "APFSIOC_GET_IO_LOG",
+            "19042": "APFSIOC_SYNC_AND_FREEZE",
+            "19043": "APFSIOC_GRAFT_AN_FS",
+            "19044": "APFSIOC_UNGRAFT_AN_FS",
+            "19045": "APFSIOC_UNGRAFT_ALL",
+            "19046": "FSIOC_GET_GRAFT_INFO",
+            "19047": "APFSIOC_CANCEL_PURGE",
+            "19048": "APFSIOC_GET_PREALLOCATE_MIN_SPACE",
+            "19049": "APFSIOC_RELEASE_PREALLOCATED_SPACE",
+            "19050": "APFSIOC_GET_DEV_INFO",
+            "19051": "APFSIOC_GET_SYSTEM_DEV",
+            "19052": "APFSIOC_GET_VOLUME_ROLE",
+            "19053": "APFSIOC_PURGEABLE_GET_FILE_INFO",
+            "19054": "APFSIOC_PURGEABLE_START_PURGE",
+            "19055": "APFSIOC_PURGEABLE_LABEL_PURGEABLE",
+            "19056": "APFSIOC_PURGEABLE_GET_DETAILED_STATS",
+            "19057": "APFSIOC_DIR_STATS_OP",
+            "19058": "APFSIOC_GET_ATTRIBUTION_INFO",
+            "19059": "APFSIOC_GET_SYNC_ROOT",
+            "19060": "APFSIOC_GET_CLONE_INODES",
+            "19061": "APFSIOC_VOL_ATTRIBUTION_TAG",
+            "19062": "APFSIOC_LIST_ATTRIBUTION_TAGS",
+            "19063": "APFSIOC_CRYPTO_DEBUG_OP",
+            "19064": "APFSIOC_OMM_CTL",
+            "19065": "APFSIOC_GET_FREE_QUEUE_INFO",
+            "19066": "APFSIOC_OBJECT_UNSET_DATALESS",
+            "19067": "APFSIOC_GET_SPEC_TELEM",
+            "19068": "APFSIOC_SET_SPEC_TELEM",
+            "19069": "APFSIOC_GET_SHARED_EXTENTS",
+            "19070": "APFSIOC_SPEC_TELEM_OP",
+            "19071": "APFSIOC_GET_CRYPTO_FILE_INFO",
+            "19072": "APFSIOC_FILE_PADDING",
+            "19074": "APFSIOC_PURGEABLE_GET_EXTENTS",
+            "19075": "APFSIOC_PURGEABLE_GET_BULK_INFO",
+            "19076": "APFSIOC_PURGEABLE_NOTIFICATION_THRESHOLD_OP",
+            "19077": "APFSIOC_IS_GRAFT_SUPPORTED",
+            "26625": "HFSIOC_RESIZE_PROGRESS",
+            "26626": "HFSIOC_RESIZE_VOLUME",
+            "26627": "HFSIOC_CHANGE_NEXT_ALLOCATION",
+            "26628": "HFSIOC_GET_VOL_CREATE_TIME",
+            "26631": "HFSIOC_SETBACKINGSTOREINFO",
+            "26632": "HFSIOC_CLRBACKINGSTOREINFO",
+            "26634": "HFSIOC_UNSUPPORTED",
+            "26635": "HFSIOC_PREV_LINK",
+            "26636": "HFSIOC_NEXT_LINK",
+            "26637": "HFSIOC_GETPATH",
+            "26638": "HFSIOC_SET_XATTREXTENTS_STATE",
+            "26639": "HFSIOC_EXT_BULKACCESS",
+            "26640": "HFSIOC_MARK_BOOT_CORRUPT",
+            "26641": "HFSIOC_GET_JOURNAL_INFO",
+            "26644": "HFSIOC_SET_VERY_LOW_DISK",
+            "26645": "HFSIOC_SET_LOW_DISK",
+            "26646": "HFSIOC_SET_DESIRED_DISK",
+            "26647": "HFSIOC_SET_ALWAYS_ZEROFILL",
+            "26648": "HFSIOC_VOLUME_STATUS",
+            "26649": "HFSIOC_DISABLE_METAZONE",
+            "26650": "HFSIOC_CHANGE_NEXTCNID",
+            "26651": "HFSIOC_GET_VERY_LOW_DISK",
+            "26652": "HFSIOC_GET_LOW_DISK",
+            "26653": "HFSIOC_GET_DESIRED_DISK",
+            "26656": "HFSIOC_TRANSFER_DOCUMENT_ID",
+            "26657": "HFSIOC_OP_CPTRIM",
+            "26658": "HFSIOC_OP_CPREWRAPPED",
+            "26659": "HFSIOC_OP_CRYPTOGEN",
+            "26660": "HFSIOC_LISTXATTRID_CP",
+            "26661": "HFSIOC_OP_CPFORCEREWRAP",
+            "26662": "HFSIOC_FSINFO_METADATA_BLOCKS",
+            "26663": "HFSIOC_CS_FREESPACE_TRIM",
+            "26664": "HFSIOC_KEY_ROLL",
+            "26665": "HFSIOC_GET_KEY_AUTO_ROLL",
+            "26666": "HFSIOC_SET_KEY_AUTO_ROLL",
+            "26668": "HFSIOC_CP_LIST_IDS",
+            "26669": "HFSIOC_GET_FSINFO",
+            "26670": "HFSIOC_REPIN_HOTFILE_STATE",
+            "26671": "HFSIOC_SET_HOTFILE_STATE",
+            "26672": "HFSIOC_SET_MAX_DEFRAG_SIZE",
+            "26673": "HFSIOC_FORCE_ENABLE_DEFRAG",
+            "26674": "FSIOC_EVAL_ROOTAUTH",
+            "26675": "FSIOC_KERNEL_ROOTAUTH",
+            "26676": "FSIOC_TEST_FSE_ACCESS_GRANTED",
+            "31233": "DTDBOpenFSCTL",
+            "31234": "DTDBAddIconFSCTL",
+            "31235": "DTDBGetIconFSCTL",
+            "31236": "DTDBGetIconInfoFSCTL",
+            "31237": "DTDBAddAPPLFSCTL",
+            "31238": "DTDBGetAPPLFSCTL",
+            "31239": "DTDBRemoveAPPLFSCTL",
+            "31240": "DTDBSetCommentFSCTL",
+            "31241": "DTDBGetCommentFSCTL",
+            "31242": "DTDBRemoveCommentFSCTL",
+            "31243": "afpfsGetParmsFSCTL",
+            "31244": "afpfsGetMountInfoFSCTL",
+            "31245": "afpfsCreateFileDescFSCTL",
+            "31246": "afpfsMapIDNameFSCTL",
+            "31247": "afpfsGetAccessRightsFSCTL",
+            "31248": "afpfsSetAccessRightsFSCTL",
+            "31249": "smbfsByteRangeLockFSCTL",
+            "31250": "afpfsGetAttenFSCTL",
+            "31251": "smbfsUniqueShareIDFSCTL",
+            "31252": "smbfsGetSessionSockaddrFSCTL",
+            "31253": "afpfsTraceLogFSCTL",
+            "31254": "afpfsGetSavedAttenFSCTL",
+            "31255": "smbfsByteRangeLock2FSCTL",
+            "31256": "afpfsRefeshCredentialFSCTL",
+            "31257": "smbfsGetStatsFSCTL",
+            "31258": "afpfsSpotLightRPC",
+            "31259": "afpfsSpotLightSideBandRPC",
+            "31260": "smbfsDebugTestFSCTL",
+            "31261": "smbfsTimeMachineFSCTL",
+            "31262": "afpfsSubMountFSCTL",
+            "31263": "afpfsSrvrInfoFSCTL",
+            "31264": "afpfsAFPRequestFSCTL"
+        },
+        "name": "fsctl-command",
+        "prerequisite": 0
+    },
+    "16": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "ioctl",
         "modifiers": {
             "16998": "BIOC*BLEN",
             "16999": "BIOCSETF",
@@ -266,7 +657,9 @@
             "26970": "SIOCGSCOPE6DEF",
             "26971": "SIOCGIFCAP",
             "26972": "SIOCSIFMANAGEMENT",
+            "26973": "SIOCGLINKHEURISTICS",
             "26974": "SIOCSATTACHPROTONULL",
+            "26975": "SIOCSPOINTOPOINTMDNS",
             "26980": "SIOCSIFPREFIX_IN6",
             "26981": "SIOCGIFPREFIX_IN6",
             "26982": "SIOCDIFPREFIX_IN6",
@@ -371,6 +764,7 @@
             "27103": "SIOCSIFISVPN",
             "27104": "SIOCGIFDELAYWAKEPKTEVENT",
             "27105": "SIOCGIFDISABLEINPUT",
+            "27106": "SIOCGIFCONGESTEDLINK",
             "29440": "SIOCSHIWAT",
             "29441": "SIOCGHIWAT",
             "29442": "SIOCSLOWAT",
@@ -383,7 +777,6 @@
             "29542": "FSEVENTS_WANT_EXTENDED_INFO",
             "29543": "FSEVENTS_GET_CURRENT_ID",
             "29544": "FSEVENTS_UNMOUNT_PENDING_ACK",
-            "29568": "SIOCSETOT",
             "29590": "SIOCGASSOCIDS",
             "29591": "SIOCGCONNIDS",
             "29592": "SIOCGCONNINFO",
@@ -474,55 +867,75 @@
             "31263": "afpfsSrvrInfoFSCTL",
             "31264": "afpfsAFPRequestFSCTL"
         },
-        "name": "ioctl-command"
+        "name": "ioctl-command",
+        "prerequisite": 0
     },
-    "0x11": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "17": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "iokit-registry-entry-class",
         "modifiers": null,
-        "name": "iokit-registry-entry-class"
+        "name": "iokit-registry-entry-class",
+        "prerequisite": 0
     },
-    "0x12": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "18": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "iokit-property",
         "modifiers": null,
-        "name": "iokit-property"
+        "name": "iokit-property",
+        "prerequisite": 0
     },
-    "0x13": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "19": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "iokit-registry-entry-class",
         "modifiers": null,
-        "name": "iokit-connection"
+        "name": "iokit-connection",
+        "prerequisite": 0
     },
-    "0x14": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "20": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "device",
         "modifiers": null,
-        "name": "device-major"
+        "name": "device-major",
+        "prerequisite": 0
     },
-    "0x15": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "21": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "device",
         "modifiers": null,
-        "name": "device-minor"
+        "name": "device-minor",
+        "prerequisite": 0
     },
-    "0x16": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "22": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "device",
         "modifiers": null,
-        "name": "device-conforms-to"
+        "name": "device-conforms-to",
+        "prerequisite": 0
     },
-    "0x17": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "23": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "extension",
         "modifiers": null,
-        "name": "extension"
+        "name": "extension",
+        "prerequisite": 0
     },
-    "0x18": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "24": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "extension-class",
         "modifiers": null,
-        "name": "extension-class"
+        "name": "extension-class",
+        "prerequisite": 0
     },
-    "0x19": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "25": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_PREFIX",
+        "category": "ae-destination",
         "modifiers": null,
-        "name": "appleevent-destination"
+        "name": "appleevent-destination",
+        "prerequisite": 0
     },
-    "0x1a": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "26": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "system",
         "modifiers": {
             "0": "apple-internal",
             "1": "sandbox-debug-mode",
@@ -538,20 +951,26 @@
             "11": "private-cloud-os",
             "12": "security-research-device"
         },
-        "name": "system-attribute"
+        "name": "system-attribute",
+        "prerequisite": 0
     },
-    "0x1b": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "27": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "auth-right-name",
         "modifiers": null,
-        "name": "right-name"
+        "name": "right-name",
+        "prerequisite": 0
     },
-    "0x1c": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "28": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_PREFIX",
+        "category": "preference-domain",
         "modifiers": null,
-        "name": "preference-domain"
+        "name": "preference-domain",
+        "prerequisite": 0
     },
-    "0x1d": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "29": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "vnode-type",
         "modifiers": {
             "1": "REGULAR-FILE",
             "2": "DIRECTORY",
@@ -562,50 +981,61 @@
             "7": "FIFO",
             "65535": "TTY"
         },
-        "name": "vnode-type"
+        "name": "vnode-type",
+        "prerequisite": 0
     },
-    "0x1e": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "30": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "process",
         "modifiers": null,
-        "name": "%entitlement-load"
+        "name": "%entitlement-load",
+        "prerequisite": 0
     },
-    "0x1f": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "31": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "process",
         "modifiers": null,
-        "name": "%entitlement-boolean"
+        "name": "%entitlement-boolean",
+        "prerequisite": 30
     },
-    "0x2": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_with_type",
+    "32": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "process",
         "modifiers": null,
-        "name": "mount-relative-path"
+        "name": "%entitlement-string",
+        "prerequisite": 30
     },
-    "0x20": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "33": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "kext-bundle-id",
         "modifiers": null,
-        "name": "%entitlement-string"
+        "name": "kext-bundle-id",
+        "prerequisite": 0
     },
-    "0x21": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "34": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "info",
         "modifiers": null,
-        "name": "kext-bundle-id"
+        "name": "info-type",
+        "prerequisite": 0
     },
-    "0x22": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "35": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "notification",
         "modifiers": null,
-        "name": "info-type"
+        "name": "notification-name",
+        "prerequisite": 0
     },
-    "0x23": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "36": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "notification",
         "modifiers": null,
-        "name": "notification-name"
+        "name": "notification-payload",
+        "prerequisite": 0
     },
-    "0x24": {
-        "arg_process_fn": "get_filter_arg_boolean",
-        "modifiers": null,
-        "name": "notification-payload"
-    },
-    "0x25": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "37": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "semaphore",
         "modifiers": {
             "1": "self",
             "2": "pgrp",
@@ -615,30 +1045,40 @@
             "6": "initproc",
             "7": "platform-binary"
         },
-        "name": "semaphore-owner"
+        "name": "semaphore-owner",
+        "prerequisite": 0
     },
-    "0x26": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "38": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "sysctl",
         "modifiers": null,
-        "name": "sysctl-name"
+        "name": "sysctl-name",
+        "prerequisite": 0
     },
-    "0x27": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_with_type",
+    "39": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_SUBPATH",
+        "category": "process",
         "modifiers": null,
-        "name": "process-path"
+        "name": "process-path",
+        "prerequisite": 0
     },
-    "0x28": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "40": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "nvram",
         "modifiers": null,
-        "name": "rootless-boot-device-filter"
+        "name": "rootless-boot-device-filter",
+        "prerequisite": 0
     },
-    "0x29": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "41": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "path",
         "modifiers": null,
-        "name": "rootless-disk-filter"
+        "name": "rootless-disk-filter",
+        "prerequisite": 0
     },
-    "0x2a": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "42": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "priv",
         "modifiers": {
             "1000": "PRIV_ADJTIME",
             "1001": "PRIV_PROC_UUID_POLICY",
@@ -694,10 +1134,12 @@
             "14004": "PRIV_VFS_DATALESS_RESOLVER",
             "14006": "PRIV_VFS_SETSIZE"
         },
-        "name": "privilege-id"
+        "name": "privilege-id",
+        "prerequisite": 0
     },
-    "0x2b": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "43": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "process",
         "modifiers": {
             "0": "is-plugin",
             "1": "is-installer",
@@ -716,20 +1158,26 @@
             "14": "is-system-session-persona",
             "15": "is-autoboxed"
         },
-        "name": "process-attribute"
+        "name": "process-attribute",
+        "prerequisite": 0
     },
-    "0x2c": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "44": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "process",
         "modifiers": null,
-        "name": "uid"
+        "name": "uid",
+        "prerequisite": 0
     },
-    "0x2d": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "45": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_PREFIX",
+        "category": "nvram",
         "modifiers": null,
-        "name": "nvram-variable"
+        "name": "nvram-variable",
+        "prerequisite": 0
     },
-    "0x2e": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "46": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "system",
         "modifiers": {
             "1": "CSR_ALLOW_UNTRUSTED_KEXTS",
             "2": "CSR_ALLOW_UNRESTRICTED_FS",
@@ -745,10 +1193,12 @@
             "2048": "CSR_ALLOW_UNAUTHENTICATED_ROOT",
             "4096": "CSR_ALLOW_RESEARCH_GUESTS"
         },
-        "name": "csr"
+        "name": "csr",
+        "prerequisite": 0
     },
-    "0x2f": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "47": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "host-special-port",
         "modifiers": {
             "8": "HOST_DYNAMIC_PAGER_PORT",
             "9": "HOST_AUDIT_CONTROL_PORT",
@@ -779,35 +1229,40 @@
             "34": "HOST_MANAGEDAPPDISTD_PORT",
             "35": "HOST_DOUBLEAGENTD_PORT"
         },
-        "name": "host-special-port"
+        "name": "host-special-port",
+        "prerequisite": 0
     },
-    "0x3": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "48": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "fs",
         "modifiers": null,
-        "name": "xattr"
+        "name": "filesystem-name",
+        "prerequisite": 0
     },
-    "0x30": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "49": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "boot-arg",
         "modifiers": null,
-        "name": "filesystem-name"
+        "name": "boot-arg",
+        "prerequisite": 0
     },
-    "0x31": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "50": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "mach",
         "modifiers": null,
-        "name": "boot-arg"
+        "name": "xpc-service-name",
+        "prerequisite": 0
     },
-    "0x32": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "51": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "process",
         "modifiers": null,
-        "name": "xpc-service-name"
+        "name": "signing-identifier",
+        "prerequisite": 0
     },
-    "0x33": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
-        "modifiers": null,
-        "name": "signing-identifier"
-    },
-    "0x34": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "52": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "signal",
         "modifiers": {
             "1": "SIGHUP",
             "2": "SIGINT",
@@ -841,30 +1296,40 @@
             "30": "SIGUSR1",
             "31": "SIGUSR2"
         },
-        "name": "signal-number"
+        "name": "signal-number",
+        "prerequisite": 0
     },
-    "0x35": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "53": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "target",
         "modifiers": null,
-        "name": "target-signing-identifier"
+        "name": "target-signing-identifier",
+        "prerequisite": 0
     },
-    "0x36": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "54": {
+        "argument_type": "SB_VALUE_TYPE_BITFIELD",
+        "category": "reboot-flags",
         "modifiers": null,
-        "name": "reboot-flags"
+        "name": "reboot-flags",
+        "prerequisite": 0
     },
-    "0x37": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "55": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "path",
         "modifiers": null,
-        "name": "datavault-disk-filter"
+        "name": "datavault-disk-filter",
+        "prerequisite": 0
     },
-    "0x38": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "56": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "extension",
         "modifiers": null,
-        "name": "extension-path-ancestor"
+        "name": "extension-path-ancestor",
+        "prerequisite": 0
     },
-    "0x39": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "57": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "path",
         "modifiers": {
             "0": "sip-protected",
             "1": "datavault",
@@ -898,20 +1363,26 @@
             "230": "app-container",
             "231": "app-container-ancestor"
         },
-        "name": "file-attribute"
+        "name": "file-attribute",
+        "prerequisite": 0
     },
-    "0x3a": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "58": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "path",
         "modifiers": null,
-        "name": "storage-class"
+        "name": "storage-class",
+        "prerequisite": 0
     },
-    "0x3b": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "59": {
+        "argument_type": "SB_VALUE_TYPE_BOOL",
+        "category": "extension",
         "modifiers": null,
-        "name": "storage-class-extension"
+        "name": "storage-class-extension",
+        "prerequisite": 0
     },
-    "0x3c": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "60": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-registry-entry-class",
         "modifiers": {
             "1": "kUSBAudioInterfaceClass",
             "2": "kUSBCommunicationControlInterfaceClass",
@@ -930,10 +1401,12 @@
             "254": "kUSBApplicationSpecificInterfaceClass",
             "255": "kUSBVendorSpecificInterfaceClass"
         },
-        "name": "iokit-usb-interface-class"
+        "name": "iokit-usb-interface-class",
+        "prerequisite": 0
     },
-    "0x3d": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "61": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-registry-entry-class",
         "modifiers": {
             "0": "kUSBHubSubClass",
             "1": "kUSBVideoControlSubClass",
@@ -944,25 +1417,26 @@
             "6": "kUSBCommEthernetNetworkingSubClass",
             "7": "kUSBATMNetworkingSubClass"
         },
-        "name": "iokit-usb-interface-subclass"
+        "name": "iokit-usb-interface-subclass",
+        "prerequisite": 0
     },
-    "0x3e": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "62": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "process",
         "modifiers": null,
-        "name": "ancestor-signing-identifier"
+        "name": "ancestor-signing-identifier",
+        "prerequisite": 0
     },
-    "0x3f": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "63": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "process",
         "modifiers": null,
-        "name": "require-ancestor-with-entitlement"
+        "name": "require-ancestor-with-entitlement",
+        "prerequisite": 0
     },
-    "0x4": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": null,
-        "name": "file-mode"
-    },
-    "0x40": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "64": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "process",
         "modifiers": {
             "0": "PERSONA_INVALID",
             "1": "PERSONA_GUEST",
@@ -972,10 +1446,12 @@
             "5": "PERSONA_DEFAULT",
             "8": "PERSONA_ENTERPRISE"
         },
-        "name": "persona-type"
+        "name": "persona-type",
+        "prerequisite": 0
     },
-    "0x41": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "65": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "syscall",
         "modifiers": {
             "0": "SYS_syscall",
             "1": "SYS_exit",
@@ -1033,6 +1509,8 @@
             "63": "SYS_invalid",
             "65": "SYS_msync",
             "66": "SYS_vfork",
+            "67": "SYS_oslog_coproc_reg",
+            "68": "SYS_oslog_coproc",
             "73": "SYS_munmap",
             "74": "SYS_mprotect",
             "75": "SYS_madvise",
@@ -1433,57 +1911,77 @@
             "556": "SYS_coalition_policy_set",
             "557": "SYS_coalition_policy_get"
         },
-        "name": "syscall-number"
+        "name": "syscall-number",
+        "prerequisite": 0
     },
-    "0x42": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "66": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "target",
         "modifiers": null,
-        "name": "require-target-with-entitlement"
+        "name": "require-target-with-entitlement",
+        "prerequisite": 0
     },
-    "0x43": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "67": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-registry-entry-class",
         "modifiers": {
             "0": "ioservice-requires-approval"
         },
-        "name": "iokit-registry-entry-attribute"
+        "name": "iokit-registry-entry-attribute",
+        "prerequisite": 0
     },
-    "0x44": {
-        "arg_process_fn": "get_filter_arg_boolean",
+    "68": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "extension",
         "modifiers": null,
-        "name": "user-intent-extension"
+        "name": "user-intent-extension",
+        "prerequisite": 0
     },
-    "0x45": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "69": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "snapshot",
         "modifiers": null,
-        "name": "snapshot-name"
+        "name": "snapshot-name",
+        "prerequisite": 0
     },
-    "0x46": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "70": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "mach-port-role",
         "modifiers": null,
-        "name": "mach-derived-port-role"
+        "name": "mach-derived-port-role",
+        "prerequisite": 0
     },
-    "0x47": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "71": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "mach-message-filter",
         "modifiers": null,
-        "name": "message-number"
+        "name": "message-number",
+        "prerequisite": 0
     },
-    "0x48": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "72": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "mach-message-filter",
         "modifiers": null,
-        "name": "message-name"
+        "name": "message-name",
+        "prerequisite": 0
     },
-    "0x49": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "73": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-method-filter",
         "modifiers": null,
-        "name": "iokit-method-number"
+        "name": "iokit-method-number",
+        "prerequisite": 0
     },
-    "0x4a": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "74": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-trap-filter",
         "modifiers": null,
-        "name": "iokit-trap-number"
+        "name": "iokit-trap-number",
+        "prerequisite": 0
     },
-    "0x4b": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "75": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "machtrap",
         "modifiers": {
             "10": "MSC__kernelrpc_mach_vm_allocate_trap",
             "11": "MSC__kernelrpc_mach_vm_purgable_control_trap",
@@ -1547,10 +2045,12 @@
             "96": "MSC_debug_control_port_for_pid",
             "100": "MSC_iokit_user_client_trap"
         },
-        "name": "machtrap-number"
+        "name": "machtrap-number",
+        "prerequisite": 0
     },
-    "0x4c": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "76": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "migroutine",
         "modifiers": {
             "0": "host_info",
             "1": "host_kernel_version",
@@ -1819,93 +2319,102 @@
             "264": "thread_set_mach_voucher",
             "265": "thread_swap_mach_voucher",
             "266": "thread_convert_thread_state",
-            "267": "thread_get_exception_ports_info",
-            "268": "thread_adopt_exception_handler",
-            "269": "vm_region",
-            "270": "vm_allocate_external",
-            "271": "vm_deallocate",
-            "272": "vm_protect",
-            "273": "vm_inherit",
-            "274": "vm_read",
-            "275": "vm_read_list",
-            "276": "vm_write",
-            "277": "vm_copy",
-            "278": "vm_read_overwrite",
-            "279": "vm_msync",
-            "280": "vm_behavior_set",
-            "281": "vm_map_external",
-            "282": "vm_machine_attribute",
-            "283": "vm_remap_external",
-            "284": "task_wire",
-            "285": "mach_make_memory_entry",
-            "286": "vm_map_page_query",
-            "287": "mach_vm_region_info",
-            "288": "vm_mapped_pages_info",
-            "289": "vm_region_recurse",
-            "290": "vm_region_recurse_64",
-            "291": "mach_vm_region_info_64",
-            "292": "vm_region_64",
-            "293": "mach_make_memory_entry_64",
-            "294": "vm_map_64_external",
-            "295": "vm_purgable_control",
-            "296": "vm_map_exec_lockdown",
-            "297": "vm_remap_new_external",
-            "298": "processor_set_statistics",
-            "299": "processor_set_tasks",
-            "300": "processor_set_threads",
-            "301": "processor_set_stack_usage",
-            "302": "processor_set_info",
-            "303": "processor_set_tasks_with_flavor",
-            "304": "mach_vm_allocate_external",
-            "305": "mach_vm_deallocate",
-            "306": "mach_vm_protect",
-            "307": "mach_vm_inherit",
-            "308": "mach_vm_read",
-            "309": "mach_vm_read_list",
-            "310": "mach_vm_write",
-            "311": "mach_vm_copy",
-            "312": "mach_vm_read_overwrite",
-            "313": "mach_vm_msync",
-            "314": "mach_vm_behavior_set",
-            "315": "mach_vm_map_external",
-            "316": "mach_vm_machine_attribute",
-            "317": "mach_vm_remap_external",
-            "318": "mach_vm_page_query",
-            "319": "mach_vm_region_recurse",
-            "320": "mach_vm_region",
-            "321": "_mach_make_memory_entry",
-            "322": "mach_vm_purgable_control",
-            "323": "mach_vm_page_info",
-            "324": "mach_vm_page_range_query",
-            "325": "mach_vm_remap_new_external",
-            "326": "mach_vm_range_create",
-            "327": "mach_memory_entry_purgable_control",
-            "328": "mach_memory_entry_access_tracking",
-            "329": "mach_memory_entry_ownership",
-            "330": "mach_voucher_extract_attr_content",
-            "331": "mach_voucher_extract_attr_recipe",
-            "332": "mach_voucher_extract_all_attr_recipes",
-            "333": "mach_voucher_attr_command",
-            "334": "mach_voucher_debug_info",
-            "335": "UNDAlertCompletedWithResult_rpc",
-            "336": "UNDNotificationCreated_rpc",
-            "337": "task_restartable_ranges_register",
-            "338": "task_restartable_ranges_synchronize",
-            "339": "arcade_register_new_upcall",
-            "340": "mach_eventlink_create",
-            "341": "mach_eventlink_destroy",
-            "342": "mach_eventlink_associate",
-            "343": "mach_eventlink_disassociate"
+            "267": "thread_raise_exception",
+            "268": "thread_get_exception_ports_info",
+            "269": "thread_adopt_exception_handler",
+            "270": "vm_region",
+            "271": "vm_allocate_external",
+            "272": "vm_deallocate",
+            "273": "vm_protect",
+            "274": "vm_inherit",
+            "275": "vm_read",
+            "276": "vm_read_list",
+            "277": "vm_write",
+            "278": "vm_copy",
+            "279": "vm_read_overwrite",
+            "280": "vm_msync",
+            "281": "vm_behavior_set",
+            "282": "vm_map_external",
+            "283": "vm_machine_attribute",
+            "284": "vm_remap_external",
+            "285": "task_wire",
+            "286": "mach_make_memory_entry",
+            "287": "vm_map_page_query",
+            "288": "mach_vm_region_info",
+            "289": "vm_mapped_pages_info",
+            "290": "vm_region_recurse",
+            "291": "vm_region_recurse_64",
+            "292": "mach_vm_region_info_64",
+            "293": "vm_region_64",
+            "294": "mach_make_memory_entry_64",
+            "295": "vm_map_64_external",
+            "296": "vm_purgable_control",
+            "297": "vm_map_exec_lockdown",
+            "298": "vm_remap_new_external",
+            "299": "processor_set_statistics",
+            "300": "processor_set_tasks",
+            "301": "processor_set_threads",
+            "302": "processor_set_stack_usage",
+            "303": "processor_set_info",
+            "304": "processor_set_tasks_with_flavor",
+            "305": "mach_vm_allocate_external",
+            "306": "mach_vm_deallocate",
+            "307": "mach_vm_protect",
+            "308": "mach_vm_inherit",
+            "309": "mach_vm_read",
+            "310": "mach_vm_read_list",
+            "311": "mach_vm_write",
+            "312": "mach_vm_copy",
+            "313": "mach_vm_read_overwrite",
+            "314": "mach_vm_msync",
+            "315": "mach_vm_behavior_set",
+            "316": "mach_vm_map_external",
+            "317": "mach_vm_machine_attribute",
+            "318": "mach_vm_remap_external",
+            "319": "mach_vm_page_query",
+            "320": "mach_vm_region_recurse",
+            "321": "mach_vm_region",
+            "322": "_mach_make_memory_entry",
+            "323": "mach_vm_purgable_control",
+            "324": "mach_vm_page_info",
+            "325": "mach_vm_page_range_query",
+            "326": "mach_vm_remap_new_external",
+            "327": "mach_vm_deferred_reclamation_buffer_allocate",
+            "328": "mach_vm_deferred_reclamation_buffer_flush",
+            "329": "mach_vm_deferred_reclamation_buffer_update_reclaimable_bytes",
+            "330": "mach_vm_range_create",
+            "331": "mach_vm_deferred_reclamation_buffer_resize",
+            "332": "mach_memory_entry_purgable_control",
+            "333": "mach_memory_entry_access_tracking",
+            "334": "mach_memory_entry_ownership",
+            "335": "mach_voucher_extract_attr_content",
+            "336": "mach_voucher_extract_attr_recipe",
+            "337": "mach_voucher_extract_all_attr_recipes",
+            "338": "mach_voucher_attr_command",
+            "339": "mach_voucher_debug_info",
+            "340": "UNDAlertCompletedWithResult_rpc",
+            "341": "UNDNotificationCreated_rpc",
+            "342": "task_restartable_ranges_register",
+            "343": "task_restartable_ranges_synchronize",
+            "344": "arcade_register_new_upcall",
+            "345": "mach_eventlink_create",
+            "346": "mach_eventlink_destroy",
+            "347": "mach_eventlink_associate",
+            "348": "mach_eventlink_disassociate"
         },
-        "name": "kernel-mig-routine"
+        "name": "kernel-mig-routine",
+        "prerequisite": 0
     },
-    "0x4d": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "77": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "iokit-user-client-type",
         "modifiers": null,
-        "name": "iokit-user-client-type"
+        "name": "iokit-user-client-type",
+        "prerequisite": 0
     },
-    "0x4e": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "78": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "fcntl",
         "modifiers": {
             "0": "F_DUPFD",
             "1": "F_GETFD",
@@ -1987,10 +2496,12 @@
             "112": "F_NOCACHE_EXT",
             "113": "F_ADDSIGS_MAIN_BINARY"
         },
-        "name": "fcntl-command"
+        "name": "fcntl-command",
+        "prerequisite": 0
     },
-    "0x4f": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "79": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "socket",
         "modifiers": {
             "0": "IPPROTO_HOPOPTS",
             "1": "IPPROTO_ICMP",
@@ -2097,15 +2608,12 @@
             "255": "IPPROTO_RAW",
             "65535": "SOL_SOCKET"
         },
-        "name": "socket-option-level"
+        "name": "socket-option-level",
+        "prerequisite": 0
     },
-    "0x5": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
-        "modifiers": null,
-        "name": "ipc-posix-name"
-    },
-    "0x50": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "80": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "socket",
         "modifiers": {
             "1": "SO_DEBUG",
             "2": "SO_ACCEPTCONN",
@@ -2188,20 +2696,26 @@
             "16384": "SO_TIMESTAMP_CONTINUOUS",
             "32768": "SO_WANTOOBFLAG"
         },
-        "name": "socket-option-name"
+        "name": "socket-option-name",
+        "prerequisite": 0
     },
-    "0x51": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "81": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "macf",
         "modifiers": null,
-        "name": "mac-policy-name"
+        "name": "mac-policy-name",
+        "prerequisite": 0
     },
-    "0x52": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "82": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "macf",
         "modifiers": null,
-        "name": "mac-syscall-number"
+        "name": "mac-syscall-number",
+        "prerequisite": 0
     },
-    "0x53": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "83": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "necp-client-action",
         "modifiers": {
             "1": "NECP_CLIENT_ACTION_ADD",
             "2": "NECP_CLIENT_ACTION_REMOVE",
@@ -2234,10 +2748,12 @@
             "1024": "NECP_CLIENT_ACTION_SIGN_MAX_STRING_LENGTH",
             "4096": "NECP_CLIENT_ACTION_SIGN_MAX_TOTAL_LENGTH"
         },
-        "name": "necp-client-action"
+        "name": "necp-client-action",
+        "prerequisite": 0
     },
-    "0x54": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "84": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "memorystatus-control",
         "modifiers": {
             "1": "MEMORYSTATUS_CMD_GET_PRIORITY_LIST",
             "2": "MEMORYSTATUS_CMD_SET_PRIORITY_PROPERTIES",
@@ -2271,34 +2787,46 @@
             "32": "MEMORYSTATUS_CMD_GET_JETSAM_ZPRINT_NAMES",
             "33": "MEMORYSTATUS_CMD_GET_JETSAM_ZPRINT_INFO",
             "34": "MEMORYSTATUS_CMD_GET_JETSAM_ZPRINT_MEMINFO",
+            "35": "MEMORYSTATUS_CMD_GET_PRIORITY_LIST_V2",
+            "37": "MEMORYSTATUS_CMD_GET_KILL_COUNTS",
             "100": "MEMORYSTATUS_CMD_GRP_SET_PROPERTIES",
             "1000": "MEMORYSTATUS_CMD_TEST_JETSAM",
             "1001": "MEMORYSTATUS_CMD_TEST_JETSAM_SORT"
         },
-        "name": "memorystatus-control-command"
+        "name": "memorystatus-control-command",
+        "prerequisite": 0
     },
-    "0x55": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "85": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "sandbox",
         "modifiers": null,
-        "name": "state-flag"
+        "name": "state-flag",
+        "prerequisite": 0
     },
-    "0x56": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "86": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "process",
         "modifiers": null,
-        "name": "require-responsible-binary-with-entitlement"
+        "name": "require-responsible-binary-with-entitlement",
+        "prerequisite": 0
     },
-    "0x57": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "87": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "process",
         "modifiers": null,
-        "name": "%entitlement-is-bool-true"
+        "name": "%entitlement-is-bool-true",
+        "prerequisite": 0
     },
-    "0x58": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "88": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "process",
         "modifiers": null,
-        "name": "%entitlement-is-present"
+        "name": "%entitlement-is-present",
+        "prerequisite": 0
     },
-    "0x59": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "89": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "task-special-port",
         "modifiers": {
             "1": "TASK_KERNEL_PORT",
             "2": "TASK_HOST_PORT",
@@ -2310,20 +2838,26 @@
             "10": "TASK_DEBUG_CONTROL_PORT",
             "11": "TASK_RESOURCE_NOTIFY_PORT"
         },
-        "name": "task-special-port"
+        "name": "task-special-port",
+        "prerequisite": 0
     },
-    "0x5a": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_with_type",
+    "90": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_SUBPATH",
+        "category": "path",
         "modifiers": null,
-        "name": "fileprovider-syncroot-path"
+        "name": "fileprovider-syncroot-path",
+        "prerequisite": 0
     },
-    "0x5b": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_with_type",
+    "91": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_SUBPATH",
+        "category": "path",
         "modifiers": null,
-        "name": "mount-root-path"
+        "name": "mount-root-path",
+        "prerequisite": 0
     },
-    "0x5c": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "92": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "csop",
         "modifiers": {
             "0": "CS_OPS_STATUS",
             "1": "CS_OPS_MARKINVALID",
@@ -2341,27 +2875,34 @@
             "14": "CS_OPS_TEAMID",
             "15": "CS_OPS_CLEAR_LV",
             "16": "CS_OPS_DER_ENTITLEMENTS_BLOB",
-            "17": "CS_OPS_VALIDATION_CATEGORY"
+            "17": "CS_OPS_VALIDATION_CATEGORY",
+            "18": "CS_OPS_CDHASH_WITH_INFO"
         },
-        "name": "codesigning-operation"
+        "name": "codesigning-operation",
+        "prerequisite": 0
     },
-    "0x5d": {
-        "arg_process_fn": "get_filter_arg_string_by_offset_no_skip",
+    "93": {
+        "argument_type": "SB_VALUE_TYPE_STRING",
+        "category": "sandbox",
         "modifiers": null,
-        "name": "profile-flag"
+        "name": "profile-flag",
+        "prerequisite": 0
     },
-    "0x5e": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "94": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "kas-info",
         "modifiers": {
             "0": "KAS_INFO_KERNEL_TEXT_SLIDE_SELECTOR",
             "1": "KAS_INFO_KERNEL_SEGMENT_VMADDR_SELECTOR",
             "2": "KAS_INFO_SPTM_TEXT_SLIDE_SELECTOR",
             "3": "KAS_INFO_TXM_TEXT_SLIDE_SELECTOR"
         },
-        "name": "kas-info-selector"
+        "name": "kas-info-selector",
+        "prerequisite": 0
     },
-    "0x5f": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "95": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "mach-exception",
         "modifiers": {
             "1": "EXCEPTION_DEFAULT",
             "2": "EXCEPTION_STATE",
@@ -2369,15 +2910,12 @@
             "4": "EXCEPTION_IDENTITY_PROTECTED",
             "5": "EXCEPTION_STATE_IDENTITY_PROTECTED"
         },
-        "name": "mach-exception-behavior"
+        "name": "mach-exception-behavior",
+        "prerequisite": 0
     },
-    "0x6": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
-        "modifiers": null,
-        "name": "global-name"
-    },
-    "0x60": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "96": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
+        "category": "mach-exception",
         "modifiers": {
             "1": "EXC_BAD_ACCESS",
             "2": "EXC_BAD_INSTRUCTION",
@@ -2393,725 +2931,394 @@
             "12": "EXC_GUARD",
             "13": "EXC_CORPSE_NOTIFY"
         },
-        "name": "mach-exception-type"
+        "name": "mach-exception-type",
+        "prerequisite": 0
     },
-    "0x61": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
+    "97": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_LITERAL",
+        "category": "check",
         "modifiers": null,
-        "name": "check-operation"
+        "name": "check-operation",
+        "prerequisite": 0
     },
-    "0x7": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
-        "modifiers": null,
-        "name": "local-name"
-    },
-    "0x8": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "1": "ip4",
-            "2": "ip6",
-            "3": "ip",
-            "5": "tcp4",
-            "6": "tcp6",
-            "7": "tcp",
-            "9": "udp4",
-            "10": "udp6",
-            "11": "udp"
-        },
-        "name": "local"
-    },
-    "0x81": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "129": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "path"
     },
-    "0x82": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "130": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "mount-relative-path"
     },
-    "0x83": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "131": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "xattr"
     },
-    "0x84": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "132": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "file-mode"
     },
-    "0x85": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "133": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "ipc-posix-name"
     },
-    "0x86": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "134": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "global-name"
     },
-    "0x87": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "135": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "local-name"
     },
-    "0x88": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "136": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "local"
     },
-    "0x89": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "137": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "remote"
     },
-    "0x8a": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "138": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "control-name"
     },
-    "0x8b": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "139": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "socket-domain"
     },
-    "0x8c": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "140": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "socket-type"
     },
-    "0x8d": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "141": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "socket-protocol"
     },
-    "0x8e": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "142": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "target"
     },
-    "0x8f": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "143": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "fsctl-command"
     },
-    "0x9": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "1": "ip4",
-            "2": "ip6",
-            "3": "ip",
-            "5": "tcp4",
-            "6": "tcp6",
-            "7": "tcp",
-            "9": "udp4",
-            "10": "udp6",
-            "11": "udp"
-        },
-        "name": "remote"
-    },
-    "0x90": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "144": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "ioctl-command"
     },
-    "0x91": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "145": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "iokit-registry-entry-class"
     },
-    "0x92": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "146": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "iokit-property"
     },
-    "0x93": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "147": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "iokit-connection"
     },
-    "0x94": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "148": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "device-major"
     },
-    "0x95": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "149": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "device-minor"
     },
-    "0x96": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "150": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "device-conforms-to"
     },
-    "0x97": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "151": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "extension"
     },
-    "0x98": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "152": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "extension-class"
     },
-    "0x99": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "153": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "appleevent-destination"
     },
-    "0x9a": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "154": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "system-attribute"
     },
-    "0x9b": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "155": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "right-name"
     },
-    "0x9c": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "156": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "preference-domain"
     },
-    "0x9d": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "157": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "vnode-type"
     },
-    "0x9e": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "158": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "%entitlement-load"
     },
-    "0x9f": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "159": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "%entitlement-boolean"
     },
-    "0xa": {
-        "arg_process_fn": "get_filter_arg_string_by_offset",
-        "modifiers": null,
-        "name": "control-name"
-    },
-    "0xa0": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "160": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "%entitlement-string"
     },
-    "0xa1": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "161": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "kext-bundle-id"
     },
-    "0xa2": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "162": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "info-type"
     },
-    "0xa3": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "163": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "notification-name"
     },
-    "0xa4": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "164": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "notification-payload"
     },
-    "0xa5": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "165": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "semaphore-owner"
     },
-    "0xa6": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "166": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "sysctl-name"
     },
-    "0xa7": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "167": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "process-path"
     },
-    "0xa8": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "168": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "rootless-boot-device-filter"
     },
-    "0xa9": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "169": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "rootless-disk-filter"
     },
-    "0xaa": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "170": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "privilege-id"
     },
-    "0xab": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "171": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "process-attribute"
     },
-    "0xac": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "172": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "uid"
     },
-    "0xad": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "173": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "nvram-variable"
     },
-    "0xae": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "174": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "csr"
     },
-    "0xaf": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "175": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "host-special-port"
     },
-    "0xb": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "0": "AF_UNSPEC",
-            "1": "AF_LOCAL",
-            "2": "AF_INET",
-            "3": "AF_IMPLINK",
-            "4": "AF_PUP",
-            "5": "AF_CHAOS",
-            "6": "AF_NS",
-            "7": "AF_OSI",
-            "8": "AF_ECMA",
-            "9": "AF_DATAKIT",
-            "10": "AF_CCITT",
-            "11": "AF_SNA",
-            "12": "AF_DECnet",
-            "13": "AF_DLI",
-            "14": "AF_LAT",
-            "15": "AF_HYLINK",
-            "16": "AF_APPLETALK",
-            "17": "AF_ROUTE",
-            "18": "AF_LINK",
-            "19": "pseudo_AF_XTP",
-            "20": "AF_COIP",
-            "21": "AF_CNT",
-            "22": "pseudo_AF_RTIP",
-            "23": "AF_IPX",
-            "24": "AF_SIP",
-            "25": "pseudo_AF_PIP",
-            "27": "AF_NDRV",
-            "28": "AF_E164",
-            "29": "pseudo_AF_KEY",
-            "30": "AF_INET6",
-            "31": "AF_NATM",
-            "32": "AF_SYSTEM",
-            "33": "AF_NETBIOS",
-            "34": "AF_PPP",
-            "35": "pseudo_AF_HDRCMPLT",
-            "36": "AF_RESERVED_36",
-            "37": "AF_IEEE80211",
-            "38": "AF_UTUN",
-            "40": "AF_VSOCK",
-            "41": "AF_MAX"
-        },
-        "name": "socket-domain"
-    },
-    "0xb0": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "176": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "filesystem-name"
     },
-    "0xb1": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "177": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "boot-arg"
     },
-    "0xb2": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "178": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "xpc-service-name"
     },
-    "0xb3": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "179": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "signing-identifier"
     },
-    "0xb4": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "180": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "signal-number"
     },
-    "0xb5": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "181": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "target-signing-identifier"
     },
-    "0xb6": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "182": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "reboot-flags"
     },
-    "0xb7": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "183": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "datavault-disk-filter"
     },
-    "0xb8": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "184": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "extension-path-ancestor"
     },
-    "0xb9": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "185": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "file-attribute"
     },
-    "0xba": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "186": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "storage-class"
     },
-    "0xbb": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "187": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "storage-class-extension"
     },
-    "0xbc": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "188": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-usb-interface-class"
     },
-    "0xbd": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "189": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-usb-interface-subclass"
     },
-    "0xbe": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "190": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "ancestor-signing-identifier"
     },
-    "0xbf": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "191": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "require-ancestor-with-entitlement"
     },
-    "0xc": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "1": "SOCK_STREAM",
-            "2": "SOCK_DGRAM",
-            "3": "SOCK_RAW",
-            "4": "SOCK_RDM",
-            "5": "SOCK_SEQPACKET"
-        },
-        "name": "socket-type"
-    },
-    "0xc0": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "192": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "persona-type"
     },
-    "0xc1": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "193": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "syscall-number"
     },
-    "0xc2": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "194": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "require-target-with-entitlement"
     },
-    "0xc3": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "195": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-registry-entry-attribute"
     },
-    "0xc4": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "196": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "user-intent-extension"
     },
-    "0xc5": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "197": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "snapshot-name"
     },
-    "0xc6": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "198": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "mach-derived-port-role"
     },
-    "0xc7": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "199": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "message-number"
     },
-    "0xc8": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "200": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "message-name"
     },
-    "0xc9": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "201": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-method-number"
     },
-    "0xca": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "202": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-trap-number"
     },
-    "0xcb": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "203": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "machtrap-number"
     },
-    "0xcc": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "204": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "kernel-mig-routine"
     },
-    "0xcd": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "205": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "iokit-user-client-type"
     },
-    "0xce": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "206": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "fcntl-command"
     },
-    "0xcf": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "207": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "socket-option-level"
     },
-    "0xd": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": null,
-        "name": "socket-protocol"
-    },
-    "0xd0": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "208": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "socket-option-name"
     },
-    "0xd1": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "209": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "mac-policy-name"
     },
-    "0xd2": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "210": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "mac-syscall-number"
     },
-    "0xd3": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "211": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "necp-client-action"
     },
-    "0xd4": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "212": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "memorystatus-control-command"
     },
-    "0xd5": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "213": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "state-flag"
     },
-    "0xd6": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "214": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "require-responsible-binary-with-entitlement"
     },
-    "0xd7": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "215": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "%entitlement-is-bool-true"
     },
-    "0xd8": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "216": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "%entitlement-is-present"
     },
-    "0xd9": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "217": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "task-special-port"
     },
-    "0xda": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "218": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "fileprovider-syncroot-path"
     },
-    "0xdb": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "219": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "mount-root-path"
     },
-    "0xdc": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "220": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "codesigning-operation"
     },
-    "0xdd": {
-        "arg_process_fn": "get_filter_arg_regex_by_id",
+    "221": {
+        "argument_type": "SB_VALUE_TYPE_PATTERN_REGEX",
         "name": "profile-flag"
     },
-    "0xde": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "222": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "kas-info-selector"
     },
-    "0xdf": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
+    "223": {
+        "argument_type": "SB_VALUE_TYPE_INTEGER",
         "name": "mach-exception-behavior"
-    },
-    "0xe": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "1": "self",
-            "2": "pgrp",
-            "3": "others",
-            "4": "children",
-            "5": "same-sandbox",
-            "6": "initproc"
-        },
-        "name": "target"
-    },
-    "0xf": {
-        "arg_process_fn": "get_filter_arg_octal_integer",
-        "modifiers": {
-            "16641": "FSIOC_SYNC_VOLUME",
-            "16642": "FSIOC_SET_PACKAGE_EXTS",
-            "16643": "FSIOC_UNSUPPORTED",
-            "16650": "FSIOC_SET_FSTYPENAME_OVERRIDE",
-            "16655": "FSIOC_ROUTEFS_SETROUTEID",
-            "16656": "FSIOC_FIOSEEKHOLE",
-            "16657": "FSIOC_FIOSEEKDATA",
-            "16660": "FSIOC_CAS_BSDFLAGS",
-            "16661": "FSIOC_FD_ONLY_OPEN_ONCE",
-            "16665": "FSIOC_EXCLAVE_FS_REGISTER",
-            "16666": "FSIOC_EXCLAVE_FS_UNREGISTER",
-            "16667": "FSIOC_EXCLAVE_FS_GET_BASE_DIRS",
-            "18945": "APFSIOC_REVERT_TO_SNAPSHOT",
-            "18946": "APFSIOC_MAINTAIN_DIR_STATS",
-            "18947": "APFSIOC_GET_DIR_STATS",
-            "18948": "APFSIOC_SET_AUTO_MOUNT_UUID",
-            "18949": "APFSIOC_GET_AUTO_MOUNT_UUID",
-            "18950": "APFSIOC_SET_CONV_CTX",
-            "18951": "APFSIOC_GET_CRYPTO_IDS",
-            "18952": "APFSIOC_GET_CRYPTO_KEY",
-            "18953": "APFSIOC_IS_SPARSE",
-            "18954": "APFSIOC_NEXT_LINK",
-            "18955": "APFSIOC_GET_BOOTINFO",
-            "18956": "APFSIOC_SET_BOOTINFO",
-            "18957": "APFSIOC_GET_BULKACCESS",
-            "18958": "APFSIOC_GET_CLONE_INFO",
-            "18959": "APFSIOC_IS_BLOCK_SHARED",
-            "18960": "APFSIOC_DIFF_SNAPSHOTS",
-            "18961": "APFSIOC_SET_NEAR_LOW_DISK",
-            "18962": "APFSIOC_GET_NEAR_LOW_DISK",
-            "18963": "APFSIOC_SNAP_RANGE_PRIV_SIZE",
-            "18964": "APFSIOC_SNAP_MAKE_DATALESS",
-            "18965": "APFS_FSCTL_NX_FEATURES",
-            "18966": "APFS_FSCTL_APFS_FEATURES",
-            "18967": "APFS_FSCTL_SET_NX_DEFRAG",
-            "18968": "APFS_FSCTL_SET_APFS_DEFRAG",
-            "18969": "APFS_FSCTL_GET_DEFRAG_LIST",
-            "18970": "APFS_FSCTL_DEBUG_CHECK_DF",
-            "18973": "APFSIOC_PIN_DATA",
-            "18974": "APFSIOC_DEBUG_STATS",
-            "18976": "APFSIOC_GET_DIR_STATS_EXT",
-            "18977": "APFSIOC_FUSION_DEBUG",
-            "18978": "APFS_FSCTL_UNMOUNT_CRYPTO_HINT",
-            "18979": "APFSIOC_FUSION_MAINT_CTL",
-            "18980": "APFSIOC_WAIT_FOR_SNAPSHOT_DELETION",
-            "18981": "APFSIOC_GET_INTERNAL_FLAGS",
-            "18982": "APFSIOC_OMAP_TRACK_ENABLE",
-            "18983": "APFSIOC_OMAP_TRACK_REPORT",
-            "18984": "APFSIOC_OMAP_LOOKUP",
-            "18985": "APFSIOC_SET_CRYPTO_MNT_DATA_IV",
-            "18986": "APFSIOC_GET_KEYLOCKER_PRANGE",
-            "18987": "APFSIOC_GET_COW_STATS",
-            "18988": "APFSIOC_FAST_PROMOTE_DATA",
-            "18989": "APFSIOC_GET_FX_DEFRAG_REGIONS",
-            "18990": "APFSIOC_BC_OPTIMIZE_INODES",
-            "18991": "APFSIOC_CONTROL_FX_DEFRAG_THREAD",
-            "18992": "APFSIOC_GET_FX_DEFRAG_PROGRESS",
-            "18993": "APFSIOC_BC_GETINODENUM",
-            "18994": "APFSIOC_SNAP_TOKEN",
-            "18995": "APFSIOC_GET_FX_DEFRAG_STATS",
-            "18996": "APFSIOC_OMAP_TREE_LEAF_EXTENTS",
-            "18997": "APFSIOC_XDSTREAM_OBJ_ID",
-            "18998": "APFSIOC_USE_XATTR_MAX_EMBEDDED_SIZE",
-            "18999": "APFSIOC_CREATE_BYPASS_DEV",
-            "19000": "APFSIOC_DESTROY_BYPASS_DEV",
-            "19001": "APFSIOC_MAKE_OBJECT_DATALESS",
-            "19002": "APFSIOC_SET_ATIME_UPDATE",
-            "19003": "APFSIOC_GET_ATIME_UPDATE",
-            "19004": "APFSIOC_FIRMLINK_CTL",
-            "19005": "APFSIOC_KEY_ROLLING_OP",
-            "19006": "APFSIOC_KEY_ROLLING_STAT",
-            "19008": "APFSIOC_SET_FREE_SPACE_CHANGE_THRES",
-            "19009": "APFSIOC_GET_FREE_SPACE_CHANGE_THRES",
-            "19010": "APFSIOC_CREATE_SYNTHETIC_FOLDER",
-            "19011": "APFSIOC_SNAP_LOOKUP",
-            "19012": "APFSIOC_MARK_PURGEABLE",
-            "19013": "APFSIOC_PURGE_FILES",
-            "19014": "APFSIOC_GET_PURGEABLE_STATS",
-            "19015": "APFSIOC_GET_PURGEABLE_FILE_FLAGS",
-            "19016": "APFSIOC_SYNC_ROOT_GET_FLAG",
-            "19017": "APFSIOC_CLEAR_PURGEABLE",
-            "19018": "APFSIOC_GET_PARENT_SYNC_ROOT",
-            "19019": "APFSIOC_CREATE_SYNTHETIC_SYMLINK",
-            "19020": "APFSIOC_SHARE_RANGE",
-            "19021": "APFSIOC_HAS_OBJIDS_AFTER_BINCOMPAT",
-            "19022": "APFSIOC_CREATE_HIDDEN_SYNTHETIC_SYMLINK",
-            "19023": "APFSIOC_MARK_PURGEABLE_EXT",
-            "19024": "APFSIOC_GET_DEV_BY_ROLE",
-            "19025": "APFSIOC_SSV_DEBUG",
-            "19026": "APFSIOC_IS_VOL_LOCKED",
-            "19027": "APFSIOC_MAKE_FILE_COW_EXEMPT",
-            "19028": "APFSIOC_DROP_EXTENTS_IN_SNAP",
-            "19029": "APFSIOC_GET_FILE_HASH_RECORD",
-            "19030": "APFSIOC_CHECKSEAL",
-            "19031": "APFSIOC_VOL_BOOTABLE",
-            "19032": "APFSIOC_EVAL_ROOTHASH",
-            "19034": "APFSIOC_VOLUME_CLASSKB_OP",
-            "19035": "APFSIOC_PFKU_ROLLING_OP",
-            "19036": "APFSIOC_CHECK_MAT_OP",
-            "19037": "APFSIOC_DOC_ID_TO_FILE_ID",
-            "19038": "APFSIOC_REVOKE_CHILDREN",
-            "19039": "APFSIOC_PURGE_SINGLE_FILE",
-            "19040": "APFSIOC_GET_ABS_VOL_UUID",
-            "19041": "APFSIOC_GET_IO_LOG",
-            "19042": "APFSIOC_SYNC_AND_FREEZE",
-            "19043": "APFSIOC_GRAFT_AN_FS",
-            "19044": "APFSIOC_UNGRAFT_AN_FS",
-            "19045": "APFSIOC_UNGRAFT_ALL",
-            "19046": "FSIOC_GET_GRAFT_INFO",
-            "19047": "APFSIOC_CANCEL_PURGE",
-            "19048": "APFSIOC_GET_PREALLOCATE_MIN_SPACE",
-            "19049": "APFSIOC_RELEASE_PREALLOCATED_SPACE",
-            "19050": "APFSIOC_GET_DEV_INFO",
-            "19051": "APFSIOC_GET_SYSTEM_DEV",
-            "19052": "APFSIOC_GET_VOLUME_ROLE",
-            "19053": "APFSIOC_PURGEABLE_GET_FILE_INFO",
-            "19054": "APFSIOC_PURGEABLE_START_PURGE",
-            "19055": "APFSIOC_PURGEABLE_LABEL_PURGEABLE",
-            "19056": "APFSIOC_PURGEABLE_GET_DETAILED_STATS",
-            "19057": "APFSIOC_DIR_STATS_OP",
-            "19058": "APFSIOC_GET_ATTRIBUTION_INFO",
-            "19059": "APFSIOC_GET_SYNC_ROOT",
-            "19060": "APFSIOC_GET_CLONE_INODES",
-            "19061": "APFSIOC_VOL_ATTRIBUTION_TAG",
-            "19062": "APFSIOC_LIST_ATTRIBUTION_TAGS",
-            "19063": "APFSIOC_CRYPTO_DEBUG_OP",
-            "19064": "APFSIOC_OMM_CTL",
-            "19065": "APFSIOC_GET_FREE_QUEUE_INFO",
-            "19066": "APFSIOC_OBJECT_UNSET_DATALESS",
-            "19067": "APFSIOC_GET_SPEC_TELEM",
-            "19068": "APFSIOC_SET_SPEC_TELEM",
-            "19069": "APFSIOC_GET_SHARED_EXTENTS",
-            "19070": "APFSIOC_SPEC_TELEM_OP",
-            "19071": "APFSIOC_GET_CRYPTO_FILE_INFO",
-            "19074": "APFSIOC_PURGEABLE_GET_EXTENTS",
-            "19075": "APFSIOC_PURGEABLE_GET_BULK_INFO",
-            "19076": "APFSIOC_PURGEABLE_NOTIFICATION_THRESHOLD_OP",
-            "19077": "APFSIOC_IS_GRAFT_SUPPORTED",
-            "26625": "HFSIOC_RESIZE_PROGRESS",
-            "26626": "HFSIOC_RESIZE_VOLUME",
-            "26627": "HFSIOC_CHANGE_NEXT_ALLOCATION",
-            "26628": "HFSIOC_GET_VOL_CREATE_TIME",
-            "26631": "HFSIOC_SETBACKINGSTOREINFO",
-            "26632": "HFSIOC_CLRBACKINGSTOREINFO",
-            "26634": "HFSIOC_UNSUPPORTED",
-            "26635": "HFSIOC_PREV_LINK",
-            "26636": "HFSIOC_NEXT_LINK",
-            "26637": "HFSIOC_GETPATH",
-            "26638": "HFSIOC_SET_XATTREXTENTS_STATE",
-            "26639": "HFSIOC_EXT_BULKACCESS",
-            "26640": "HFSIOC_MARK_BOOT_CORRUPT",
-            "26641": "HFSIOC_GET_JOURNAL_INFO",
-            "26644": "HFSIOC_SET_VERY_LOW_DISK",
-            "26645": "HFSIOC_SET_LOW_DISK",
-            "26646": "HFSIOC_SET_DESIRED_DISK",
-            "26647": "HFSIOC_SET_ALWAYS_ZEROFILL",
-            "26648": "HFSIOC_VOLUME_STATUS",
-            "26649": "HFSIOC_DISABLE_METAZONE",
-            "26650": "HFSIOC_CHANGE_NEXTCNID",
-            "26651": "HFSIOC_GET_VERY_LOW_DISK",
-            "26652": "HFSIOC_GET_LOW_DISK",
-            "26653": "HFSIOC_GET_DESIRED_DISK",
-            "26656": "HFSIOC_TRANSFER_DOCUMENT_ID",
-            "26657": "HFSIOC_OP_CPTRIM",
-            "26658": "HFSIOC_OP_CPREWRAPPED",
-            "26659": "HFSIOC_OP_CRYPTOGEN",
-            "26660": "HFSIOC_LISTXATTRID_CP",
-            "26661": "HFSIOC_OP_CPFORCEREWRAP",
-            "26662": "HFSIOC_FSINFO_METADATA_BLOCKS",
-            "26663": "HFSIOC_CS_FREESPACE_TRIM",
-            "26664": "HFSIOC_KEY_ROLL",
-            "26665": "HFSIOC_GET_KEY_AUTO_ROLL",
-            "26666": "HFSIOC_SET_KEY_AUTO_ROLL",
-            "26668": "HFSIOC_CP_LIST_IDS",
-            "26669": "HFSIOC_GET_FSINFO",
-            "26670": "HFSIOC_REPIN_HOTFILE_STATE",
-            "26671": "HFSIOC_SET_HOTFILE_STATE",
-            "26672": "HFSIOC_SET_MAX_DEFRAG_SIZE",
-            "26673": "HFSIOC_FORCE_ENABLE_DEFRAG",
-            "26674": "FSIOC_EVAL_ROOTAUTH",
-            "26675": "FSIOC_KERNEL_ROOTAUTH",
-            "26676": "FSIOC_TEST_FSE_ACCESS_GRANTED",
-            "31233": "DTDBOpenFSCTL",
-            "31234": "DTDBAddIconFSCTL",
-            "31235": "DTDBGetIconFSCTL",
-            "31236": "DTDBGetIconInfoFSCTL",
-            "31237": "DTDBAddAPPLFSCTL",
-            "31238": "DTDBGetAPPLFSCTL",
-            "31239": "DTDBRemoveAPPLFSCTL",
-            "31240": "DTDBSetCommentFSCTL",
-            "31241": "DTDBGetCommentFSCTL",
-            "31242": "DTDBRemoveCommentFSCTL",
-            "31243": "afpfsGetParmsFSCTL",
-            "31244": "afpfsGetMountInfoFSCTL",
-            "31245": "afpfsCreateFileDescFSCTL",
-            "31246": "afpfsMapIDNameFSCTL",
-            "31247": "afpfsGetAccessRightsFSCTL",
-            "31248": "afpfsSetAccessRightsFSCTL",
-            "31249": "smbfsByteRangeLockFSCTL",
-            "31250": "afpfsGetAttenFSCTL",
-            "31251": "smbfsUniqueShareIDFSCTL",
-            "31252": "smbfsGetSessionSockaddrFSCTL",
-            "31253": "afpfsTraceLogFSCTL",
-            "31254": "afpfsGetSavedAttenFSCTL",
-            "31255": "smbfsByteRangeLock2FSCTL",
-            "31256": "afpfsRefeshCredentialFSCTL",
-            "31257": "smbfsGetStatsFSCTL",
-            "31258": "afpfsSpotLightRPC",
-            "31259": "afpfsSpotLightSideBandRPC",
-            "31260": "smbfsDebugTestFSCTL",
-            "31261": "smbfsTimeMachineFSCTL",
-            "31262": "afpfsSubMountFSCTL",
-            "31263": "afpfsSrvrInfoFSCTL",
-            "31264": "afpfsAFPRequestFSCTL"
-        },
-        "name": "fsctl-command"
     }
 }

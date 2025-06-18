@@ -1,5 +1,5 @@
 GCC_BIN=`xcrun --sdk macosx --find gcc`
-GCC=$(GCC_BASE) -arch x86_64
+GCC=$(GCC_BASE) -arch arm64
 SDK=`xcrun --sdk macosx --show-sdk-path`
 
 CFLAGS = 

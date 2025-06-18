@@ -8,9 +8,8 @@ def read_filters():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(script_dir, "misc/filters.json")) as data:
         temp = json.load(data)
-
         for key, value in temp.items():
-            filters[int(str(key), 16)] = value
+            filters[int(key)] = value
 
     return filters
 

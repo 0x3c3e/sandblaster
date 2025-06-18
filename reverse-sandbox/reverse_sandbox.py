@@ -6,10 +6,13 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
 import sandbox_filter
-import sandbox_regex
+
+# import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
 from graphs import graph as graph_tools
+import regex_parser
+import networkx as nx
 
 
 REGEX_TABLE_OFFSET = 2
@@ -110,9 +113,7 @@ def create_operation_nodes(
 
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
-    with open(outfname, "wt") as outfile, open(
-        f"reverse.{outfname}", "wt"
-    ) as outfile_reverse:
+    with open(outfname, "wt") as outfile:
         default_node = sandbox_data.operation_nodes.find_operation_node_by_offset(
             sandbox_data.op_table[0]
         )
@@ -123,7 +124,6 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
             return
 
         outfile.write("(version 1)\n")
-        outfile_reverse.write("(version 1)\n")
 
         for idx, offset in enumerate(sandbox_data.op_table):
             operation = sandbox_data.sb_ops[idx]
@@ -131,29 +131,21 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 operation not in sandbox_data.ops_to_reverse
             ):
                 continue
-
+            print(operation)
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
 
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
-            import networkx as nx
+            graph_builder.export_dot("aa.dot")
 
-            outs = []
-            sinks = [
-                node
-                for node in nx.topological_sort(graph)
-                if graph.out_degree(node) == 0
-            ]
-            start = [
-                node
-                for node in nx.topological_sort(graph)
-                if graph.in_degree(node) == 0
-            ][0]
-            for i, sink in enumerate(sinks):
-                out = graph_tools.build_ite_iterative_z3(graph, start, sink)
-                print(out)
+            for node in graph.nodes:
+                n = sandbox_data.operation_nodes.find_operation_node_by_offset(node)
+                print(node, n, n.raw)
+            # for i, sink in enumerate(sinks):
+            #     out = graph_tools.build_ite_iterative_z3(graph, start, sink)
+            #     print(graph_tools.ite_expr_to_cnf_z3(out))
 
 
 def parse_global_vars(f: object, sandbox_data: SandboxData) -> List[str]:
@@ -203,8 +195,11 @@ def parse_regex_list(infile: object, sandbox_data: SandboxData):
     for offset in offsets_table:
         infile.seek(offset * 8 + sandbox_data.base_addr)
         re_length = struct.unpack("<H", infile.read(2))[0]
-        regex_data = struct.unpack(f"<{re_length}B", infile.read(re_length))
-        sandbox_data.regex_list.append(sandbox_regex.parse_regex(regex_data))
+        d = infile.read(re_length)
+        regex_data = struct.unpack(f"<{re_length}B", d)
+        a = regex_parser.analyze(regex_data)
+        print("REGEX", a)
+        sandbox_data.regex_list.append(a)
 
 
 def parse_op_table(infile: object, sandbox_data: SandboxData):

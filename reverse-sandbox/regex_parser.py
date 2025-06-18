@@ -1,125 +1,171 @@
-import logging
+import re
+from collections import defaultdict
+from typing import Dict, Tuple, Any, Sequence
+from enum import IntEnum
 
-logger = logging.getLogger(__name__)
+from automata.fa.nfa import NFA
+from automata.fa.dfa import DFA
+from automata.fa.gnfa import GNFA
 
+Op = Tuple[str, Any]
 
-def parse_character(re, i, regex_list):
-    value = chr(re[i + 1])
-    if value == ".":
-        value = "[.]"
-    regex_list.append({"pos": i - 6, "type": "character", "value": value})
-    return i + 1
-
-
-def parse_beginning_of_line(i, regex_list):
-    regex_list.append({"pos": i - 6, "type": "character", "value": "^"})
-
-
-def parse_end_of_line(i, regex_list):
-    regex_list.append({"pos": i - 6, "type": "character", "value": "$"})
+# Header constants
+MAGIC_NUMBER = 0x3000000
+HEADER_MAGIC_SIZE = 4
+HEADER_LENGTH_SIZE = 2
 
 
-def parse_any_character(i, regex_list):
-    regex_list.append({"pos": i - 6, "type": "character", "value": "."})
+class OpCode(IntEnum):
+    CHAR = 0x02
+    LINE_START = 0x19
+    LINE_END = 0x29
+    ANY = 0x09
+    MATCH_LOW_NIBBLE = 0x05
+    JMP_LOW_NIBBLE = 0x0A
+    JMP_EXACT = 0x2F
+    SET_BASE_LOW_NIBBLE = 0x0B
 
 
-def parse_jump_forward(re, i, regex_list):
-    jump_to = re[i + 1] + (re[i + 2] << 8)
-    regex_list.append({"pos": i - 6, "type": "jump_forward", "value": jump_to})
-    return i + 2
+class RegexBytecodeParser:
+    """
+    Parses and normalizes regex bytecode into a linear instruction map.
+    """
+
+    def __init__(self, bytecode: bytes):
+        self.bytecode = bytecode
+        self.instructions: Dict[int, Op] = {}
+
+    def parse(self) -> Dict[int, Op]:
+        data = self.bytecode
+        if int.from_bytes(data[:HEADER_MAGIC_SIZE], "little") != MAGIC_NUMBER:
+            raise ValueError("Invalid bytecode magic number")
+        length = int.from_bytes(
+            data[HEADER_MAGIC_SIZE : HEADER_MAGIC_SIZE + HEADER_LENGTH_SIZE], "little"
+        )
+        if len(data) != HEADER_MAGIC_SIZE + HEADER_LENGTH_SIZE + length:
+            raise ValueError("Bytecode length mismatch")
+
+        i = HEADER_MAGIC_SIZE + HEADER_LENGTH_SIZE
+        while i < len(data):
+            idx = i - (HEADER_MAGIC_SIZE + HEADER_LENGTH_SIZE)
+            raw = data[i]
+
+            match raw:
+                case OpCode.CHAR:
+                    char = chr(data[i + 1])
+                    self.instructions[idx] = ("chr", re.escape(char))
+                    i += 2
+                case OpCode.LINE_START:
+                    self.instructions[idx] = ("chr", "^")
+                    i += 1
+                case OpCode.LINE_END:
+                    self.instructions[idx] = ("chr", "$")
+                    i += 1
+                case OpCode.ANY:
+                    self.instructions[idx] = ("chr", ".")
+                    i += 1
+                case x if (x & 0xF) == OpCode.MATCH_LOW_NIBBLE:
+                    self.instructions[idx] = ("match", None)
+                    i += 1
+                case x if x == OpCode.JMP_EXACT or (x & 0xF) == OpCode.JMP_LOW_NIBBLE:
+                    offset = data[i + 1] | (data[i + 2] << 8)
+                    self.instructions[idx] = ("jmp", offset)
+                    i += 3
+                case x if (x & 0xF) == OpCode.SET_BASE_LOW_NIBBLE:
+                    count = x >> 4
+                    ranges = []
+                    start = i + 1
+                    for j in range(count):
+                        lo = data[start + 2 * j]
+                        hi = data[start + 2 * j + 1]
+                        ranges.append(f"{chr(lo)}-{chr(hi)}" if lo < hi else chr(lo))
+                    self.instructions[idx] = ("chr", f"[{''.join(ranges)}]")
+                    i += 1 + 2 * count
+                case _:
+                    i += 1
+
+        return self.instructions
+
+    def remap(self) -> Dict[int, Op]:
+        """
+        Reassigns instruction indices to a contiguous range and adjusts jumps.
+        """
+        orig_indices = sorted(self.instructions.keys())
+        index_map = {orig: new for new, orig in enumerate(orig_indices)}
+
+        remapped: Dict[int, Op] = {}
+        for orig in orig_indices:
+            new_idx = index_map[orig]
+            op, arg = self.instructions[orig]
+            match (op, arg):
+                case "jmp", offset if isinstance(offset, int):
+                    remapped[new_idx] = ("jmp", index_map.get(offset, offset))
+                case other_op, other_arg:
+                    remapped[new_idx] = (other_op, other_arg)
+        self.instructions = remapped
+        return remapped
 
 
-def parse_jump_backward(re, i, regex_list):
-    jump_to = re[i + 1] + (re[i + 2] << 8)
-    regex_list.append({"pos": i - 6, "type": "jump_backward", "value": jump_to})
-    logger.debug(
-        "(0xa) i: %d (0x%x), re[i, i+1, i+2]: 0x%x, 0x%x, 0x%x",
-        i,
-        i,
-        re[i],
-        re[i + 1],
-        re[i + 2],
+def bytecode_to_nfa(instructions: Dict[int, Op]) -> Tuple[NFA, Dict[str, str]]:
+    transitions = defaultdict(lambda: defaultdict(set))
+    start_state = "q0"
+    state_map: Dict[int, str] = {}
+    final_states = set()
+    symbol_map: Dict[str, str] = {}
+    epsilon = ""
+
+    # Helper to generate new states
+    def new_state(idx: int) -> str:
+        return f"q{idx + 1}"
+
+    for idx in instructions:
+        state_map[idx] = new_state(idx)
+
+    for idx, instr in instructions.items():
+        curr = state_map[idx]
+        next_idx = idx + 1
+        match instr:
+            case "chr", pattern:
+                placeholder = chr(0xE000 + idx)
+                symbol_map[placeholder] = pattern
+                if pattern == "$":
+                    final_states.add(curr)
+                elif next_idx in state_map:
+                    transitions[curr][placeholder].add(state_map[next_idx])
+            case "jmp", target if isinstance(target, int):
+                if target in state_map:
+                    transitions[curr][epsilon].add(state_map[target])
+                if next_idx in state_map:
+                    transitions[curr][epsilon].add(state_map[next_idx])
+            case "match", None:
+                final_states.add(curr)
+            case _:
+                continue
+
+    if instructions:
+        first = min(instructions.keys())
+        transitions[start_state][epsilon].add(state_map[first])
+
+    nfa = NFA(
+        states=set(state_map.values()) | {start_state},
+        input_symbols={s for trans in transitions.values() for s in trans if s != epsilon},
+        transitions={state: dict(edges) for state, edges in transitions.items()},
+        initial_state=start_state,
+        final_states=final_states,
     )
-    logger.debug("value: 0x%x", jump_to)
-    return i + 2
+    return nfa, symbol_map
 
 
-def parse_character_class(re, i, regex_list):
-    num = re[i] >> 4
-    i = i + 1
-    logger.debug("i: %d, num: %d", i, num)
-    values = []
-    value = "["
-    for j in range(0, num):
-        values.append(re[i + 2 * j])
-        values.append(re[i + 2 * j + 1])
-    first = values[0]
-    last = values[2 * num - 1]
-    # In case of excludes.
-    if first > last:
-        node_type = "class_exclude"
-        value += "^"
-        for j in range(len(values) - 1, 0, -1):
-            values[j] = values[j - 1]
-        values[0] = last
-        for j in range(0, len(values)):
-            if j % 2 == 0:
-                values[j] = values[j] + 1
-            else:
-                values[j] = values[j] - 1
-    else:
-        node_type = "class"
-    for j in range(0, len(values), 2):
-        if values[j] < values[j + 1]:
-            value += "%s-%s" % (chr(values[j]), chr(values[j + 1]))
-        else:
-            value += "%s" % (chr(values[j]))
-    value += "]"
-    regex_list.append({"pos": i - 6, "type": node_type, "value": value})
-    message = "values: [", ", ".join([hex(j) for j in values]), "]"
-    logger.debug(message)
+def analyze(bytecode: Sequence[int]) -> str:
+    parser = RegexBytecodeParser(bytes(bytecode))
+    parser.parse()
+    remapped = parser.remap()
+    nfa, symmap = bytecode_to_nfa(remapped)
+    dfa = DFA.from_nfa(nfa, minify=True)
+    gnfa = GNFA.from_dfa(dfa)
+    regex = gnfa.to_regex()
 
-    return i + 2 * num - 1
-
-
-def parse_end(re, i, regex_list):
-    regex_list.append({"pos": i - 6, "type": "end", "value": 0})
-    return i + 1
-
-
-def parse(re, i, regex_list):
-    # Actual character.
-    if re[i] == 0x02:
-        i = parse_character(re, i, regex_list)
-    # Beginning of line.
-    elif re[i] == 0x19:
-        parse_beginning_of_line(i, regex_list)
-    # End of line.
-    elif re[i] == 0x29:
-        parse_end_of_line(i, regex_list)
-    # Any character.
-    elif re[i] == 0x09:
-        parse_any_character(i, regex_list)
-    # Jump forward.
-    elif re[i] == 0x2F:
-        i = parse_jump_forward(re, i, regex_list)
-    # Jump backward.
-    elif re[i] & 0xF == 0xA:
-        i = parse_jump_backward(re, i, regex_list)
-    # Character class.
-    elif re[i] & 0xF == 0xB:
-        i = parse_character_class(re, i, regex_list)
-    elif re[i] & 0xF == 0x5:
-        i = parse_end(re, i, regex_list)
-    else:
-        logger.warning("##########unknown", hex(re[i]))
-
-    return i + 1
-
-
-class RegexParser(object):
-
-    @staticmethod
-    def parse(re, i, regex_list):
-        while i < len(re):
-            i = parse(re, i, regex_list)
+    for placeholder, literal in symmap.items():
+        escaped = literal.encode("unicode_escape").decode("utf-8")
+        regex = regex.replace(placeholder, escaped)
+    return regex

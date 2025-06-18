@@ -66,7 +66,6 @@ def get_filter_arg_regex_by_id(f, regex_id, filter_id):
     global keep_builtin_filters
     return_string = ""
     global regex_list
-    print(regex_list, regex_id)
     for regex in regex_list[regex_id]:
         if (
             re.match("^/com\\\.apple\\\.sandbox\$", regex)
@@ -109,7 +108,11 @@ def convert_filter_callback(
             result = get_filter_arg_integer(f, filter_arg, filter_id)
         case FilterType.SB_VALUE_TYPE_STRING:
             result = get_filter_arg_string(f, filter_arg, filter_id)
-        case FilterType.SB_VALUE_TYPE_PATTERN_LITERAL | FilterType.SB_VALUE_TYPE_PATTERN_PREFIX | FilterType.SB_VALUE_TYPE_PATTERN_SUBPATH:
+        case (
+            FilterType.SB_VALUE_TYPE_PATTERN_LITERAL
+            | FilterType.SB_VALUE_TYPE_PATTERN_PREFIX
+            | FilterType.SB_VALUE_TYPE_PATTERN_SUBPATH
+        ):
             result = get_filter_arg_string_by_offset(f, filter_arg, filter_id)
         case FilterType.SB_VALUE_TYPE_PATTERN_REGEX:
             result = get_filter_arg_regex_by_id(f, filter_arg, filter_id)

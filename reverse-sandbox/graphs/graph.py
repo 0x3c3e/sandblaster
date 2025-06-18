@@ -52,50 +52,6 @@ def build_ite_iterative_z3(G, start_node, sink):
     return ite_expr_to_cnf_z3(node_to_expr[start_node])
 
 
-def z3_to_pyeda(z3_expr, varcache=None):
-    """
-    Convert a boolean-only Z3 expression to a PyEDA expr.
-    varcache: dictionary to map var names -> pyeda exprvar objects
-    """
-    if varcache is None:
-        varcache = {}
-
-    # Check if it’s a BoolVal
-    if z3_expr.eq(z3.BoolVal(True)):
-        return AndOp()  # empty AND => True in PyEDA
-    if z3_expr.eq(z3.BoolVal(False)):
-        return OrOp()  # empty OR => False in PyEDA
-
-    # If it's a variable
-    if (z3_expr.decl().kind() == z3.Z3_OP_UNINTERPRETED) and (z3_expr.num_args() == 0):
-        var_name = str(z3_expr)
-        if var_name not in varcache:
-            varcache[var_name] = exprvar(var_name)
-        return varcache[var_name]
-
-    # Otherwise dispatch on operator
-    op = z3_expr.decl().kind()
-    kids = z3_expr.children()
-    if op == z3.Z3_OP_NOT:
-        return ~z3_to_pyeda(kids[0], varcache)
-    elif op == z3.Z3_OP_AND:
-        pykids = [z3_to_pyeda(k, varcache) for k in kids]
-        # Combine with operator overload: reduce(lambda a,b: a & b, pykids)
-        out = pykids[0]
-        for c in pykids[1:]:
-            out = out & c
-        return out
-    elif op == z3.Z3_OP_OR:
-        pykids = [z3_to_pyeda(k, varcache) for k in kids]
-        out = pykids[0]
-        for c in pykids[1:]:
-            out = out | c
-        return out
-    # etc., handle Implies, Xor, ITE, etc. if needed
-
-    raise NotImplementedError(f"Unsupported op kind: {op}")
-
-
 def ite_expr_to_cnf_z3(ite_expr):
     """
     Convert a Z3 expression (e.g. containing If-Then-Else) to CNF using Tseitin encoding.
@@ -119,33 +75,6 @@ def ite_expr_to_cnf_z3(ite_expr):
     cnf_expr = subgoals[0].as_expr()
 
     return cnf_expr
-
-
-def sympy_expr_to_sbpl(expr, operation_nodes):
-    if expr.is_Symbol:
-        return str(operation_nodes.find_operation_node_by_offset(int(str(expr))))
-
-    if isinstance(expr, Not):
-        return {"require-not": [sympy_expr_to_sbpl(expr.args[0], operation_nodes)]}
-
-    if isinstance(expr, And):
-        return {
-            "require-all": [
-                sympy_expr_to_sbpl(arg, operation_nodes) for arg in expr.args
-            ]
-        }
-
-    if isinstance(expr, Or):
-        return {
-            "require-any": [
-                sympy_expr_to_sbpl(arg, operation_nodes) for arg in expr.args
-            ]
-        }
-    if isinstance(expr, BooleanTrue):
-        return "true"
-    if isinstance(expr, BooleanFalse):
-        return "false"
-    raise ValueError(f"Unsupported expression type: {expr}")
 
 
 def sbpl_to_string(data, indent=0, indent_size=4):
