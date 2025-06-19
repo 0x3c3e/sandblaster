@@ -11,7 +11,6 @@ from nodes import operation_node_parser
 import parsers.regex as regex
 
 
-
 def create_operation_nodes(infile: object, sandbox_data: SandboxData) -> List[object]:
     sandbox_data.operation_nodes = operation_node_parser.OperionNodeParser()
     sandbox_data.operation_nodes.build_operation_nodes(
