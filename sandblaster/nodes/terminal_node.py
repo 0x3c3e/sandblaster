@@ -85,9 +85,7 @@ class TerminalNode:
 
         return modifiers
 
-    def terminal_convert_function(
-        self, convert_fn, infile, sandbox_data, keep_builtin_filters
-    ):
+    def convert_filter(self, infile, sandbox_data):
         if self.inline_modifier:
             if not self.inline_modifier.policy_op_idx:
                 self.db_modifiers[self.INLINE_MODIFIERS].append(
@@ -111,11 +109,6 @@ class TerminalNode:
             self.get_modifiers_by_flag(self.modifier.flags)
         )
         self.parsed = True
-
-    def convert_filter(self, convert_fn, f, sandbox_data, keep_builtin_filters):
-        self.terminal_convert_function(
-            convert_fn, f, sandbox_data, keep_builtin_filters
-        )
 
     def is_allow(self):
         return self.type == self.TERMINAL_NODE_TYPE_ALLOW

@@ -5,7 +5,6 @@ import argparse
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-import sandbox_filter
 
 from nodes import operation_node_builder
 from nodes import operation_node_parser
@@ -92,20 +91,11 @@ def extract_string_from_offset(f: object, offset: int, base_addr: int) -> str:
     return f.read(string_len).decode("utf-8")
 
 
-def create_operation_nodes(
-    infile: object, sandbox_data: SandboxData, keep_builtin_filters: bool
-) -> List[object]:
+def create_operation_nodes(infile: object, sandbox_data: SandboxData) -> List[object]:
     sandbox_data.operation_nodes = operation_node_parser.OperionNodeParser()
     sandbox_data.operation_nodes.build_operation_nodes(
-        infile, sandbox_data.op_nodes_count
+        infile, sandbox_data.op_nodes_count, sandbox_data
     )
-    for node in sandbox_data.operation_nodes.operation_nodes:
-        node.convert_filter(
-            sandbox_filter.convert_filter_callback,
-            infile,
-            sandbox_data,
-            keep_builtin_filters,
-        )
 
 
 def process_profile(outfname: str, sandbox_data: SandboxData):
@@ -127,14 +117,13 @@ def process_profile(outfname: str, sandbox_data: SandboxData):
                 operation not in sandbox_data.ops_to_reverse
             ):
                 continue
-            print(operation)
             node = sandbox_data.operation_nodes.find_operation_node_by_offset(offset)
             if not node:
                 continue
 
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
-            graph_builder.export_dot("aa.dot")
+            # graph_builder.export_dot("aa.dot")
 
             for node in graph.nodes:
                 n = sandbox_data.operation_nodes.find_operation_node_by_offset(node)
@@ -238,7 +227,7 @@ def main():
 
         infile.seek(sandbox_data.operation_nodes_offset)
         logging.info(f"Number of operation nodes: {sandbox_data.op_nodes_count}")
-        create_operation_nodes(infile, sandbox_data, args.keep_builtin_filters)
+        create_operation_nodes(infile, sandbox_data)
 
         infile.seek(sandbox_data.profiles_offset)
         parse_op_table(infile, sandbox_data)

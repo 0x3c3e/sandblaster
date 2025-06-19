@@ -15,13 +15,17 @@ class OperionNodeParser:
         node.parse_raw()
         return node
 
-    def build_operation_nodes(self, f, num_operation_nodes):
+    def build_operation_nodes(self, f, num_operation_nodes, sandbox_data):
         for i in range(num_operation_nodes):
             raw = struct.unpack("<8B", f.read(8))
             node = self.build_operation_node(raw, i)
             self.operation_nodes.append(node)
             self.cache[node.offset] = node
         for op_node in self.operation_nodes:
+            op_node.convert_filter(
+                f,
+                sandbox_data,
+            )
             if not op_node.is_non_terminal():
                 continue
             if op_node.node.match_offset in self.cache:

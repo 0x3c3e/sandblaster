@@ -1,3 +1,6 @@
+import sandbox_filter
+
+
 class NonTerminalNode:
     def __init__(self):
         self.filter_id = None
@@ -32,7 +35,7 @@ class NonTerminalNode:
             return (self.filter, self.argument)
         return ("%02x" % self.filter_id, "%04x" % (self.argument_id))
 
-    def convert_filter(self, convert_fn, f, sandbox_data, keep_builtin_filters):
-        (self.filter, self.argument) = convert_fn(
-            f, sandbox_data, keep_builtin_filters, self.filter_id, self.argument_id
+    def convert_filter(self, f, sandbox_data):
+        (self.filter, self.argument) = sandbox_filter.convert_filter_callback(
+            f, sandbox_data, self.filter_id, self.argument_id
         )

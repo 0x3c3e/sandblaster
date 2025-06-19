@@ -29,7 +29,6 @@ class FilterContext:
     base_addr: int
     regex_list: List[str]
     global_vars: List[Any]
-    keep_builtin_filters: bool
 
 
 def get_filter_arg_bool(arg):
@@ -68,12 +67,11 @@ def sb_filter_is_case_sensitive(filter_id):
     return (filter_id & 0xFE) == 4
 
 
-def convert_filter_callback(f, sandbox_data, keep_builtin_filters_arg, filter_id, filter_arg):
+def convert_filter_callback(f, sandbox_data, filter_id, filter_arg):
     ctx = FilterContext(
         base_addr=sandbox_data.base_addr,
         regex_list=sandbox_data.regex_list,
         global_vars=sandbox_data.global_vars,
-        keep_builtin_filters=keep_builtin_filters_arg,
     )
 
     if not Filters.exists(filter_id):
@@ -99,6 +97,10 @@ def convert_filter_callback(f, sandbox_data, keep_builtin_filters_arg, filter_id
             result = get_filter_arg_string_by_offset(f, filter_arg, filter_id, ctx)
         case FilterType.SB_VALUE_TYPE_PATTERN_REGEX:
             result = get_filter_arg_regex_by_id(f, filter_arg, filter_id, ctx)
+        case FilterType.SB_VALUE_TYPE_BITFIELD:
+            result = filter_arg
+        case _:
+            raise KeyError
 
     return (append, result)
 
@@ -108,7 +110,6 @@ def convert_modifier_callback(f, sandbox_data, modifier_id, modifier_argument):
         base_addr=sandbox_data.base_addr,
         regex_list=sandbox_data.regex_list,
         global_vars=sandbox_data.global_vars,
-        keep_builtin_filters=False,
     )
 
     if not Modifiers.exists(modifier_id):
