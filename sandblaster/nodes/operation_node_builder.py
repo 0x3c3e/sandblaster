@@ -1,5 +1,4 @@
 import networkx as nx
-import json
 from networkx.drawing.nx_pydot import write_dot
 
 

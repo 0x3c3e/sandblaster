@@ -17,13 +17,13 @@ HEADER_LENGTH_SIZE = 2
 
 class OpCode(IntEnum):
     CHAR = 0x02
-    LINE_START = 0x19
-    LINE_END = 0x29
+    START = 0x19
+    END = 0x29
     ANY = 0x09
-    MATCH_LOW_NIBBLE = 0x05
-    JMP_LOW_NIBBLE = 0x0A
-    JMP_EXACT = 0x2F
-    SET_BASE_LOW_NIBBLE = 0x0B
+    MATCH = 0x05
+    JMP_BEHIND = 0x0A
+    JMP_AHEAD = 0x2F
+    CLASS = 0x0B
 
 
 class RegexBytecodeParser:
@@ -55,31 +55,54 @@ class RegexBytecodeParser:
                     char = chr(data[i + 1])
                     self.instructions[idx] = ("chr", re.escape(char))
                     i += 2
-                case OpCode.LINE_START:
+                case OpCode.START:
                     self.instructions[idx] = ("chr", "^")
                     i += 1
-                case OpCode.LINE_END:
+                case OpCode.END:
                     self.instructions[idx] = ("chr", "$")
                     i += 1
                 case OpCode.ANY:
                     self.instructions[idx] = ("chr", ".")
                     i += 1
-                case x if (x & 0xF) == OpCode.MATCH_LOW_NIBBLE:
+                case x if (x & 0xF) == OpCode.MATCH:
                     self.instructions[idx] = ("match", None)
                     i += 1
-                case x if x == OpCode.JMP_EXACT or (x & 0xF) == OpCode.JMP_LOW_NIBBLE:
+                case x if x == OpCode.JMP_AHEAD or (x & 0xF) == OpCode.JMP_BEHIND:
                     offset = data[i + 1] | (data[i + 2] << 8)
                     self.instructions[idx] = ("jmp", offset)
                     i += 3
-                case x if (x & 0xF) == OpCode.SET_BASE_LOW_NIBBLE:
+                case x if (x & 0xF) == OpCode.CLASS:
                     count = x >> 4
-                    ranges = []
+                    values = []
                     start = i + 1
                     for j in range(count):
-                        lo = data[start + 2 * j]
-                        hi = data[start + 2 * j + 1]
-                        ranges.append(f"{chr(lo)}-{chr(hi)}" if lo < hi else chr(lo))
-                    self.instructions[idx] = ("chr", f"[{''.join(ranges)}]")
+                        values.append(data[start + 2 * j])
+                        values.append(data[start + 2 * j + 1])
+
+                    first = values[0]
+                    last = values[-1]
+                    value = "["
+
+                    if first > last:
+                        # exclusion class
+                        value += "^"
+                        values = [last] + values[:-1]
+                        for j in range(len(values)):
+                            if j % 2 == 0:
+                                values[j] += 1
+                            else:
+                                values[j] -= 1
+
+                    for j in range(0, len(values), 2):
+                        lo = values[j]
+                        hi = values[j + 1]
+                        if lo < hi:
+                            value += f"{chr(lo)}-{chr(hi)}"
+                        else:
+                            value += f"{chr(lo)}"
+
+                    value += "]"
+                    self.instructions[idx] = ("chr", value)
                     i += 1 + 2 * count
                 case _:
                     i += 1
@@ -148,7 +171,9 @@ def bytecode_to_nfa(instructions: Dict[int, Op]) -> Tuple[NFA, Dict[str, str]]:
 
     nfa = NFA(
         states=set(state_map.values()) | {start_state},
-        input_symbols={s for trans in transitions.values() for s in trans if s != epsilon},
+        input_symbols={
+            s for trans in transitions.values() for s in trans if s != epsilon
+        },
         transitions={state: dict(edges) for state, edges in transitions.items()},
         initial_state=start_state,
         final_states=final_states,

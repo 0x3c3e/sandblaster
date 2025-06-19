@@ -1,7 +1,6 @@
-from parse_strings import parse_fsm_string
+from parsers.strings import parse_fsm_string
 import pytest
 
-# Test cases organized as tuples of (input_bytes, expected_output)
 TEST_CASES = [
     (b"C/aaa\x0f\x00\x0f\n", sorted(["/aaa"]), "Single simple path"),
     (

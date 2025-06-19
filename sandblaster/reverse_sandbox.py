@@ -7,13 +7,9 @@ from typing import List, Optional, Tuple
 
 import sandbox_filter
 
-# import sandbox_regex
 from nodes import operation_node_builder
 from nodes import operation_node_parser
-from graphs import graph as graph_tools
-import regex_parser
-import networkx as nx
-
+import parsers.regex as regex
 
 REGEX_TABLE_OFFSET = 2
 REGEX_COUNT_OFFSET = 4
@@ -195,11 +191,8 @@ def parse_regex_list(infile: object, sandbox_data: SandboxData):
     for offset in offsets_table:
         infile.seek(offset * 8 + sandbox_data.base_addr)
         re_length = struct.unpack("<H", infile.read(2))[0]
-        d = infile.read(re_length)
-        regex_data = struct.unpack(f"<{re_length}B", d)
-        a = regex_parser.analyze(regex_data)
-        print("REGEX", a)
-        sandbox_data.regex_list.append(a)
+        data = infile.read(re_length)
+        sandbox_data.regex_list.append(regex.analyze(data))
 
 
 def parse_op_table(infile: object, sandbox_data: SandboxData):

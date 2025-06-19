@@ -195,11 +195,9 @@ def convert_paths_to_strings(
 
 
 def parse_fsm_string(fsm_bytes: bytes, global_vars: Sequence[str]) -> List[str]:
-    print(fsm_bytes)
     """End-to-end parsing: use match/case throughout."""
     callback_map = {i: f"[{name}]" for i, name in enumerate(global_vars)}
     ops = parse_fsa_pattern_bytecode(fsm_bytes, debug=False)
     indexed = convert_operations(ops)
-    print(indexed)
     paths = generate_paths(indexed)
     return convert_paths_to_strings(paths, indexed, callback_map)
