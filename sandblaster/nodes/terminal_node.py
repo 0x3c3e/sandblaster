@@ -1,6 +1,5 @@
 import os
 import json
-import sandbox_filter
 
 
 class TerminalNode:
@@ -13,7 +12,7 @@ class TerminalNode:
     @staticmethod
     def load_modifiers_db():
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(script_dir, "misc/modifiers.json")) as data:
+        with open(os.path.join(script_dir, "../misc/modifiers.json")) as data:
             temp = json.load(data)
         return temp["modifiers"]
 
@@ -85,15 +84,13 @@ class TerminalNode:
 
         return modifiers
 
-    def convert_filter(self, infile, sandbox_data):
+    def convert_filter(self, sandbox_data, filter_resolver, modifier_resolver):
         if self.inline_modifier:
             if not self.inline_modifier.policy_op_idx:
                 self.db_modifiers[self.INLINE_MODIFIERS].append(
                     self.get_modifier(self.inline_modifier.id, "id")
                 )
-                self.ss = sandbox_filter.convert_modifier_callback(
-                    infile,
-                    sandbox_data,
+                self.ss = modifier_resolver.resolve(
                     self.inline_modifier.id,
                     self.inline_modifier.argument,
                 )

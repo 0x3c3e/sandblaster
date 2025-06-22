@@ -1,80 +1,107 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, BinaryIO
 import struct
 import sys
+import logging
+
 import parsers.regex as regex
 from nodes import operation_node_parser
+from filters.filter_resolver import FilterResolver
+from filters.modifier_resolver import ModifierResolver
 
 
 @dataclass(slots=True)
 class SandboxPayload:
-    op_table: Optional[int] = None
+    infile: BinaryIO
+    base_addr: int
+
+    op_table: Optional[Tuple[int, ...]] = None
     regex_list: List[str] = field(default_factory=list)
     global_vars: List[str] = field(default_factory=list)
-    policies: Optional[Tuple[int]] = None
+    policies: Optional[Tuple[int, ...]] = None
     sb_ops: List[str] = field(default_factory=list)
-    operation_nodes: Optional[List[object]] = None
+    operation_nodes: Optional[object] = None
     ops_to_reverse: List[str] = field(default_factory=list)
 
-    def create_operation_nodes(
-        self, infile: object, op_nodes_count, sandbox_data
-    ) -> List[object]:
-        self.operation_nodes = operation_node_parser.OperionNodeParser()
-        self.operation_nodes.build_operation_nodes(infile, op_nodes_count, sandbox_data)
+    def parse(
+        self,
+        sandbox_data: object,
+        operations_file: str,
+        operation_filter: Optional[List[str]],
+        filters,
+        modifiers,
+    ) -> None:
+        self._read_sandbox_operations(operations_file)
+        if operation_filter:
+            self._filter_operations(operation_filter)
 
-    def parse_global_vars(
-        self, f: object, vars_offset, vars_count, base_addr
-    ) -> List[str]:
-        next_var_pointer = vars_offset
-
-        for _ in range(vars_count):
-            f.seek(next_var_pointer)
-            var_offset = struct.unpack("<H", f.read(2))[0]
-            f.seek(base_addr + (var_offset * 8))
-            string_len = struct.unpack("H", f.read(2))[0]
-            var_string = f.read(string_len - 1).decode("utf-8")
-            self.global_vars.append(var_string)
-            next_var_pointer += 2
-
-    def parse_policies(
-        self, f: object, entitlements_offset, entitlements_count
-    ) -> Tuple[int]:
-        f.seek(entitlements_offset)
-        self.policies = struct.unpack(
-            f"<{entitlements_count}H",
-            f.read(2 * entitlements_count),
+        self._parse_regex_list(
+            sandbox_data.regex_count, sandbox_data.regex_table_offset
         )
+        self._parse_global_vars(sandbox_data.vars_offset, sandbox_data.vars_count)
+        self._parse_policies(
+            sandbox_data.entitlements_offset, sandbox_data.entitlements_count
+        )
+        self._create_operation_nodes(
+            sandbox_data.op_nodes_count, sandbox_data.operation_nodes_offset, filters, modifiers
+        )
+        self._parse_op_table(sandbox_data.sb_ops_count, sandbox_data.profiles_offset)
 
-    def read_sandbox_operations(self, operations_file):
-        with open(operations_file) as file:
-            self.sb_ops = [line.strip() for line in file.readlines()]
+    def _read_sandbox_operations(self, path: str) -> None:
+        with open(path, "r") as f:
+            self.sb_ops = [line.strip() for line in f if line.strip()]
+        logging.info(f"Read {len(self.sb_ops)} sandbox operations")
 
-    def filter_sandbox_operations(self, operation):
-        for op in operation:
-            if op not in self.sb_ops:
-                sys.exit(1)
-            self.ops_to_reverse.append(op)
+    def _filter_operations(self, ops: List[str]) -> None:
+        missing = [op for op in ops if op not in self.sb_ops]
+        if missing:
+            logging.error(f"Invalid operations requested: {missing}")
+            sys.exit(1)
+        self.ops_to_reverse = ops
+        logging.info(f"Filtered operations: {ops}")
 
-    def parse_regex_list(
-        self, infile: object, regex_count, regex_table_offset, base_addr
-    ):
-        if not regex_count:
+    def _parse_regex_list(self, count: int, offset: int) -> None:
+        if count == 0:
             return
+        self.infile.seek(offset)
+        offsets = struct.unpack(f"<{count}H", self.infile.read(2 * count))
 
-        infile.seek(regex_table_offset)
-        offsets_table = struct.unpack(
-            f"<{regex_count}H",
-            infile.read(2 * regex_count),
-        )
-
-        for offset in offsets_table:
-            infile.seek(offset * 8 + base_addr)
-            re_length = struct.unpack("<H", infile.read(2))[0]
-            data = infile.read(re_length)
+        for off in offsets:
+            self.infile.seek(self.base_addr + off * 8)
+            length = struct.unpack("<H", self.infile.read(2))[0]
+            data = self.infile.read(length)
             self.regex_list.append(regex.analyze(data))
+        logging.info(f"Parsed {len(self.regex_list)} regex entries")
 
-    def parse_op_table(self, infile: object, sb_ops_count):
-        self.op_table = struct.unpack(
-            f"<{sb_ops_count}H",
-            infile.read(2 * sb_ops_count),
+    def _parse_global_vars(self, offset: int, count: int) -> None:
+        for i in range(count):
+            self.infile.seek(offset + i * 2)
+            var_offset = struct.unpack("<H", self.infile.read(2))[0]
+            self.infile.seek(self.base_addr + var_offset * 8)
+            strlen = struct.unpack("<H", self.infile.read(2))[0]
+            string = self.infile.read(strlen - 1).decode("utf-8")
+            self.global_vars.append(string)
+        logging.info(f"Parsed global vars: {self.global_vars}")
+
+    def _parse_policies(self, offset: int, count: int) -> None:
+        self.infile.seek(offset)
+        self.policies = struct.unpack(f"<{count}H", self.infile.read(2 * count))
+
+    def _create_operation_nodes(self, count: int, offset: int, filters, modifiers) -> None:
+        filter_resolver = FilterResolver(
+            self.infile, self.base_addr, self.regex_list, self.global_vars, filters
         )
+        modifier_resolver = ModifierResolver(
+            self.infile, self.base_addr, self.regex_list, self.global_vars, modifiers
+        )
+        self.infile.seek(offset)
+        parser = operation_node_parser.OperionNodeParser()
+        parser.build_operation_nodes(
+            self.infile, count, self, filter_resolver, modifier_resolver
+        )
+        self.operation_nodes = parser
+        logging.info(f"Parsed {count} operation nodes")
+
+    def _parse_op_table(self, count: int, offset: int) -> None:
+        self.infile.seek(offset)
+        self.op_table = struct.unpack(f"<{count}H", self.infile.read(2 * count))

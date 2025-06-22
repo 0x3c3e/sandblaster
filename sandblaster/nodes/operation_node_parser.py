@@ -15,7 +15,9 @@ class OperionNodeParser:
         node.parse_raw()
         return node
 
-    def build_operation_nodes(self, f, num_operation_nodes, sandbox_data):
+    def build_operation_nodes(
+        self, f, num_operation_nodes, sandbox_data, filter_resolver, modifier_resolver
+    ):
         for i in range(num_operation_nodes):
             raw = struct.unpack("<8B", f.read(8))
             node = self.build_operation_node(raw, i)
@@ -23,8 +25,9 @@ class OperionNodeParser:
             self.cache[node.offset] = node
         for op_node in self.operation_nodes:
             op_node.convert_filter(
-                f,
                 sandbox_data,
+                filter_resolver,
+                modifier_resolver,
             )
             if not op_node.is_non_terminal():
                 continue
