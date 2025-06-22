@@ -8,7 +8,12 @@ logger = logging.getLogger(__name__)
 
 class ModifierResolver:
     def __init__(
-        self, f: BinaryIO, base_addr: int, regex_list: List[str], global_vars: List[Any], modifiers
+        self,
+        f: BinaryIO,
+        base_addr: int,
+        regex_list: List[str],
+        global_vars: List[Any],
+        modifiers,
     ):
         self.f = f
         self.base_addr = base_addr

@@ -8,6 +8,7 @@ import parsers.regex as regex
 from nodes import operation_node_parser
 from filters.filter_resolver import FilterResolver
 from filters.modifier_resolver import ModifierResolver
+from filters.terminal_resolver import TerminalResolver
 
 
 @dataclass(slots=True)
@@ -30,6 +31,7 @@ class SandboxPayload:
         operation_filter: Optional[List[str]],
         filters,
         modifiers,
+        terminals,
     ) -> None:
         self._read_sandbox_operations(operations_file)
         if operation_filter:
@@ -43,7 +45,11 @@ class SandboxPayload:
             sandbox_data.entitlements_offset, sandbox_data.entitlements_count
         )
         self._create_operation_nodes(
-            sandbox_data.op_nodes_count, sandbox_data.operation_nodes_offset, filters, modifiers
+            sandbox_data.op_nodes_count,
+            sandbox_data.operation_nodes_offset,
+            filters,
+            modifiers,
+            terminals,
         )
         self._parse_op_table(sandbox_data.sb_ops_count, sandbox_data.profiles_offset)
 
@@ -87,17 +93,25 @@ class SandboxPayload:
         self.infile.seek(offset)
         self.policies = struct.unpack(f"<{count}H", self.infile.read(2 * count))
 
-    def _create_operation_nodes(self, count: int, offset: int, filters, modifiers) -> None:
+    def _create_operation_nodes(
+        self, count: int, offset: int, filters, modifiers, terminals
+    ) -> None:
         filter_resolver = FilterResolver(
             self.infile, self.base_addr, self.regex_list, self.global_vars, filters
         )
         modifier_resolver = ModifierResolver(
             self.infile, self.base_addr, self.regex_list, self.global_vars, modifiers
         )
+        terminal_resolver = TerminalResolver(terminals)
         self.infile.seek(offset)
         parser = operation_node_parser.OperionNodeParser()
         parser.build_operation_nodes(
-            self.infile, count, self, filter_resolver, modifier_resolver
+            self.infile,
+            count,
+            self,
+            filter_resolver,
+            modifier_resolver,
+            terminal_resolver,
         )
         self.operation_nodes = parser
         logging.info(f"Parsed {count} operation nodes")

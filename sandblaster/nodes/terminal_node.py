@@ -1,22 +1,9 @@
-import os
-import json
-
-
 class TerminalNode:
     TERMINAL_NODE_TYPE_ALLOW = 0x00
     TERMINAL_NODE_TYPE_DENY = 0x01
 
     INLINE_MODIFIERS = "inline_modifiers"
     FLAGS_MODIFIERS = "flags_modifiers"
-
-    @staticmethod
-    def load_modifiers_db():
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(script_dir, "../misc/modifiers.json")) as data:
-            temp = json.load(data)
-        return temp["modifiers"]
-
-    modifiers_db = load_modifiers_db()
 
     def __init__(self):
         self.type = None
@@ -51,44 +38,19 @@ class TerminalNode:
                         ret += f" (with {modifier['name']} {self.ss})"
                 else:
                     ret += str(self.inline_operation_node)
-
         for modifier in self.db_modifiers[self.FLAGS_MODIFIERS]:
             if modifier and "name" in modifier.keys():
                 ret += f" (with {modifier['name']})"
 
         return ret
 
-    def get_modifier(self, key_value, key_name):
-        for i in self.modifiers_db:
-            if i[key_name] == key_value:
-                return i
-
-    def get_modifiers_by_flag(self, flags):
-        modifiers = []
-        for modifier in self.modifiers_db:
-            # should be if modifier['action_mask'] ... currently ignoring 'no-report' modifier
-            if modifier["action_mask"] and (
-                flags & modifier["action_mask"] == modifier["action_flag"]
-            ):
-                # remove default with report
-                if (
-                    modifier["name"] == "report" and self.is_deny()
-                ):  # report is default for deny
-                    continue
-                if (
-                    modifier["name"] == "no-report" and self.is_allow()
-                ):  # report is default for allow
-                    continue
-                # need to add no-report
-                modifiers.append(modifier)
-
-        return modifiers
-
-    def convert_filter(self, sandbox_data, filter_resolver, modifier_resolver):
+    def convert_filter(
+        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
+    ):
         if self.inline_modifier:
             if not self.inline_modifier.policy_op_idx:
                 self.db_modifiers[self.INLINE_MODIFIERS].append(
-                    self.get_modifier(self.inline_modifier.id, "id")
+                    terminal_resolver.get_modifier(self.inline_modifier.id)
                 )
                 self.ss = modifier_resolver.resolve(
                     self.inline_modifier.id,
@@ -101,9 +63,10 @@ class TerminalNode:
                 self.inline_operation_node = sandbox_data.operation_nodes[
                     sandbox_data.policies[self.inline_modifier.argument]
                 ]
-
         self.db_modifiers[self.FLAGS_MODIFIERS].extend(
-            self.get_modifiers_by_flag(self.modifier.flags)
+            terminal_resolver.get_modifiers_by_flag(
+                self.modifier.flags, self.is_deny(), self.is_allow()
+            )
         )
         self.parsed = True
 

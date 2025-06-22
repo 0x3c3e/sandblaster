@@ -32,7 +32,9 @@ class NonTerminalNode:
             return (self.filter, self.argument)
         return ("%02x" % self.filter_id, "%04x" % (self.argument_id))
 
-    def convert_filter(self, sandbox_data, filter_resolver, modifier_resolver):
+    def convert_filter(
+        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
+    ):
         (self.filter, self.argument) = filter_resolver.resolve(
             self.filter_id, self.argument_id
         )

@@ -71,8 +71,12 @@ class OperationNode:
         elif self.is_non_terminal():
             self.parse_non_terminal()
 
-    def convert_filter(self, sandbox_data, filter_resolver, modifier_resolver):
-        self.node.convert_filter(sandbox_data, filter_resolver, modifier_resolver)
+    def convert_filter(
+        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
+    ):
+        self.node.convert_filter(
+            sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
+        )
 
     def __str__(self):
         return str(self.node)

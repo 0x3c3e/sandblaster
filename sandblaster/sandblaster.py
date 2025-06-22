@@ -5,6 +5,7 @@ from parsers.profile import SandboxPayload
 from nodes import operation_node_builder
 from configs.filters import Filters
 
+
 def process_profile(output_path: str, payload: SandboxPayload) -> None:
     """
     Build and output the operation node graphs for selected operations.
@@ -58,10 +59,18 @@ def main() -> int:
 
     filters = Filters("./misc/filters.json")
     modifiers = Filters("./misc/modifiers_functions.json")
+    terminals = Filters("./misc/modifiers.json")
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxHeader.from_file(infile)
         payload = SandboxPayload(infile=infile, base_addr=sandbox_data.base_addr)
-        payload.parse(sandbox_data, args.operations_file, args.operation, filters, modifiers)
+        payload.parse(
+            sandbox_data,
+            args.operations_file,
+            args.operation,
+            filters,
+            modifiers,
+            terminals,
+        )
 
     process_profile(args.output, payload)
     return 0

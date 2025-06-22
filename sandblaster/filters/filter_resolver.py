@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 
 class FilterResolver:
     def __init__(
-        self, f: BinaryIO, base_addr: int, regex_list: List[str], global_vars: List[Any], filters
+        self,
+        f: BinaryIO,
+        base_addr: int,
+        regex_list: List[str],
+        global_vars: List[Any],
+        filters,
     ):
         self.f = f
         self.base_addr = base_addr
