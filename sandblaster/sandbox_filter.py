@@ -70,8 +70,8 @@ def sb_filter_is_case_sensitive(filter_id):
 def convert_filter_callback(f, sandbox_data, filter_id, filter_arg):
     ctx = FilterContext(
         base_addr=sandbox_data.base_addr,
-        regex_list=sandbox_data.regex_list,
-        global_vars=sandbox_data.global_vars,
+        regex_list=sandbox_data.payload.regex_list,
+        global_vars=sandbox_data.payload.global_vars,
     )
 
     if not Filters.exists(filter_id):
@@ -108,8 +108,8 @@ def convert_filter_callback(f, sandbox_data, filter_id, filter_arg):
 def convert_modifier_callback(f, sandbox_data, modifier_id, modifier_argument):
     ctx = FilterContext(
         base_addr=sandbox_data.base_addr,
-        regex_list=sandbox_data.regex_list,
-        global_vars=sandbox_data.global_vars,
+        regex_list=sandbox_data.payload.regex_list,
+        global_vars=sandbox_data.payload.global_vars,
     )
 
     if not Modifiers.exists(modifier_id):
