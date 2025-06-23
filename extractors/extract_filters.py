@@ -2,15 +2,6 @@ import sys
 import lief
 import json
 
-
-# sb_condition_is_boolean, 1
-# sb_condition_is_integer, 3
-# sb_condition_is_string_textbuf, 4
-# sb_pattern_is_literal, 5
-# sb_condition_is_pattern, v-5 > 3
-# sb_condition_is_regex, 9
-# sb_condition_is_network, 10
-# sb_condition_is_bitmask, 11
 mapping = {
     0x1: "SB_VALUE_TYPE_BOOL",
     0x2: "SB_VALUE_TYPE_BITFIELD",

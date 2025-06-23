@@ -1,55 +1,79 @@
+from dataclasses import dataclass, field
+from typing import Optional, List, Dict, Any
+from nodes.modifier import InlineModifier, Modifier
+
+@dataclass(slots=True)
 class TerminalNode:
+    # Required (non-default) fields
+    type: int
+    modifier_flags: int
+    modifier: Modifier
+    parent: object
+    action_inline: bool
+    inline_modifier: Optional[InlineModifier]
+
+    # Class-level constants
     TERMINAL_NODE_TYPE_ALLOW = 0x00
     TERMINAL_NODE_TYPE_DENY = 0x01
 
-    INLINE_MODIFIERS = "inline_modifiers"
-    FLAGS_MODIFIERS = "flags_modifiers"
+    # Optional/resolved fields
+    flags: Optional[int] = None
+    action: Optional[str] = None
+    inline_operation_node: Optional[object] = None
+    ss: Optional[Any] = None
+    operation_name: Optional[str] = None
+    parsed: bool = False
 
-    def __init__(self):
-        self.type = None
-        self.flags = None
-        self.action = None
-        self.modifier_flags = None
-        self.action_inline = None
-        self.inline_modifier = None
-        self.modifier = None
-        self.inline_operation_node = None
-        self.ss = None
-        self.db_modifiers = {self.INLINE_MODIFIERS: [], self.FLAGS_MODIFIERS: []}
-        self.parsed = False
-        self.operation_name = None
+    db_modifiers: Dict[str, List[Dict[str, Any]]] = field(default_factory=lambda: {
+        "inline_modifiers": [],
+        "flags_modifiers": []
+    })
+
+    @classmethod
+    def from_raw(cls, parent, raw: bytes) -> "TerminalNode":
+        type_ = raw[1] & 1
+        modifier_flags = raw[1] | (raw[2] << 8) | (raw[3] << 16)
+        action_inline = (modifier_flags & 0x800000) != 0
+
+        inline_modifier = (
+            InlineModifier(raw[4], raw[5], raw[6] + (raw[7] << 8))
+            if action_inline else None
+        )
+
+        modifier = Modifier(modifier_flags, raw[4], raw[5], raw[6] + (raw[7] << 8))
+
+        return cls(
+            type=type_,
+            modifier_flags=modifier_flags,
+            modifier=modifier,
+            parent=parent,
+            action_inline=action_inline,
+            inline_modifier=inline_modifier,
+        )
 
     def __eq__(self, other):
         return self.type == other.type and self.flags == other.flags
 
     def __str__(self):
-        ret = ""
-        if self.type == self.TERMINAL_NODE_TYPE_ALLOW:
-            ret += "allow"
-        elif self.type == self.TERMINAL_NODE_TYPE_DENY:
-            ret += "deny"
-        else:
-            ret += "unknown"
+        parts = ["allow" if self.is_allow() else "deny" if self.is_deny() else "unknown"]
 
         if self.parsed:
-            if self.action_inline:
+            if self.action_inline and self.inline_modifier:
                 if not self.inline_modifier.policy_op_idx:
-                    for modifier in self.db_modifiers[self.INLINE_MODIFIERS]:
-                        ret += f" (with {modifier['name']} {self.ss})"
+                    for mod in self.db_modifiers["inline_modifiers"]:
+                        parts.append(f"(with {mod['name']} {self.ss})")
                 else:
-                    ret += str(self.inline_operation_node)
-        for modifier in self.db_modifiers[self.FLAGS_MODIFIERS]:
-            if modifier and "name" in modifier.keys():
-                ret += f" (with {modifier['name']})"
+                    parts.append(str(self.inline_operation_node))
+            for mod in self.db_modifiers["flags_modifiers"]:
+                if mod and "name" in mod:
+                    parts.append(f"(with {mod['name']})")
 
-        return ret
+        return " ".join(parts)
 
-    def convert_filter(
-        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
-    ):
+    def convert_filter(self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver):
         if self.inline_modifier:
             if not self.inline_modifier.policy_op_idx:
-                self.db_modifiers[self.INLINE_MODIFIERS].append(
+                self.db_modifiers["inline_modifiers"].append(
                     terminal_resolver.get_modifier(self.inline_modifier.id)
                 )
                 self.ss = modifier_resolver.resolve(
@@ -57,21 +81,20 @@ class TerminalNode:
                     self.inline_modifier.argument,
                 )
             else:
-                self.operation_name = sandbox_data.sb_ops[
-                    self.inline_modifier.policy_op_idx
-                ]
+                self.operation_name = sandbox_data.sb_ops[self.inline_modifier.policy_op_idx]
                 self.inline_operation_node = sandbox_data.operation_nodes[
                     sandbox_data.policies[self.inline_modifier.argument]
                 ]
-        self.db_modifiers[self.FLAGS_MODIFIERS].extend(
+
+        self.db_modifiers["flags_modifiers"].extend(
             terminal_resolver.get_modifiers_by_flag(
                 self.modifier.flags, self.is_deny(), self.is_allow()
             )
         )
         self.parsed = True
 
-    def is_allow(self):
+    def is_allow(self) -> bool:
         return self.type == self.TERMINAL_NODE_TYPE_ALLOW
 
-    def is_deny(self):
+    def is_deny(self) -> bool:
         return self.type == self.TERMINAL_NODE_TYPE_DENY
