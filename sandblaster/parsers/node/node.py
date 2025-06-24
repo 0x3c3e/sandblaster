@@ -10,7 +10,7 @@ class NodeType(IntEnum):
 
 
 class NodeParser:
-    def parse_operation_node(
+    def _parse_operation_node(
         self, offset: int, raw: bytes
     ) -> Union[TerminalNode, NonTerminalNode]:
         node_type = NodeType(raw[0])
@@ -19,12 +19,16 @@ class NodeParser:
             return TerminalNode.from_raw(offset, raw)
         return NonTerminalNode.from_raw(offset, raw)
 
-    def build_operation_nodes(
+    def parse(
         self,
         f,
         num_operation_nodes,
     ):
         nodes = {}
+        flags = set()
         for i in range(num_operation_nodes):
-            nodes[i] = self.parse_operation_node(i, f.read(8))
-        return nodes
+            node = self._parse_operation_node(i, f.read(8))
+            nodes[i] = node
+            if isinstance(node, TerminalNode):
+                flags.add(node.modifier_flags)
+        return nodes, flags

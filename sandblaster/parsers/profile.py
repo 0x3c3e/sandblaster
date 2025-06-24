@@ -4,7 +4,8 @@ import struct
 import sys
 import logging
 
-import parsers.regex as regex
+from parsers.specialized.globals_parser import GlobalVarsParser
+from parsers.specialized.regex_parser import RegexListParser
 from parsers.node.node import NodeParser
 from parsers.node.graph import NodeGraph
 from filters.filter_resolver import FilterResolver
@@ -38,10 +39,18 @@ class SandboxPayload:
         if operation_filter:
             self._filter_operations(operation_filter)
 
-        self._parse_regex_list(
-            sandbox_data.regex_count, sandbox_data.regex_table_offset
+        self.regex_list = RegexListParser.parse(
+            self.infile,
+            self.base_addr,
+            sandbox_data.regex_count,
+            sandbox_data.regex_table_offset,
         )
-        self._parse_global_vars(sandbox_data.vars_offset, sandbox_data.vars_count)
+        self.global_vars = GlobalVarsParser.parse(
+            self.infile,
+            self.base_addr,
+            sandbox_data.vars_count,
+            sandbox_data.vars_offset,
+        )
         self._parse_policies(
             sandbox_data.entitlements_offset, sandbox_data.entitlements_count
         )
@@ -67,29 +76,6 @@ class SandboxPayload:
         self.ops_to_reverse = ops
         logging.info(f"Filtered operations: {ops}")
 
-    def _parse_regex_list(self, count: int, offset: int) -> None:
-        if count == 0:
-            return
-        self.infile.seek(offset)
-        offsets = struct.unpack(f"<{count}H", self.infile.read(2 * count))
-
-        for off in offsets:
-            self.infile.seek(self.base_addr + off * 8)
-            length = struct.unpack("<H", self.infile.read(2))[0]
-            data = self.infile.read(length)
-            self.regex_list.append(regex.analyze(data))
-        logging.info(f"Parsed {len(self.regex_list)} regex entries")
-
-    def _parse_global_vars(self, offset: int, count: int) -> None:
-        for i in range(count):
-            self.infile.seek(offset + i * 2)
-            var_offset = struct.unpack("<H", self.infile.read(2))[0]
-            self.infile.seek(self.base_addr + var_offset * 8)
-            strlen = struct.unpack("<H", self.infile.read(2))[0]
-            string = self.infile.read(strlen - 1).decode("utf-8")
-            self.global_vars.append(string)
-        logging.info(f"Parsed global vars: {self.global_vars}")
-
     def _parse_policies(self, offset: int, count: int) -> None:
         self.infile.seek(offset)
         self.policies = struct.unpack(f"<{count}H", self.infile.read(2 * count))
@@ -105,13 +91,12 @@ class SandboxPayload:
         )
         self.infile.seek(offset)
         parser = NodeParser()
-        nodes = parser.build_operation_nodes(
+        nodes, flags = parser.parse(
             self.infile,
             count,
         )
         graph = NodeGraph(nodes)
-        graph.collect_used_flags()
-        terminal_resolver = TerminalResolver(terminals, graph.flags)
+        terminal_resolver = TerminalResolver(terminals, flags)
         graph.link()
         graph.convert(
             self,
