@@ -2,7 +2,7 @@ import sys
 import argparse
 from parsers.header import SandboxHeader
 from parsers.profile import SandboxPayload
-from nodes import operation_node_builder
+from parsers.graph import GraphParser
 from configs.filters import Filters
 
 
@@ -24,18 +24,16 @@ def process_profile(output_path: str, payload: SandboxPayload) -> None:
             if not node:
                 continue
 
-            graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
+            graph_builder = GraphParser(node)
             graph = graph_builder.build_operation_node_graph()
 
-            graph_builder.export_dot("../dots/out.dot")
+            # graph_builder.export_dot("../dots/out.dot")
             for graph_node_offset in graph.nodes:
                 graph_node = payload.operation_nodes.find_operation_node_by_offset(
                     graph_node_offset
                 )
                 if graph_node:
-                    print(
-                        graph_node_offset, graph_node, getattr(graph_node, "raw", None)
-                    )
+                    print(graph_node_offset, graph_node, graph_node.raw)
 
 
 def main() -> int:

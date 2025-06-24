@@ -5,7 +5,7 @@ import sys
 import logging
 
 import parsers.regex as regex
-from nodes import operation_node_parser
+from parsers.node import NodeParser
 from filters.filter_resolver import FilterResolver
 from filters.modifier_resolver import ModifierResolver
 from filters.terminal_resolver import TerminalResolver
@@ -103,13 +103,12 @@ class SandboxPayload:
             self.infile, self.base_addr, self.regex_list, self.global_vars, modifiers
         )
         self.infile.seek(offset)
-        parser = operation_node_parser.OperationNodeParser()
+        parser = NodeParser()
         parser.build_operation_nodes(
             self.infile,
             count,
         )
         parser.collect_used_flags()
-        print("FLAGS", parser.flags)
         terminal_resolver = TerminalResolver(terminals, parser.flags)
         parser.fill_operation_nodes(
             self,

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import BinaryIO
 import struct
+from functools import cached_property
 
 # ─── Low‑level constants ────────────────────────────────────────────────────────
 INDEX_SIZE = 2
@@ -14,7 +15,7 @@ def align_up(value: int, alignment: int = 8) -> int:
 
 
 # ─── Main data model ────────────────────────────────────────────────────────────
-@dataclass(slots=True)
+@dataclass
 class SandboxHeader:
     # • Raw header fields •
     header_size: int
@@ -28,43 +29,43 @@ class SandboxHeader:
     entitlements_count: int = 0
 
     # ── Offset & size properties ────────────────────────────────────────────────
-    @property
+    @cached_property
     def regex_table_offset(self) -> int:
         return self.header_size
 
-    @property
+    @cached_property
     def vars_offset(self) -> int:
         return self.regex_table_offset + self.regex_count * INDEX_SIZE
 
-    @property
+    @cached_property
     def states_offset(self) -> int:
         return self.vars_offset + self.vars_count * INDEX_SIZE
 
-    @property
+    @cached_property
     def entitlements_offset(self) -> int:
         return self.states_offset + self.states_count * INDEX_SIZE
 
-    @property
+    @cached_property
     def profiles_offset(self) -> int:
         return self.entitlements_offset + self.entitlements_count * INDEX_SIZE
 
-    @property
+    @cached_property
     def profile_record_size(self) -> int:
         return self.sb_ops_count * INDEX_SIZE + PROFILE_OPS_OFFSET
 
-    @property
+    @cached_property
     def profiles_end_offset(self) -> int:
         return self.profiles_offset + self.num_profiles * self.profile_record_size
 
-    @property
+    @cached_property
     def operation_nodes_size(self) -> int:
         return self.op_nodes_count * OPERATION_NODE_SIZE
 
-    @property
+    @cached_property
     def operation_nodes_offset(self) -> int:
         return align_up(self.profiles_end_offset + self.sb_ops_count * INDEX_SIZE)
 
-    @property
+    @cached_property
     def base_addr(self) -> int:
         return self.operation_nodes_offset + self.operation_nodes_size
 

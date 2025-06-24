@@ -1,9 +1,9 @@
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from nodes.terminal_node import TerminalNode
+from nodes.terminal import TerminalNode
 
 
-class OperationNodeGraphBuilder:
+class GraphParser:
     def __init__(self, node):
         self.graph = nx.DiGraph()
         self.graph.add_node(node.offset, start=True)
@@ -55,11 +55,11 @@ class OperationNodeGraphBuilder:
             self.add_path(False)
             self.add_path(True)
         elif not match_is_terminal and unmatch_is_terminal:
-            self.add_path(non_terminal.unmatch.is_allow())
-            self.add_path(not non_terminal.unmatch.is_allow())
+            self.add_path(non_terminal.unmatch.is_allow)
+            self.add_path(not non_terminal.unmatch.is_allow)
         elif match_is_terminal and not unmatch_is_terminal:
-            self.add_path(non_terminal.match.is_allow())
-            self.add_path(not non_terminal.match.is_allow())
+            self.add_path(non_terminal.match.is_allow)
+            self.add_path(not non_terminal.match.is_allow)
         elif match_is_terminal and unmatch_is_terminal:
             self.add_path(True)
             self.add_path(False)

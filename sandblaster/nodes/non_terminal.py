@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
+from functools import cached_property
 
 
-@dataclass(slots=True)
+@dataclass
 class NonTerminalNode:
     offset: int
     raw: bytes
@@ -17,19 +18,19 @@ class NonTerminalNode:
     def from_raw(cls, offset: int, raw: bytes) -> "NonTerminalNode":
         return cls(offset=offset, raw=raw)
 
-    @property
+    @cached_property
     def filter_id(self) -> int:
         return self.raw[1]
 
-    @property
+    @cached_property
     def argument_id(self) -> int:
         return self.raw[2] | (self.raw[3] << 8)
 
-    @property
+    @cached_property
     def match_offset(self) -> int:
         return self.raw[4] | (self.raw[5] << 8)
 
-    @property
+    @cached_property
     def unmatch_offset(self) -> int:
         return self.raw[6] | (self.raw[7] << 8)
 
