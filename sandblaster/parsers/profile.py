@@ -102,12 +102,16 @@ class SandboxPayload:
         modifier_resolver = ModifierResolver(
             self.infile, self.base_addr, self.regex_list, self.global_vars, modifiers
         )
-        terminal_resolver = TerminalResolver(terminals)
         self.infile.seek(offset)
-        parser = operation_node_parser.OperionNodeParser()
+        parser = operation_node_parser.OperationNodeParser()
         parser.build_operation_nodes(
             self.infile,
             count,
+        )
+        parser.collect_used_flags()
+        print("FLAGS", parser.flags)
+        terminal_resolver = TerminalResolver(terminals, parser.flags)
+        parser.fill_operation_nodes(
             self,
             filter_resolver,
             modifier_resolver,

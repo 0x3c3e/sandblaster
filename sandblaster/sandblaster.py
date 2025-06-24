@@ -21,12 +21,13 @@ def process_profile(output_path: str, payload: SandboxPayload) -> None:
                 continue
 
             node = payload.operation_nodes.find_operation_node_by_offset(offset)
-            if not node or not node.node:
+            if not node:
                 continue
 
             graph_builder = operation_node_builder.OperationNodeGraphBuilder(node)
             graph = graph_builder.build_operation_node_graph()
 
+            graph_builder.export_dot("../dots/out.dot")
             for graph_node_offset in graph.nodes:
                 graph_node = payload.operation_nodes.find_operation_node_by_offset(
                     graph_node_offset

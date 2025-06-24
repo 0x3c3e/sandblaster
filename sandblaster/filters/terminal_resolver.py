@@ -1,24 +1,27 @@
+from collections import defaultdict
+
+
 class TerminalResolver:
-    def __init__(self, modifiers):
-        self.modifiers = modifiers
+    def __init__(self, modifiers, used_flags: set[int]):
+        self._modifiers_by_id = modifiers._filters
+        self._modifiers_by_name = {m["name"]: m for m in self._modifiers_by_id.values()}
+        self._modifiers_by_flags_context = defaultdict(list)
 
-    def get_modifiers_by_flag(self, flags, deny, allow):
-        modifiers = []
-        for modifier in self.modifiers._filters.values():
-            # should be if modifier['action_mask'] ... currently ignoring 'no-report' modifier
-            if modifier["action_mask"] and (
-                flags & modifier["action_mask"] == modifier["action_flag"]
-            ):
-                # remove default with report
-                if modifier["name"] == "report" and deny:  # report is default for deny
-                    continue
-                if (
-                    modifier["name"] == "no-report" and allow
-                ):  # report is default for allow
-                    continue
-                # need to add no-report
-                modifiers.append(modifier)
-        return modifiers
+        for m in self._modifiers_by_id.values():
+            mask = m["action_mask"]
+            if not mask:
+                continue
+            flag = m["action_flag"]
 
-    def get_modifier(self, id):
-        return self.modifiers._filters[id]
+            for f in used_flags:
+                if (f & mask) == flag:
+                    self._modifiers_by_flags_context[f].append(m)
+
+    def get_modifier(self, id: int) -> dict:
+        return self._modifiers_by_id[id]
+
+    def get_modifier_by_name(self, name: str) -> dict:
+        return self._modifiers_by_name.get(name)
+
+    def get_modifiers_by_flag(self, flags: int) -> list[dict]:
+        return self._modifiers_by_flags_context[flags]
