@@ -5,7 +5,8 @@ import sys
 import logging
 
 import parsers.regex as regex
-from parsers.node import NodeParser
+from parsers.node.node import NodeParser
+from parsers.node.graph import NodeGraph
 from filters.filter_resolver import FilterResolver
 from filters.modifier_resolver import ModifierResolver
 from filters.terminal_resolver import TerminalResolver
@@ -104,19 +105,21 @@ class SandboxPayload:
         )
         self.infile.seek(offset)
         parser = NodeParser()
-        parser.build_operation_nodes(
+        nodes = parser.build_operation_nodes(
             self.infile,
             count,
         )
-        parser.collect_used_flags()
-        terminal_resolver = TerminalResolver(terminals, parser.flags)
-        parser.fill_operation_nodes(
+        graph = NodeGraph(nodes)
+        graph.collect_used_flags()
+        terminal_resolver = TerminalResolver(terminals, graph.flags)
+        graph.link()
+        graph.convert(
             self,
             filter_resolver,
             modifier_resolver,
             terminal_resolver,
         )
-        self.operation_nodes = parser
+        self.operation_nodes = graph
         logging.info(f"Parsed {count} operation nodes")
 
     def _parse_op_table(self, count: int, offset: int) -> None:

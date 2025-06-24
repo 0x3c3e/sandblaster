@@ -1,6 +1,6 @@
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from nodes.terminal import TerminalNode
+from nodes.terminal import TerminalNode, NodeType
 
 
 class GraphParser:
@@ -48,18 +48,17 @@ class GraphParser:
         self.nodes_to_process.add(match_node)
 
     def decide_and_add_paths(self) -> None:
-        non_terminal = self.node
-        match_is_terminal = isinstance(non_terminal.match, TerminalNode)
-        unmatch_is_terminal = isinstance(non_terminal.unmatch, TerminalNode)
+        match_is_terminal = isinstance(self.node.match, TerminalNode)
+        unmatch_is_terminal = isinstance(self.node.unmatch, TerminalNode)
         if not match_is_terminal and not unmatch_is_terminal:
             self.add_path(False)
             self.add_path(True)
         elif not match_is_terminal and unmatch_is_terminal:
-            self.add_path(non_terminal.unmatch.is_allow)
-            self.add_path(not non_terminal.unmatch.is_allow)
+            self.add_path(self.node.unmatch.type == NodeType.ALLOW)
+            self.add_path(self.node.unmatch.type == NodeType.DENY)
         elif match_is_terminal and not unmatch_is_terminal:
-            self.add_path(non_terminal.match.is_allow)
-            self.add_path(not non_terminal.match.is_allow)
+            self.add_path(self.node.match.type == NodeType.ALLOW)
+            self.add_path(self.node.match.type == NodeType.DENY)
         elif match_is_terminal and unmatch_is_terminal:
             self.add_path(True)
             self.add_path(False)

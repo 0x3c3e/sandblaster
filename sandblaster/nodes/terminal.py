@@ -1,15 +1,21 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any
 from functools import cached_property
+from enum import IntEnum
+
+
+class NodeType(IntEnum):
+    ALLOW = 0x00
+    DENY = 0x01
+
+    def __str__(self) -> str:
+        return self.name.lower()
 
 
 @dataclass
 class TerminalNode:
     offset: int
     raw: bytes
-
-    TERMINAL_NODE_TYPE_ALLOW = 0x00
-    TERMINAL_NODE_TYPE_DENY = 0x01
 
     # Resolved fields
     flags: Optional[int] = None
@@ -49,15 +55,7 @@ class TerminalNode:
 
     @cached_property
     def type(self) -> int:
-        return self.modifier_flags & 1
-
-    @cached_property
-    def is_allow(self) -> bool:
-        return self.type == self.TERMINAL_NODE_TYPE_ALLOW
-
-    @cached_property
-    def is_deny(self) -> bool:
-        return self.type == self.TERMINAL_NODE_TYPE_DENY
+        return NodeType(self.raw[1] & 1)
 
     def convert_filter(
         self,
@@ -81,18 +79,18 @@ class TerminalNode:
         self._str_repr = self._build_str_repr()  # ← precompute
 
     def _build_str_repr(self) -> str:
-        parts = ["allow" if self.is_allow else "deny" if self.is_deny else "unknown"]
+        parts = [str(self.type)]
 
         if self.action_inline:
             if not self.arg_id and self.inline_modifiers:
-                parts.append(f"(with {self.inline_modifiers.get('name')} {self.ss})")
+                name = self.inline_modifiers["name"]
+                parts.append(f"(with {name} {self.ss})")
             elif self.inline_operation_node:
                 parts.append(str(self.inline_operation_node))
 
         for mod in self.flags_modifiers:
-            name = mod.get("name")
-            if name:
-                parts.append(f"(with {name})")
+            name = mod["name"]
+            parts.append(f"(with {name})")
 
         return " ".join(parts)
 
