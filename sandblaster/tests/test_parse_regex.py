@@ -1,4 +1,4 @@
-from parsers.regex import analyze
+from sandblaster.parsers.regex import analyze
 import pytest
 
 

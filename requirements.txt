@@ -2,3 +2,4 @@ networkx
 lief
 z3-solver
 automata-lib
+pytest

@@ -1,4 +1,4 @@
-from nodes.terminal import TerminalNode
+from sandblaster.nodes.terminal import TerminalNode
 
 
 class NodeGraph:

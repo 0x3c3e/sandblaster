@@ -4,13 +4,13 @@ import struct
 import sys
 import logging
 
-from parsers.specialized.globals_parser import GlobalVarsParser
-from parsers.specialized.regex_parser import RegexListParser
-from parsers.node.node import NodeParser
-from parsers.node.graph import NodeGraph
-from filters.filter_resolver import FilterResolver
-from filters.modifier_resolver import ModifierResolver
-from filters.terminal_resolver import TerminalResolver
+from sandblaster.parsers.specialized.globals_parser import GlobalVarsParser
+from sandblaster.parsers.specialized.regex_parser import RegexListParser
+from sandblaster.parsers.node.node import NodeParser
+from sandblaster.parsers.node.graph import NodeGraph
+from sandblaster.filters.filter_resolver import FilterResolver
+from sandblaster.filters.modifier_resolver import ModifierResolver
+from sandblaster.filters.terminal_resolver import TerminalResolver
 
 
 @dataclass(slots=True)
@@ -33,7 +33,6 @@ class SandboxPayload:
         operation_filter: Optional[List[str]],
         filters,
         modifiers,
-        terminals,
     ) -> None:
         self._read_sandbox_operations(operations_file)
         if operation_filter:
@@ -59,7 +58,6 @@ class SandboxPayload:
             sandbox_data.operation_nodes_offset,
             filters,
             modifiers,
-            terminals,
         )
         self._parse_op_table(sandbox_data.sb_ops_count, sandbox_data.profiles_offset)
 
@@ -81,22 +79,22 @@ class SandboxPayload:
         self.policies = struct.unpack(f"<{count}H", self.infile.read(2 * count))
 
     def _create_operation_nodes(
-        self, count: int, offset: int, filters, modifiers, terminals
+        self, count: int, offset: int, filters, modifiers
     ) -> None:
+        self.infile.seek(offset)
         filter_resolver = FilterResolver(
             self.infile, self.base_addr, self.regex_list, self.global_vars, filters
         )
         modifier_resolver = ModifierResolver(
             self.infile, self.base_addr, self.regex_list, self.global_vars, modifiers
         )
-        self.infile.seek(offset)
         parser = NodeParser()
         nodes, flags = parser.parse(
             self.infile,
             count,
         )
         graph = NodeGraph(nodes)
-        terminal_resolver = TerminalResolver(terminals, flags)
+        terminal_resolver = TerminalResolver(modifiers, flags)
         graph.link()
         graph.convert(
             self,

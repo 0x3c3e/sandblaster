@@ -1,7 +1,7 @@
 from typing import Union
 from enum import IntEnum
-from nodes.terminal import TerminalNode
-from nodes.non_terminal import NonTerminalNode
+from sandblaster.nodes.terminal import TerminalNode
+from sandblaster.nodes.non_terminal import NonTerminalNode
 
 
 class NodeType(IntEnum):

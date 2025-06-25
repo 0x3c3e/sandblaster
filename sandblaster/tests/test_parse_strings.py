@@ -1,4 +1,4 @@
-from parsers.strings import parse_fsm_string
+from sandblaster.parsers.strings import parse_fsm_string
 import pytest
 
 TEST_CASES = [

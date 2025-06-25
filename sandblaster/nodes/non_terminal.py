@@ -35,11 +35,7 @@ class NonTerminalNode:
         return self.raw[6] | (self.raw[7] << 8)
 
     def convert_filter(
-        self,
-        sandbox_data,
-        filter_resolver,
-        modifier_resolver,
-        terminal_resolver,
+        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
     ):
         self.filter, self.argument = filter_resolver.resolve(
             self.filter_id, self.argument_id

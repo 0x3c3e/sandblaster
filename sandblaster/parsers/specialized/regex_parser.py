@@ -1,6 +1,6 @@
 import struct
 from typing import List, BinaryIO
-import parsers.regex as regex
+import sandblaster.parsers.regex as regex
 
 
 class RegexListParser:
@@ -17,8 +17,6 @@ class RegexListParser:
             infile.seek(base_addr + off * 8)
             length = struct.unpack("<H", infile.read(2))[0]
             data = infile.read(length)
-            regex_list.append(
-                regex.analyze(data)
-            )
+            regex_list.append(regex.analyze(data))
 
         return regex_list

@@ -2,8 +2,8 @@ import struct
 import logging
 from typing import List, Any, Tuple, Optional, BinaryIO
 
-from parsers.strings import parse_fsm_string
-from filters.base import FilterType
+from sandblaster.parsers.strings import parse_fsm_string
+from sandblaster.filters.base import FilterType
 
 logger = logging.getLogger(__name__)
 

@@ -1,9 +1,9 @@
-import sys
 import argparse
-from parsers.header import SandboxHeader
-from parsers.profile import SandboxPayload
-from parsers.graph import GraphParser
-from configs.filters import Filters
+import os
+from sandblaster.parsers.header import SandboxHeader
+from sandblaster.parsers.profile import SandboxPayload
+from sandblaster.parsers.graph import GraphParser
+from sandblaster.configs.filters import Filters
 
 
 def process_profile(output_path: str, payload: SandboxPayload) -> None:
@@ -37,43 +37,28 @@ def process_profile(output_path: str, payload: SandboxPayload) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Sandbox profile operation graph builder."
-    )
-    parser.add_argument("filename", help="Path to the binary sandbox profile.")
+    parser = argparse.ArgumentParser(description="Apple Sandbox Profiles Decompiler")
+    parser.add_argument("filename")
     parser.add_argument(
-        "-o",
-        "--operations_file",
+        "--operations",
         required=True,
-        help="File listing supported operations.",
     )
-    parser.add_argument(
-        "-n", "--operation", nargs="+", help="Operation(s) to reverse (optional)."
-    )
-    parser.add_argument(
-        "--output", required=True, help="Path to write the output file."
-    )
+    parser.add_argument("--filter")
+    parser.add_argument("--output", required=True)
 
     args = parser.parse_args()
 
-    filters = Filters("./misc/filters.json")
-    modifiers = Filters("./misc/modifiers_functions.json")
-    terminals = Filters("./misc/modifiers.json")
+    directory = os.path.abspath(os.path.dirname(__file__))
+    filters = Filters(directory + "/misc/filters.json")
+    modifiers = Filters(directory + "/misc/modifiers.json")
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxHeader.from_file(infile)
         payload = SandboxPayload(infile=infile, base_addr=sandbox_data.base_addr)
-        payload.parse(
-            sandbox_data,
-            args.operations_file,
-            args.operation,
-            filters,
-            modifiers,
-            terminals,
-        )
+        payload.parse(sandbox_data, args.operations, args.filter, filters, modifiers)
 
     process_profile(args.output, payload)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

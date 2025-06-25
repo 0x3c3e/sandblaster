@@ -75,7 +75,11 @@ def extract_data_between_variables(file_path, output_path):
         new_key = key + length + 0x20
         output[new_key] = {
             "name": output[key]["name"],
-            "argument_type": ("SB_VALUE_TYPE_INTEGER" if "INTEGER" in output[key]["argument_type"] else "SB_VALUE_TYPE_PATTERN_REGEX"),
+            "argument_type": (
+                "SB_VALUE_TYPE_INTEGER"
+                if "INTEGER" in output[key]["argument_type"]
+                else "SB_VALUE_TYPE_PATTERN_REGEX"
+            ),
         }
     with open(output_path, "w") as file:
         json.dump(output, file, indent=4, sort_keys=int)

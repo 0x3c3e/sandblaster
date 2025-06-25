@@ -1,6 +1,6 @@
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from nodes.terminal import TerminalNode, NodeType
+from sandblaster.nodes.terminal import TerminalNode, NodeType
 
 
 class GraphParser:

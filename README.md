@@ -16,17 +16,25 @@ python extractors/extract_sandbox_operations.py Sandbox.kext/Contents/MacOS/Sand
 python extractors/extract_profile_data_from_kext.py Sandbox.kext/Contents/MacOS/Sandbox profiles/profile_data
 ```
 
-### Requirements
+## Testing
+
+Create a virtual environment and install the required packages:
+
 ```sh
 pip install -r requirements.txt
 ```
 
-### Reversing the Sandbox
+Run the test suite with `pytest`:
 
+```sh
+pytest -q
+```
+
+### Reversing the Sandbox
 After extracting the necessary data, run the following command to reverse the sandbox profile:
 
 ```sh
-python reverse-sandbox/reverse_sandbox.py -o profiles/sandbox_operations profiles/profile_data --output profiles/profile_data_reversed
+python -m sandblaster --operations profiles/sandbox_operations profiles/profile_data --output profiles/profile_data_reversed
 ```
 
 ## Credits
