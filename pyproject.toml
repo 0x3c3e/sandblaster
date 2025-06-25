@@ -1,13 +1,27 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sandblaster"
 version = "1.0.0"
+dependencies = [
+    "networkx==2.8.8",
+    "z3-solver==4.13.4.0",
+    "pytest==8.4.0",
+    "lief==0.16.2",
+    "automata-lib==9.0.0"
+ ]
+
 
 [project.scripts]
-ssay = "sandblaster.__main__:main"
+sandblaster = "sandblaster.__main__:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"sandblaster.misc" = ["*.json"]
 
 [tool.setuptools.packages.find]
 where = ["."]
