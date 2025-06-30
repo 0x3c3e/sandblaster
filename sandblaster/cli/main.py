@@ -1,23 +1,9 @@
 import argparse
 from sandblaster.parsers.header import SandboxHeader
-from sandblaster.parsers.profile import SandboxPayload
 from sandblaster.parsers.sandbox import SandboxParser
 from sandblaster.configs.filters import Filters
+from sandblaster.parsers.bool_expressions import process_profile
 from importlib.resources import files
-from sandblaster.graphs.graph import get_nnf_forms
-import pprint
-
-
-def process_profile(payload: SandboxPayload) -> None:
-    for idx in payload.ops_to_reverse:
-        print(payload.sb_ops[idx])
-        offset = payload.op_table[idx]
-
-        node = payload.operation_nodes.find_operation_node_by_offset(offset)
-        if not node:
-            continue
-        nnf_forms = get_nnf_forms(node)
-        pprint.pprint(nnf_forms)
 
 
 def main() -> int:

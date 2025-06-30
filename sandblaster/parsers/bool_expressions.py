@@ -1,6 +1,8 @@
 import networkx as nx
 import z3
+import pprint
 from sandblaster.parsers.graph import GraphParser
+from sandblaster.parsers.profile import SandboxPayload
 
 
 def ite_expr_to_nnf(ite_expr):
@@ -20,8 +22,7 @@ def build_ite_expr(graph, start_node):
             node_to_expr[node] = z3.BoolVal(True)
             continue
 
-        cond = z3.Bool(str(graph.nodes[node].get("label")))
-
+        cond = z3.Bool(str(node))
         true_expr = z3.BoolVal(False)
         false_expr = z3.BoolVal(False)
 
@@ -43,8 +44,7 @@ def get_subgraph(graph, sink):
 
 def get_nnf_forms(node):
     result = []
-    graph_builder = GraphParser(node)
-    graph = graph_builder.build_operation_node_graph()
+    graph = GraphParser(node).parse()
     for sink in [n for n in nx.topological_sort(graph) if graph.out_degree(n) == 0]:
         subgraph = get_subgraph(graph, sink)
         for start in [n for n, deg in subgraph.in_degree() if deg == 0]:
@@ -53,3 +53,15 @@ def get_nnf_forms(node):
             result.append((sink, nnf_expr))
         graph.remove_nodes_from(subgraph.nodes())
     return result
+
+
+def process_profile(payload: SandboxPayload) -> None:
+    for idx in payload.ops_to_reverse:
+        print(payload.sb_ops[idx])
+        offset = payload.op_table[idx]
+
+        node = payload.operation_nodes.find_operation_node_by_offset(offset)
+        if not node:
+            continue
+        nnf_forms = get_nnf_forms(node)
+        pprint.pprint(nnf_forms)
