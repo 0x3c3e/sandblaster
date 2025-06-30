@@ -1,5 +1,6 @@
-from sandblaster.parsers.strings import parse_fsm_string
 import pytest
+
+from sandblaster.parsers.strings import parse_fsm_string
 
 TEST_CASES = [
     (b"C/aaa\x0f\x00\x0f\n", sorted(["/aaa"]), "Single simple path"),

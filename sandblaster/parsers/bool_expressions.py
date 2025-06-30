@@ -1,4 +1,4 @@
-import pprint
+from concurrent.futures import ProcessPoolExecutor
 
 import networkx as nx
 import z3
@@ -6,15 +6,13 @@ import z3
 from sandblaster.parsers.graph import GraphParser
 from sandblaster.parsers.profile import SandboxPayload
 
+NNF_TACTIC = z3.Then("simplify", "nnf")
+
 
 def ite_expr_to_nnf(ite_expr):
-    g = z3.Goal()
-    g.add(ite_expr)
-    cnf_tactic = z3.Then("simplify", "nnf")
-    subgoals = cnf_tactic(g)
-    nnf_expr = subgoals[0].as_expr()
-
-    return nnf_expr
+    goal = z3.Goal()
+    goal.add(ite_expr)
+    return NNF_TACTIC(goal)[0].as_expr()
 
 
 def build_ite_expr(graph, start_node):
@@ -52,12 +50,13 @@ def get_nnf_forms(node):
         for start in [n for n, deg in subgraph.in_degree() if deg == 0]:
             ite = build_ite_expr(subgraph, start)
             nnf_expr = ite_expr_to_nnf(ite)
-            result.append((sink, nnf_expr))
+            result.append((str(sink), str(nnf_expr)))
         graph.remove_nodes_from(subgraph.nodes())
     return result
 
 
 def process_profile(payload: SandboxPayload) -> None:
+    nodes = []
     for idx in payload.ops_to_reverse:
         print(payload.sb_ops[idx])
         offset = payload.op_table[idx]
@@ -65,5 +64,7 @@ def process_profile(payload: SandboxPayload) -> None:
         node = payload.operation_nodes.find_operation_node_by_offset(offset)
         if not node:
             continue
-        nnf_forms = get_nnf_forms(node)
-        pprint.pprint(nnf_forms)
+        nodes.append(node)
+    with ProcessPoolExecutor() as pool:
+        results = list(pool.map(get_nnf_forms, nodes))
+    print(results)
