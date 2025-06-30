@@ -6,22 +6,24 @@ from sandblaster.nodes.terminal import TerminalNode, NodeType
 class GraphParser:
     def __init__(self, node):
         self.graph = nx.DiGraph()
-        self.graph.add_node(node.offset, start=True)
+        self.graph.add_node(node.offset, start=True, label=str(node))
         self.nodes_to_process = {node}
         self.node = None
         self.duplicates = {}
+        self.reverse = {}
 
     def add_new_node(self):
         key = (self.node.filter_id, self.node.argument_id)
         duplicate = False
-        label = self.node.offset
+        label = key
         color = "black"
+        self.reverse[self.node.offset] = key
         if key not in self.duplicates:
-            self.duplicates[key] = self.node.offset
+            self.duplicates[key] = set()
         else:
-            label = self.duplicates[key]
             duplicate = True
             color = "green"
+        self.duplicates[key].add(self.node.offset)
         self.graph.add_node(
             self.node.offset, duplicate=duplicate, label=label, color=color
         )

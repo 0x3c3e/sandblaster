@@ -22,3 +22,13 @@ TAGS
 *.bin
 core
 .DS_STORE
+.vscode
+profiles
+compiler
+kernelcaches
+out
+dots
+docs
+*.egg-info
+dist/*
+*.dot

@@ -1,38 +1,23 @@
 import argparse
 from sandblaster.parsers.header import SandboxHeader
 from sandblaster.parsers.profile import SandboxPayload
-from sandblaster.parsers.graph import GraphParser
+from sandblaster.parsers.sandbox import SandboxParser
 from sandblaster.configs.filters import Filters
 from importlib.resources import files
+from sandblaster.graphs.graph import get_nnf_forms
+import pprint
 
 
-def process_profile(output_path: str, payload: SandboxPayload) -> None:
-    """
-    Build and output the operation node graphs for selected operations.
-    """
-    with open(output_path, "wt") as outfile:
-        outfile.write("(version 1)\n")
+def process_profile(payload: SandboxPayload) -> None:
+    for idx in payload.ops_to_reverse:
+        print(payload.sb_ops[idx])
+        offset = payload.op_table[idx]
 
-        for idx, offset in enumerate(payload.op_table):
-            operation = payload.sb_ops[idx]
-
-            if payload.ops_to_reverse and operation not in payload.ops_to_reverse:
-                continue
-
-            node = payload.operation_nodes.find_operation_node_by_offset(offset)
-            if not node:
-                continue
-
-            graph_builder = GraphParser(node)
-            graph = graph_builder.build_operation_node_graph()
-
-            # graph_builder.export_dot("../dots/out.dot")
-            for graph_node_offset in graph.nodes:
-                graph_node = payload.operation_nodes.find_operation_node_by_offset(
-                    graph_node_offset
-                )
-                if graph_node:
-                    print(graph_node_offset, graph_node, graph_node.raw)
+        node = payload.operation_nodes.find_operation_node_by_offset(offset)
+        if not node:
+            continue
+        nnf_forms = get_nnf_forms(node)
+        pprint.pprint(nnf_forms)
 
 
 def main() -> int:
@@ -42,7 +27,7 @@ def main() -> int:
         "--operations",
         required=True,
     )
-    parser.add_argument("--filter")
+    parser.add_argument("--filter", nargs="+")
     parser.add_argument("--output", required=True)
 
     args = parser.parse_args()
@@ -51,8 +36,16 @@ def main() -> int:
     modifiers = Filters(files("sandblaster.misc") / "modifiers.json")
     with open(args.filename, "rb") as infile:
         sandbox_data = SandboxHeader.from_file(infile)
-        payload = SandboxPayload(infile=infile, base_addr=sandbox_data.base_addr)
-        payload.parse(sandbox_data, args.operations, args.filter, filters, modifiers)
+        sandbox_parser = SandboxParser(infile=infile, base_addr=sandbox_data.base_addr)
+        sandbox_payload = sandbox_parser.parse(
+            sandbox_data, args.operations, args.filter
+        )
+        sandbox_parser.create_operation_nodes(
+            sandbox_data.op_nodes_count,
+            sandbox_data.operation_nodes_offset,
+            filters,
+            modifiers,
+        )
 
-    process_profile(args.output, payload)
+    process_profile(sandbox_payload)
     return 0
