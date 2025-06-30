@@ -9,7 +9,6 @@ from automata.fa.gnfa import GNFA
 
 Op = Tuple[str, Any]
 
-# Header constants
 MAGIC_NUMBER = 0x3000000
 HEADER_MAGIC_SIZE = 4
 HEADER_LENGTH_SIZE = 2
@@ -27,10 +26,6 @@ class OpCode(IntEnum):
 
 
 class RegexBytecodeParser:
-    """
-    Parses and normalizes regex bytecode into a linear instruction map.
-    """
-
     def __init__(self, bytecode: bytes):
         self.bytecode = bytecode
         self.instructions: Dict[int, Op] = {}
@@ -84,7 +79,6 @@ class RegexBytecodeParser:
                     value = "["
 
                     if first > last:
-                        # exclusion class
                         value += "^"
                         values = [last] + values[:-1]
                         for j in range(len(values)):
@@ -110,9 +104,6 @@ class RegexBytecodeParser:
         return self.instructions
 
     def remap(self) -> Dict[int, Op]:
-        """
-        Reassigns instruction indices to a contiguous range and adjusts jumps.
-        """
         orig_indices = sorted(self.instructions.keys())
         index_map = {orig: new for new, orig in enumerate(orig_indices)}
 

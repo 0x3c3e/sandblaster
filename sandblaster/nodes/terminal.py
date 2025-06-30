@@ -17,7 +17,6 @@ class TerminalNode:
     offset: int
     raw: bytes
 
-    # Resolved fields
     flags: Optional[int] = None
     action: Optional[str] = None
     inline_operation_node: Optional[object] = None
@@ -26,7 +25,6 @@ class TerminalNode:
     inline_modifiers: Dict[str, Any] = field(default_factory=dict)
     flags_modifiers: List[Dict[str, Any]] = field(default_factory=list)
 
-    # Cached string representation (populated by convert_filter)
     _str_repr: Optional[str] = field(init=False, default=None)
 
     @classmethod
@@ -76,7 +74,7 @@ class TerminalNode:
         self.flags_modifiers = terminal_resolver.get_modifiers_by_flag(
             self.modifier_flags
         )
-        self._str_repr = self._build_str_repr()  # ← precompute
+        self._str_repr = self._build_str_repr()
 
     def _build_str_repr(self) -> str:
         parts = [str(self.type)]

@@ -8,7 +8,6 @@ class NonTerminalNode:
     offset: int
     raw: bytes
 
-    # Resolved fields (set later via convert_filter)
     filter: Optional[str] = None
     argument: Optional[str] = None
     match: Optional[object] = None

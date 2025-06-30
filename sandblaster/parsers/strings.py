@@ -117,8 +117,6 @@ def convert_operations(ops: Dict[int, Operation]) -> Dict[int, Operation]:
 
 
 def generate_paths(operations: Dict[int, Operation]) -> List[Path]:
-    """Traverse operations with match/case to collect successful paths."""
-
     def truncate(path: Path) -> Path:
         for j, idx in enumerate(path):
             if operations[idx] == "PUSH_STATE":
@@ -171,7 +169,6 @@ def ranges_to_regex(ranges, mode):
 def convert_paths_to_strings(
     paths: List[Path], operations: Dict[int, Operation], callback_map: Mapping[int, str]
 ) -> List[str]:
-    """Convert index paths into string patterns."""
     results: set[str] = set()
     for path in paths:
         parts: List[str] = []
@@ -195,7 +192,6 @@ def convert_paths_to_strings(
 
 
 def parse_fsm_string(fsm_bytes: bytes, global_vars: Sequence[str]) -> List[str]:
-    """End-to-end parsing: use match/case throughout."""
     callback_map = {i: f"[{name}]" for i, name in enumerate(global_vars)}
     ops = parse_fsa_pattern_bytecode(fsm_bytes, debug=False)
     indexed = convert_operations(ops)

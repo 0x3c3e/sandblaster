@@ -3,21 +3,17 @@ from typing import BinaryIO
 import struct
 from functools import cached_property
 
-# ─── Low‑level constants ────────────────────────────────────────────────────────
 INDEX_SIZE = 2
 OPERATION_NODE_SIZE = 8
-PROFILE_OPS_OFFSET = 4  # per‑profile fixed header
+PROFILE_OPS_OFFSET = 4
 
-# ─── Helper functions ───────────────────────────────────────────────────────────
 def align_up(value: int, alignment: int = 8) -> int:
     mask = alignment - 1
     return (value + mask) & ~mask
 
 
-# ─── Main data model ────────────────────────────────────────────────────────────
 @dataclass
 class SandboxHeader:
-    # • Raw header fields •
     header_size: int
     type: int
     op_nodes_count: int
@@ -28,7 +24,6 @@ class SandboxHeader:
     num_profiles: int = 0
     entitlements_count: int = 0
 
-    # ── Offset & size properties ────────────────────────────────────────────────
     @cached_property
     def regex_table_offset(self) -> int:
         return self.header_size
@@ -69,7 +64,6 @@ class SandboxHeader:
     def base_addr(self) -> int:
         return self.operation_nodes_offset + self.operation_nodes_size
 
-    # ── Factory method ──────────────────────────────────────────────────────────
     @classmethod
     def from_file(cls, infile: BinaryIO) -> "SandboxHeader":
         macos15_2_struct = struct.Struct("<HHBB6xHH")
