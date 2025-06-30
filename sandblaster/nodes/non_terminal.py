@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional
 from functools import cached_property
+from typing import Optional
 
 
 @dataclass
@@ -8,8 +8,6 @@ class NonTerminalNode:
     offset: int
     raw: bytes
 
-    filter: Optional[str] = None
-    argument: Optional[str] = None
     match: Optional[object] = None
     unmatch: Optional[object] = None
 
@@ -33,15 +31,5 @@ class NonTerminalNode:
     def unmatch_offset(self) -> int:
         return self.raw[6] | (self.raw[7] << 8)
 
-    def convert_filter(
-        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
-    ):
-        self.filter, self.argument = filter_resolver.resolve(
-            self.filter_id, self.argument_id
-        )
-
     def __hash__(self):
         return hash(self.offset)
-
-    def __str__(self):
-        return f"({self.filter} {self.argument})"

@@ -1,5 +1,6 @@
 import networkx as nx
-from sandblaster.nodes.terminal import TerminalNode, NodeType
+
+from sandblaster.nodes.terminal import NodeType, TerminalNode
 
 
 class GraphParser:
@@ -13,7 +14,7 @@ class GraphParser:
         if reverse:
             return (self.node.unmatch, "dashed", 0)
         return (self.node.match, "solid", 1)
-    
+
     def add_path(self, reverse: bool) -> None:
         match_node, edge_style, result = self.get_nodes_attributes(reverse)
         if not match_node:

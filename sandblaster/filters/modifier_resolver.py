@@ -1,7 +1,6 @@
-import struct
 import logging
-from typing import List, Any, BinaryIO
-
+import struct
+from typing import Any, BinaryIO, List
 
 logger = logging.getLogger(__name__)
 

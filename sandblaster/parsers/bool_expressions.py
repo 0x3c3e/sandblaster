@@ -1,6 +1,8 @@
+import pprint
+
 import networkx as nx
 import z3
-import pprint
+
 from sandblaster.parsers.graph import GraphParser
 from sandblaster.parsers.profile import SandboxPayload
 

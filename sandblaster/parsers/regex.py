@@ -1,11 +1,11 @@
 import re
 from collections import defaultdict
-from typing import Dict, Tuple, Any, Sequence
 from enum import IntEnum
+from typing import Any, Dict, Sequence, Tuple
 
-from automata.fa.nfa import NFA
 from automata.fa.dfa import DFA
 from automata.fa.gnfa import GNFA
+from automata.fa.nfa import NFA
 
 Op = Tuple[str, Any]
 
@@ -128,7 +128,6 @@ def bytecode_to_nfa(instructions: Dict[int, Op]) -> Tuple[NFA, Dict[str, str]]:
     symbol_map: Dict[str, str] = {}
     epsilon = ""
 
-    # Helper to generate new states
     def new_state(idx: int) -> str:
         return f"q{idx + 1}"
 

@@ -1,11 +1,12 @@
-from dataclasses import dataclass
-from typing import BinaryIO
 import struct
+from dataclasses import dataclass
 from functools import cached_property
+from typing import BinaryIO
 
 INDEX_SIZE = 2
 OPERATION_NODE_SIZE = 8
 PROFILE_OPS_OFFSET = 4
+
 
 def align_up(value: int, alignment: int = 8) -> int:
     mask = alignment - 1

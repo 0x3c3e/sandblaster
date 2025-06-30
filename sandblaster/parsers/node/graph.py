@@ -14,11 +14,3 @@ class NodeGraph:
                 continue
             op_node.match = self.nodes[op_node.match_offset]
             op_node.unmatch = self.nodes[op_node.unmatch_offset]
-
-    def convert(
-        self, sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
-    ):
-        for op_node in self.nodes.values():
-            op_node.convert_filter(
-                sandbox_data, filter_resolver, modifier_resolver, terminal_resolver
-            )

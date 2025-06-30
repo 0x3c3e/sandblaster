@@ -1,15 +1,12 @@
-from typing import List, Optional, BinaryIO
-import struct
 import logging
+import struct
+from typing import BinaryIO, List, Optional
 
+from sandblaster.parsers.node.graph import NodeGraph
+from sandblaster.parsers.node.node import NodeParser
+from sandblaster.parsers.profile import SandboxPayload
 from sandblaster.parsers.specialized.globals_parser import GlobalVarsParser
 from sandblaster.parsers.specialized.regex_parser import RegexListParser
-from sandblaster.parsers.node.node import NodeParser
-from sandblaster.parsers.node.graph import NodeGraph
-from sandblaster.filters.filter_resolver import FilterResolver
-from sandblaster.filters.modifier_resolver import ModifierResolver
-from sandblaster.filters.terminal_resolver import TerminalResolver
-from sandblaster.parsers.profile import SandboxPayload
 
 
 class SandboxParser:
@@ -64,38 +61,15 @@ class SandboxParser:
         self.infile.seek(offset)
         self.payload.policies = struct.unpack(f"<{count}H", self.infile.read(2 * count))
 
-    def create_operation_nodes(
-        self, count: int, offset: int, filters, modifiers
-    ) -> None:
+    def create_operation_nodes(self, count: int, offset: int) -> None:
         self.infile.seek(offset)
-        filter_resolver = FilterResolver(
-            self.infile,
-            self.base_addr,
-            self.payload.regex_list,
-            self.payload.global_vars,
-            filters,
-        )
-        modifier_resolver = ModifierResolver(
-            self.infile,
-            self.base_addr,
-            self.payload.regex_list,
-            self.payload.global_vars,
-            modifiers,
-        )
         parser = NodeParser()
         nodes, flags = parser.parse(
             self.infile,
             count,
         )
         graph = NodeGraph(nodes)
-        terminal_resolver = TerminalResolver(modifiers, flags)
         graph.link()
-        graph.convert(
-            self.payload,
-            filter_resolver,
-            modifier_resolver,
-            terminal_resolver,
-        )
         self.payload.operation_nodes = graph
         logging.info(f"Parsed {count} operation nodes")
 

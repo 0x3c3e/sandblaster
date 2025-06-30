@@ -1,5 +1,6 @@
 import struct
-from typing import List, BinaryIO
+from typing import BinaryIO, List
+
 import sandblaster.parsers.regex as regex
 
 

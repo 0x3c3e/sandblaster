@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional, BinaryIO
+from typing import BinaryIO, List, Optional, Tuple
 
 
 @dataclass(slots=True)

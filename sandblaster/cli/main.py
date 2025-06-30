@@ -1,9 +1,10 @@
 import argparse
-from sandblaster.parsers.header import SandboxHeader
-from sandblaster.parsers.sandbox import SandboxParser
+from importlib.resources import files
+
 from sandblaster.configs.filters import Filters
 from sandblaster.parsers.bool_expressions import process_profile
-from importlib.resources import files
+from sandblaster.parsers.header import SandboxHeader
+from sandblaster.parsers.sandbox import SandboxParser
 
 
 def main() -> int:
@@ -29,8 +30,6 @@ def main() -> int:
         sandbox_parser.create_operation_nodes(
             sandbox_data.op_nodes_count,
             sandbox_data.operation_nodes_offset,
-            filters,
-            modifiers,
         )
 
     process_profile(sandbox_payload)
