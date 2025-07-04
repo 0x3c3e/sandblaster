@@ -3,7 +3,7 @@ import struct
 from typing import Any, BinaryIO, List, Optional, Tuple
 
 from sandblaster.filters.base import FilterType
-from sandblaster.parsers.strings import parse_fsm_string
+from sandblaster.parsers.fsa_parser.processor import parse_fsm_string
 
 logger = logging.getLogger(__name__)
 

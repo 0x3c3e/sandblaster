@@ -21,9 +21,6 @@ def make_fallback_tactic():
 
 
 def ite_expr_to_nnf(expr, timeout_ms=600):
-    """
-    Applies NNF transformation with ctx-simplify and timeout fallback.
-    """
     goal = z3.Goal()
     goal.add(expr)
 
@@ -38,9 +35,6 @@ def ite_expr_to_nnf(expr, timeout_ms=600):
 
 
 def build_ite_expr(graph, start_node):
-    """
-    Builds an ITE expression from a control-flow graph rooted at start_node.
-    """
     node_to_expr = {}
 
     for node in reversed(list(nx.topological_sort(graph))):

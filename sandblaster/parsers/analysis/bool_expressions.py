@@ -5,10 +5,10 @@ import z3
 from networkx.drawing.nx_pydot import write_dot
 
 from sandblaster.nodes.representation.non_terminal import NonTerminalRepresentation
-from sandblaster.parsers.expression import build_ite_expr, ite_expr_to_nnf
-from sandblaster.parsers.graph import GraphParser
-from sandblaster.parsers.partition import backward_partition
-from sandblaster.parsers.profile import SandboxPayload
+from sandblaster.parsers.analysis.expression import build_ite_expr, ite_expr_to_nnf
+from sandblaster.parsers.analysis.partition import backward_partition
+from sandblaster.parsers.graph.graph_parser import GraphParser
+from sandblaster.parsers.core.profile import SandboxPayload
 
 
 def random_hex_color():

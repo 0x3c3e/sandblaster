@@ -5,9 +5,9 @@ from importlib.resources import files
 from sandblaster.configs.filters import Filters
 from sandblaster.filters.filter_resolver import FilterResolver
 from sandblaster.filters.modifier_resolver import ModifierResolver
-from sandblaster.parsers.bool_expressions import process_profile
-from sandblaster.parsers.header import SandboxHeader
-from sandblaster.parsers.sandbox import SandboxParser
+from sandblaster.parsers.analysis.bool_expressions import process_profile
+from sandblaster.parsers.core.header import SandboxHeader
+from sandblaster.parsers.core.sandbox import SandboxParser
 
 
 def read_sandbox_operations(path: str) -> None:

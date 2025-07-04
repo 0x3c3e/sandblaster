@@ -1,5 +1,6 @@
 from typing import BinaryIO, List
-from construct import Struct, Int16ul, Bytes, this
+
+from construct import Bytes, Int16ul, Struct, this
 
 import sandblaster.parsers.regex as regex
 
