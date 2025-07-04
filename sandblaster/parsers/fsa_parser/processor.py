@@ -2,10 +2,28 @@ from collections import deque
 from typing import Any, Dict, List, Mapping, Sequence, Tuple, Union
 
 from sandblaster.parsers.fsa_parser.decoder import parse_fsa_pattern_bytecode
-from sandblaster.parsers.fsa_parser.utils import ranges_to_regex
+from sandblaster.parsers.fsa_parser.state import State
 
 Operation = Union[str, Tuple[str, Any]]
 Path = List[int]
+
+
+def escape_char(c):
+    if 32 <= c <= 126 and chr(c) not in {"\\", "[", "]", "^", "-"}:
+        return chr(c)
+    else:
+        return f"\\x{c:02x}"
+
+
+def ranges_to_regex(ranges, mode):
+    parts = []
+    for start, end in ranges:
+        start_char = escape_char(start)
+        end_char = escape_char(end)
+        parts.append(f"{start_char}-{end_char}")
+
+    char_class = "".join(parts)
+    return f"[^{char_class}]" if mode == State.RANGE_EXCLUSIVE else f"[{char_class}]"
 
 
 def convert_operations(ops: Dict[int, Operation]) -> Dict[int, Operation]:
@@ -17,8 +35,8 @@ def convert_operations(ops: Dict[int, Operation]) -> Dict[int, Operation]:
     for pc, val in ops.items():
         idx = idx_map[pc]
         match val:
-            case ("JNE", tgt):
-                new_ops[idx] = ("JNE", idx_map[tgt])
+            case (State.JNE, tgt):
+                new_ops[idx] = (State.JNE, idx_map[tgt])
             case other:
                 new_ops[idx] = other
     return new_ops
@@ -27,7 +45,7 @@ def convert_operations(ops: Dict[int, Operation]) -> Dict[int, Operation]:
 def generate_paths(operations: Dict[int, Operation]) -> List[Path]:
     def truncate(path: Path) -> Path:
         for j, idx in enumerate(path):
-            if operations[idx] == "PUSH_STATE":
+            if operations[idx] == State.PUSH_STATE:
                 return path[:j]
         return path
 
@@ -41,14 +59,14 @@ def generate_paths(operations: Dict[int, Operation]) -> List[Path]:
             continue
 
         match op:
-            case "SUCCESS":
+            case State.SUCCESS:
                 result.append(path)
 
-            case ("JNE", tgt):
+            case (State.JNE, tgt):
                 queue.append((pc + 1, path + [pc]))
                 queue.append((tgt, path[:-1] + [pc]))
 
-            case "RESTORE_POS":
+            case State.RESTORE_POS:
                 queue.append((pc + 1, truncate(path)))
 
             case _:
@@ -65,16 +83,16 @@ def convert_paths_to_strings(
         parts: List[str] = []
         for idx in path:
             match operations[idx]:
-                case ("LITERAL", text):
+                case (State.LITERAL, text):
                     parts.append(text)
-                case ("CALLBACK", cb):
+                case (State.CALLBACK, cb):
                     parts.append(callback_map[cb])
-                case (("MATCH_SEQ" | "MATCH_BYTE"), arg):
+                case ((State.MATCH_SEQ | State.MATCH_BYTE), arg):
                     parts.append(f".+{chr(arg)}")
-                case ("RANGE_EXCLUSIVE", ranges):
-                    parts.append(ranges_to_regex(ranges, "RANGE_EXCLUSIVE"))
-                case ("RANGE_INCLUSIVE", ranges):
-                    parts.append(ranges_to_regex(ranges, "RANGE_INCLUSIVE"))
+                case (State.RANGE_EXCLUSIVE, ranges):
+                    parts.append(ranges_to_regex(ranges, State.RANGE_EXCLUSIVE))
+                case (State.RANGE_INCLUSIVE, ranges):
+                    parts.append(ranges_to_regex(ranges, State.RANGE_INCLUSIVE))
                 case _:
                     pass
         results.add("".join(parts))

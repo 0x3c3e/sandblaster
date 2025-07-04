@@ -6,6 +6,7 @@ from automata.fa.gnfa import GNFA
 from automata.fa.nfa import NFA
 
 from sandblaster.parsers.regex_parser.parser import RegexBytecodeParser
+from sandblaster.parsers.regex_parser.state import State
 
 Op = Tuple[str, Any]
 
@@ -28,19 +29,19 @@ def bytecode_to_nfa(instructions: Dict[int, Op]) -> Tuple[NFA, Dict[str, str]]:
         curr = state_map[idx]
         next_idx = idx + 1
         match instr:
-            case "chr", pattern:
+            case State.CHR, pattern:
                 placeholder = chr(0xE000 + idx)
                 symbol_map[placeholder] = pattern
                 if pattern == "$":
                     final_states.add(curr)
                 elif next_idx in state_map:
                     transitions[curr][placeholder].add(state_map[next_idx])
-            case "jmp", target if isinstance(target, int):
+            case State.JMP, target if isinstance(target, int):
                 if target in state_map:
                     transitions[curr][epsilon].add(state_map[target])
                 if next_idx in state_map:
                     transitions[curr][epsilon].add(state_map[next_idx])
-            case "match", None:
+            case State.MATCH, None:
                 final_states.add(curr)
             case _:
                 continue
