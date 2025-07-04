@@ -10,6 +10,12 @@ from sandblaster.parsers.header import SandboxHeader
 from sandblaster.parsers.sandbox import SandboxParser
 
 
+def read_sandbox_operations(path: str) -> None:
+    with open(path, "r") as f:
+        ops = [line.strip() for line in f if line.strip()]
+    return ops
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Apple Sandbox Profiles Decompiler")
     parser.add_argument("filename")
@@ -27,12 +33,13 @@ def main() -> int:
 
     filters = Filters(files("sandblaster.misc") / "filters.json")
     modifiers = Filters(files("sandblaster.misc") / "modifiers.json")
+    sandbox_operations = read_sandbox_operations(args.operations)
     with open(args.filename, "rb") as infile:
         mm = mmap.mmap(infile.fileno(), 0, access=mmap.ACCESS_READ)
         sandbox_data = SandboxHeader(mm)
         sandbox_parser = SandboxParser(infile=mm, base_addr=sandbox_data.base_addr)
         sandbox_payload = sandbox_parser.parse(
-            sandbox_data, args.operations, args.filter
+            sandbox_data, sandbox_operations, args.filter
         )
         sandbox_parser.create_operation_nodes(
             sandbox_data.header.op_nodes_count,

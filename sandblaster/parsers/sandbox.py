@@ -18,10 +18,10 @@ class SandboxParser:
     def parse(
         self,
         sandbox_data: object,
-        operations_file: str,
+        operations: List[str],
         operation_filter: Optional[List[str]],
     ) -> SandboxPayload:
-        self._read_sandbox_operations(operations_file)
+        self.payload.sb_ops = operations
         self.payload.regex_list = RegexListParser.parse(
             self.infile,
             self.base_addr,
@@ -42,11 +42,6 @@ class SandboxParser:
         )
         self._filter_operations(operation_filter)
         return self.payload
-
-    def _read_sandbox_operations(self, path: str) -> None:
-        with open(path, "r") as f:
-            self.payload.sb_ops = [line.strip() for line in f if line.strip()]
-        logging.info(f"Read {len(self.payload.sb_ops)} sandbox operations")
 
     def _filter_operations(self, ops: List[str]) -> None:
         if not ops:
