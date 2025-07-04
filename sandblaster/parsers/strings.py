@@ -192,7 +192,7 @@ def convert_paths_to_strings(
 
 
 def parse_fsm_string(fsm_bytes: bytes, global_vars: Sequence[str]) -> List[str]:
-    callback_map = {i: f"[{name}]" for i, name in enumerate(global_vars)}
+    callback_map = {i: f"${{{name.upper()}}}" for i, name in enumerate(global_vars)}
     ops = parse_fsa_pattern_bytecode(fsm_bytes, debug=False)
     indexed = convert_operations(ops)
     paths = generate_paths(indexed)

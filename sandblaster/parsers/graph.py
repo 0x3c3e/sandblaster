@@ -7,6 +7,7 @@ class GraphParser:
     def __init__(self, node):
         self.graph = nx.DiGraph()
         self.nodes_to_process = {node}
+        self.mapping = {}
 
     def get_nodes_attributes(self, node, reverse: bool):
         if reverse:
@@ -17,7 +18,8 @@ class GraphParser:
         match_node, edge_style, result = self.get_nodes_attributes(node, reverse)
         if not match_node:
             return
-        self.graph.add_node(match_node.offset)
+        self.mapping[str((node.filter_id, node.argument_id))] = node.offset
+        self.graph.add_node(match_node.offset, id=(node.filter_id, node.argument_id))
         self.graph.add_edge(
             node.offset, match_node.offset, style=edge_style, result=result
         )
@@ -44,6 +46,6 @@ class GraphParser:
             node = self.nodes_to_process.pop()
             if isinstance(node, TerminalNode):
                 continue
-            self.graph.add_node(node.offset)
+            self.graph.add_node(node.offset, id=(node.filter_id, node.argument_id))
             self.link_node(node)
         return self.graph

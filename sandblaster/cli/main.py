@@ -2,6 +2,8 @@ import argparse
 from importlib.resources import files
 
 from sandblaster.configs.filters import Filters
+from sandblaster.filters.filter_resolver import FilterResolver
+from sandblaster.filters.modifier_resolver import ModifierResolver
 from sandblaster.parsers.bool_expressions import process_profile
 from sandblaster.parsers.header import SandboxHeader
 from sandblaster.parsers.sandbox import SandboxParser
@@ -31,6 +33,19 @@ def main() -> int:
             sandbox_data.op_nodes_count,
             sandbox_data.operation_nodes_offset,
         )
-
-    process_profile(sandbox_payload)
+        filter_resolver = FilterResolver(
+            infile,
+            sandbox_data.base_addr,
+            sandbox_parser.payload.regex_list,
+            sandbox_parser.payload.global_vars,
+            filters,
+        )
+        modifier_resolver = ModifierResolver(
+            infile,
+            sandbox_data.base_addr,
+            sandbox_parser.payload.regex_list,
+            sandbox_parser.payload.global_vars,
+            modifiers,
+        )
+        process_profile(sandbox_payload, filter_resolver, modifier_resolver)
     return 0
