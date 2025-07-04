@@ -1,3 +1,5 @@
+from collections import deque
+
 import networkx as nx
 
 from sandblaster.nodes.terminal import NodeType, TerminalNode
@@ -6,7 +8,7 @@ from sandblaster.nodes.terminal import NodeType, TerminalNode
 class GraphParser:
     def __init__(self, node):
         self.graph = nx.DiGraph()
-        self.nodes_to_process = {node}
+        self.nodes_to_process = deque([node])
         self.mapping = {}
 
     def get_nodes_attributes(self, node, reverse: bool):
@@ -23,27 +25,27 @@ class GraphParser:
         self.graph.add_edge(
             node.offset, match_node.offset, style=edge_style, result=result
         )
-        self.nodes_to_process.add(match_node)
+        self.nodes_to_process.append(match_node)
 
     def link_node(self, node) -> None:
-        match_is_terminal = isinstance(node.match, TerminalNode)
-        unmatch_is_terminal = isinstance(node.unmatch, TerminalNode)
-        if not match_is_terminal and not unmatch_is_terminal:
+        match = node.match
+        unmatch = node.unmatch
+        match_terminal = isinstance(match, TerminalNode)
+        unmatch_terminal = isinstance(unmatch, TerminalNode)
+
+        if not match_terminal:
             self.add_path(node, False)
+        if not unmatch_terminal:
             self.add_path(node, True)
-        elif not match_is_terminal and unmatch_is_terminal:
-            self.add_path(node, node.unmatch.type == NodeType.ALLOW)
-            self.add_path(node, node.unmatch.type == NodeType.DENY)
-        elif match_is_terminal and not unmatch_is_terminal:
-            self.add_path(node, node.match.type == NodeType.ALLOW)
-            self.add_path(node, node.match.type == NodeType.DENY)
-        elif match_is_terminal and unmatch_is_terminal:
-            self.add_path(node, True)
-            self.add_path(node, False)
+
+        if match_terminal:
+            self.add_path(node, match.type == NodeType.DENY)
+        if unmatch_terminal:
+            self.add_path(node, unmatch.type == NodeType.ALLOW)
 
     def parse(self):
         while self.nodes_to_process:
-            node = self.nodes_to_process.pop()
+            node = self.nodes_to_process.popleft()
             if isinstance(node, TerminalNode):
                 continue
             self.graph.add_node(node.offset, id=(node.filter_id, node.argument_id))

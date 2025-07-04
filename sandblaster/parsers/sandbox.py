@@ -25,19 +25,21 @@ class SandboxParser:
         self.payload.regex_list = RegexListParser.parse(
             self.infile,
             self.base_addr,
-            sandbox_data.regex_count,
+            sandbox_data.header.regex_count,
             sandbox_data.regex_table_offset,
         )
         self.payload.global_vars = GlobalVarsParser.parse(
             self.infile,
             self.base_addr,
-            sandbox_data.vars_count,
+            sandbox_data.header.vars_count,
             sandbox_data.vars_offset,
         )
         self._parse_policies(
             sandbox_data.entitlements_offset, sandbox_data.entitlements_count
         )
-        self._parse_op_table(sandbox_data.sb_ops_count, sandbox_data.profiles_offset)
+        self._parse_op_table(
+            sandbox_data.header.sb_ops_count, sandbox_data.profiles_offset
+        )
         self._filter_operations(operation_filter)
         return self.payload
 

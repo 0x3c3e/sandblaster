@@ -4,8 +4,7 @@ import networkx as nx
 import z3
 from networkx.drawing.nx_pydot import write_dot
 
-from sandblaster.nodes.representation.non_terminal import \
-    NonTerminalRepresentation
+from sandblaster.nodes.representation.non_terminal import NonTerminalRepresentation
 from sandblaster.parsers.expression import build_ite_expr, ite_expr_to_nnf
 from sandblaster.parsers.graph import GraphParser
 from sandblaster.parsers.partition import backward_partition
@@ -124,5 +123,5 @@ def process_profile(payload: SandboxPayload, filters, modifier_resolver) -> None
             final_expr = ite_expr_to_nnf(merged_expr)
 
             print(key, final_expr)
-            # z3_to_sbpl_print(final_expr, payload, filters, mapping)
+            z3_to_sbpl_print(final_expr, payload, filters, mapping)
             print("*" * 10)
