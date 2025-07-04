@@ -1,7 +1,8 @@
 from collections import deque
 from typing import Any, Dict, List, Mapping, Sequence, Tuple, Union
-from sandblaster.parsers.fsa_parser.utils import ranges_to_regex
+
 from sandblaster.parsers.fsa_parser.decoder import parse_fsa_pattern_bytecode
+from sandblaster.parsers.fsa_parser.utils import ranges_to_regex
 
 Operation = Union[str, Tuple[str, Any]]
 Path = List[int]

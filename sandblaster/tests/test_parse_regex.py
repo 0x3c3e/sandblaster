@@ -1,6 +1,6 @@
 import pytest
 
-from sandblaster.parsers.regex import analyze
+from sandblaster.parsers.regex_parser.processor import analyze
 
 TEST_CASES = [
     (

@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Tuple, Union
+
 from sandblaster.parsers.fsa_parser.opcode import Opcode
 
 Operation = Union[str, Tuple[str, Any]]
@@ -6,18 +7,22 @@ Path = List[int]
 
 
 def _read_u16(data: bytes, offset: int) -> int:
-    return int.from_bytes(data[offset:offset + 2], "little")
+    return int.from_bytes(data[offset : offset + 2], "little")
 
 
 def _read_literal(data: bytes, offset: int, length: int) -> Tuple[str, int]:
-    lit = data[offset:offset + length].decode("utf-8", errors="replace")
+    lit = data[offset : offset + length].decode("utf-8", errors="replace")
     return lit, offset + length
 
 
-def _read_range(data: bytes, offset: int) -> Tuple[Tuple[str, List[Tuple[int, int]]], int]:
+def _read_range(
+    data: bytes, offset: int
+) -> Tuple[Tuple[str, List[Tuple[int, int]]], int]:
     flags = data[offset]
     count = (flags & 0x7F) + 1
-    ranges = [(data[offset + 1 + 2 * j], data[offset + 2 + 2 * j]) for j in range(count)]
+    ranges = [
+        (data[offset + 1 + 2 * j], data[offset + 2 + 2 * j]) for j in range(count)
+    ]
     mode = "RANGE_EXCLUSIVE" if flags & 0x80 else "RANGE_INCLUSIVE"
     return (mode, ranges), offset + 1 + count * 2
 

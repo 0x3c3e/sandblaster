@@ -2,7 +2,7 @@ from typing import BinaryIO, List
 
 from construct import Bytes, Int16ul, Struct, this
 
-import sandblaster.parsers.regex as regex
+import sandblaster.parsers.regex_parser.processor as processor
 
 RegexOffset = Int16ul
 
@@ -22,6 +22,6 @@ class RegexListParser:
         for off in offsets:
             infile.seek(base_addr + off * 8)
             entry = RegexEntry.parse_stream(infile)
-            regex_list.append(regex.analyze(entry.data))
+            regex_list.append(processor.analyze(entry.data))
 
         return regex_list
