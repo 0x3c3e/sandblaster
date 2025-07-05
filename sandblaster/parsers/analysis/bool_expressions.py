@@ -4,8 +4,12 @@ import networkx as nx
 import z3
 from networkx.drawing.nx_pydot import write_dot
 
-from sandblaster.nodes.representation.non_terminal import NonTerminalRepresentation
-from sandblaster.parsers.analysis.expression import build_ite_expr, ite_expr_to_nnf
+from sandblaster.nodes.representation.non_terminal import \
+    NonTerminalRepresentation
+from sandblaster.nodes.representation.terminal import \
+    TerminalNodeRepresentation
+from sandblaster.parsers.analysis.expression import (build_ite_expr,
+                                                     ite_expr_to_nnf)
 from sandblaster.parsers.analysis.partition import backward_partition
 from sandblaster.parsers.core.profile import SandboxPayload
 from sandblaster.parsers.graph.graph_parser import GraphParser
@@ -85,9 +89,7 @@ def z3_to_sbpl_print(expr, payload, filters, mapping, level=0, output_func=print
             emit(")")
         case z3.Z3_OP_UNINTERPRETED:
             name = expr.decl().name()
-            offset = mapping[name]
-            node = payload.operation_nodes.find_operation_node_by_offset(offset)
-            emit(str(NonTerminalRepresentation(node, filters)))
+            emit(mapping[name])
 
         case _:
             raise ValueError(
@@ -95,7 +97,28 @@ def z3_to_sbpl_print(expr, payload, filters, mapping, level=0, output_func=print
             )
 
 
-def process_profile(payload: SandboxPayload, filters, modifier_resolver) -> None:
+def get_parsed_nodes(graph, parsed: dict, filters) -> dict:
+    unparsed_nodes = {
+        n
+        for n in nx.topological_sort(graph)
+        if graph.out_degree(n) != 0 and str(n) not in parsed
+    }
+
+    new_entries = {
+        str(graph.nodes[n]["id"]): NonTerminalRepresentation(
+            *graph.nodes[n]["id"], filters
+        )
+        for n in unparsed_nodes
+    }
+
+    parsed.update(new_entries)
+    return parsed
+
+
+def process_profile(
+    payload: SandboxPayload, filters, modifier_resolver, terminal_resolver
+) -> None:
+    parsed = {}
     for idx in payload.ops_to_reverse:
         sb_op = payload.sb_ops[idx]
         offset = payload.op_table[idx]
@@ -107,8 +130,7 @@ def process_profile(payload: SandboxPayload, filters, modifier_resolver) -> None
 
         graph_parser = GraphParser(node)
         graph = graph_parser.parse()
-        mapping = graph_parser.mapping
-
+        parsed = get_parsed_nodes(graph, parsed, filters)
         nnf_forms = get_nnf_forms(graph, payload, filters)
 
         for key, subgraph in nnf_forms.items():
@@ -122,6 +144,10 @@ def process_profile(payload: SandboxPayload, filters, modifier_resolver) -> None
             merged_expr = z3.Or(*exprs)
             final_expr = ite_expr_to_nnf(merged_expr)
 
-            print(key, final_expr)
-            z3_to_sbpl_print(final_expr, payload, filters, mapping)
+            t = payload.operation_nodes.find_operation_node_by_offset(key)
+            e = TerminalNodeRepresentation(
+                t, terminal_resolver, modifier_resolver, payload
+            )
+            print(e)
+            z3_to_sbpl_print(final_expr, payload, filters, parsed)
             print("*" * 10)

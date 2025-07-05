@@ -5,6 +5,7 @@ from importlib.resources import files
 from sandblaster.configs.filters import Filters
 from sandblaster.filters.filter_resolver import FilterResolver
 from sandblaster.filters.modifier_resolver import ModifierResolver
+from sandblaster.filters.terminal_resolver import TerminalResolver
 from sandblaster.parsers.analysis.bool_expressions import process_profile
 from sandblaster.parsers.core.header import SandboxHeader
 from sandblaster.parsers.core.sandbox import SandboxParser
@@ -59,6 +60,9 @@ def main() -> int:
             sandbox_parser.payload.global_vars,
             modifiers,
         )
-        process_profile(sandbox_payload, filter_resolver, modifier_resolver)
+        terminal_resolver = TerminalResolver(modifiers, sandbox_parser.flags)
+        process_profile(
+            sandbox_payload, filter_resolver, modifier_resolver, terminal_resolver
+        )
         mm.close()
     return 0

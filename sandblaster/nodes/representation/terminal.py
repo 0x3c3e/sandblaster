@@ -13,11 +13,12 @@ class TerminalNodeRepresentation:
         self.flags_modifiers = terminal_resolver.get_modifiers_by_flag(
             node.modifier_flags
         )
+        self.node = node
 
     def __str__(self) -> str:
-        parts = [str(self.type)]
+        parts = [str(self.node.type)]
 
-        if self.action_inline:
+        if self.node.action_inline:
             if self.inline_modifiers:
                 name = self.inline_modifiers["name"]
                 parts.append(f"(with {name} {self.inline_data})")
