@@ -74,8 +74,8 @@ def parse_fsa_pattern_bytecode(fsa: bytes) -> Dict[int, Operation]:
                 op, i = State.MATCH, i + 1
 
             case Opcode.JNE_EXT:
-                offset = _read_u16(fsa, i + 1) + 0x81
-                op = (State.JNE, i + 3 + offset)
+                offset = _read_u16(fsa, i + 1) + 0x84
+                op = (State.JNE, i + offset)
                 i += 3
 
             case _ if Opcode.LITERAL_SHORT.start <= opcode <= Opcode.LITERAL_SHORT.stop:

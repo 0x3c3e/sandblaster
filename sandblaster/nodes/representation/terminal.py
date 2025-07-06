@@ -1,5 +1,5 @@
 class TerminalNodeRepresentation:
-    def __init__(self, node, terminal_resolver, modifier_resolver, sandbox_data):
+    def __init__(self, node, terminal_resolver, modifier_resolver, sandbox_data, sb_op):
         if node.action_inline:
             if not node.arg_id:
                 self.inline_modifiers = terminal_resolver.get_modifier(node.arg_type)
@@ -14,9 +14,10 @@ class TerminalNodeRepresentation:
             node.modifier_flags
         )
         self.node = node
+        self.sb_op = sb_op
 
     def __str__(self) -> str:
-        parts = [str(self.node.type)]
+        parts = []
 
         if self.node.action_inline:
             if self.inline_modifiers:
@@ -25,8 +26,8 @@ class TerminalNodeRepresentation:
             elif self.inline_operation_node:
                 parts.append(str(self.inline_operation_node))
 
-        for mod in self.flags_modifiers:
-            name = mod["name"]
-            parts.append(f"(with {name})")
-
-        return " ".join(parts)
+        # for mod in self.flags_modifiers:
+        #     name = mod["name"]
+        #     parts.append(f"(with {name})")
+        out = " ".join(parts)
+        return f"(allow {self.sb_op} {out}"

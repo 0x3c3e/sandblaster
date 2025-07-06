@@ -4,19 +4,18 @@ import networkx as nx
 import z3
 from networkx.drawing.nx_pydot import write_dot
 
-from sandblaster.nodes.representation.non_terminal import \
-    NonTerminalRepresentation
-from sandblaster.nodes.representation.terminal import \
-    TerminalNodeRepresentation
-from sandblaster.parsers.analysis.expression import (build_ite_expr,
-                                                     ite_expr_to_nnf)
+from sandblaster.nodes.representation.non_terminal import NonTerminalRepresentation
+from sandblaster.nodes.representation.terminal import TerminalNodeRepresentation
+from sandblaster.parsers.analysis.expression import build_ite_expr, ite_expr_to_nnf
 from sandblaster.parsers.analysis.partition import backward_partition
 from sandblaster.parsers.core.profile import SandboxPayload
 from sandblaster.parsers.graph.graph_parser import GraphParser
+from sandblaster.parsers.analysis.spbl_printer import z3_to_sbpl_print
 
 
-def random_hex_color():
-    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+def random_hex_color(seed=None):
+    rng = random.Random(seed)
+    return "#{:06x}".format(rng.randint(0, 0xFFFFFF))
 
 
 def get_nnf_forms(graph, payload, filters):
@@ -39,62 +38,6 @@ def get_nnf_forms(graph, payload, filters):
     nx.set_node_attributes(graph, {node: "bold" for node in sinks}, "style")
     write_dot(graph, "out.dot")
     return partitions
-
-
-def z3_to_sbpl_print(expr, payload, filters, mapping, level=0, output_func=print):
-    """
-    Recursively prints a Z3 expression in SBPL syntax using match/case on operator type.
-    """
-    indent = " " * level
-
-    def emit(line: str):
-        output_func(f"{indent}{line}")
-
-    decl_kind = expr.decl().kind()
-    args = expr.children()
-
-    match decl_kind:
-        case z3.Z3_OP_TRUE:
-            emit("allow")
-        case z3.Z3_OP_FALSE:
-            emit("deny")
-        case z3.Z3_OP_AND:
-            emit("(require-all")
-            for arg in args:
-                z3_to_sbpl_print(arg, payload, filters, mapping, level + 2, output_func)
-            emit(")")
-
-        case z3.Z3_OP_OR:
-            emit("(require-any")
-            for arg in args:
-                z3_to_sbpl_print(arg, payload, filters, mapping, level + 2, output_func)
-            emit(")")
-
-        case z3.Z3_OP_NOT:
-            emit("(require-not")
-            z3_to_sbpl_print(args[0], payload, filters, mapping, level + 2, output_func)
-            emit(")")
-
-        case z3.Z3_OP_ITE:
-            emit("(if")
-            z3_to_sbpl_print(
-                args[0], payload, filters, mapping, level + 2, output_func
-            )  # condition
-            z3_to_sbpl_print(
-                args[1], payload, filters, mapping, level + 2, output_func
-            )  # then
-            z3_to_sbpl_print(
-                args[2], payload, filters, mapping, level + 2, output_func
-            )  # else
-            emit(")")
-        case z3.Z3_OP_UNINTERPRETED:
-            name = expr.decl().name()
-            emit(mapping[name])
-
-        case _:
-            raise ValueError(
-                f"Unsupported Z3 expression: {expr} (decl kind: {decl_kind})"
-            )
 
 
 def get_parsed_nodes(graph, parsed: dict, filters) -> dict:
@@ -126,28 +69,51 @@ def process_profile(
         if not node:
             continue
 
-        print(sb_op)
+        parsed = _process_graph_from_node(
+            node, payload, filters, parsed, modifier_resolver, terminal_resolver, sb_op
+        )
+        print("*" * 10)
 
-        graph_parser = GraphParser(node)
-        graph = graph_parser.parse()
-        parsed = get_parsed_nodes(graph, parsed, filters)
-        nnf_forms = get_nnf_forms(graph, payload, filters)
 
-        for key, subgraph in nnf_forms.items():
-            exprs = []
+def _process_graph_from_node(
+    node, payload, filters, parsed, modifier_resolver, terminal_resolver, sb_op
+) -> dict:
+    graph_parser = GraphParser(node)
+    graph = graph_parser.parse()
+    parsed = get_parsed_nodes(graph, parsed, filters)
+    nnf_forms = get_nnf_forms(graph, payload, filters)
 
-            for start_node in [n for n, deg in subgraph.in_degree() if deg == 0]:
-                ite_expr = build_ite_expr(subgraph, start_node)
-                nnf_expr = ite_expr_to_nnf(ite_expr)
-                exprs.append(nnf_expr)
+    for key, subgraph in nnf_forms.items():
+        _process_subgraph(
+            subgraph,
+            key,
+            payload,
+            filters,
+            parsed,
+            modifier_resolver,
+            terminal_resolver,
+            sb_op,
+        )
 
-            merged_expr = z3.Or(*exprs)
-            final_expr = ite_expr_to_nnf(merged_expr)
+    return parsed
 
-            t = payload.operation_nodes.find_operation_node_by_offset(key)
-            e = TerminalNodeRepresentation(
-                t, terminal_resolver, modifier_resolver, payload
-            )
-            print(e)
-            z3_to_sbpl_print(final_expr, payload, filters, parsed)
-            print("*" * 10)
+
+def _process_subgraph(
+    subgraph, key, payload, filters, parsed, modifier_resolver, terminal_resolver, sb_op
+):
+    exprs = [
+        ite_expr_to_nnf(build_ite_expr(subgraph, start_node))
+        for start_node, deg in subgraph.in_degree()
+        if deg == 0
+    ]
+
+    merged_expr = z3.Or(*exprs)
+    final_expr = ite_expr_to_nnf(merged_expr)
+
+    terminal = payload.operation_nodes.find_operation_node_by_offset(key)
+    terminal_repr = TerminalNodeRepresentation(
+        terminal, terminal_resolver, modifier_resolver, payload, sb_op
+    )
+    print(terminal_repr)
+    z3_to_sbpl_print(final_expr, payload, filters, parsed, level=1)
+    print(")")

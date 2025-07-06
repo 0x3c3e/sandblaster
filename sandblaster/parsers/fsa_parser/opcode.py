@@ -8,6 +8,7 @@ class Opcode:
     PUSH_STATE = 0x06
     POP_STATE = 0x07
     JNE_EXT = 0x08
+    FAIL = 0x09
     SUCCESS = 0x0A
     RANGE = 0x0B
     MATCH = 0x0F

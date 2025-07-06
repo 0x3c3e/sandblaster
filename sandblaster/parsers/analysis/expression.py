@@ -7,6 +7,7 @@ def make_tactic_with_timeout(timeout_ms):
         z3.With("cofactor-term-ite", timeout=timeout_ms),
         z3.With("aig", timeout=timeout_ms),
         z3.With("qe", timeout=timeout_ms),
+        z3.Tactic("nnf", timeout=timeout_ms),
         z3.With("ctx-simplify", timeout=timeout_ms),
     )
 
@@ -16,6 +17,7 @@ def make_fallback_tactic():
         z3.Tactic("cofactor-term-ite"),
         z3.Tactic("aig"),
         z3.Tactic("qe"),
+        z3.Tactic("nnf"),
         z3.Tactic("simplify"),
     )
 

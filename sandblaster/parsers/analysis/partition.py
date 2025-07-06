@@ -1,8 +1,8 @@
 import networkx as nx
 
 
-def compute_graph(graph, sink, all_sinks, visited):
-    guards = {pred for s in all_sinks if s != sink for pred in graph.predecessors(s)}
+def compute_graph(graph, sink, other_sink, visited):
+    guards = {pred for pred in graph.predecessors(other_sink)}
 
     subgraph_nodes = set()
     stack = [sink]
@@ -25,7 +25,13 @@ def compute_graph(graph, sink, all_sinks, visited):
 
 def compute_weight(subgraph, idx):
     edge_score = sum(1 for _, _, d in subgraph.edges(data=True) if d.get("result") == 0)
-    return edge_score * 1.1 + idx
+    return (edge_score) * 1.1 + idx
+
+
+def evaluate_candidate(graph, sink, s, visited, idx):
+    subgraph, updated_visited = compute_graph(graph, sink, s, visited)
+    weight = compute_weight(subgraph, idx)
+    return (weight, sink, subgraph, updated_visited)
 
 
 def backward_partition(graph, payload):
@@ -36,19 +42,23 @@ def backward_partition(graph, payload):
         )
 
     sinks = [n for n in nx.topological_sort(graph) if is_sink(n)]
+    ss = sinks.copy()
     visited = set()
     partitions = {}
-
+    total = len(sinks)
+    i = 0
     while sinks:
+        print(f"{i}/{total}")
+        i += 1
         candidates = []
         for idx, sink in enumerate(sinks):
-            subgraph, updated_visited = compute_graph(
-                graph, sink, sinks, visited.copy()
-            )
-            weight = compute_weight(subgraph, idx)
-            candidates.append((weight, sink, subgraph, updated_visited))
-
-        _, chosen_sink, chosen_subgraph, visited = min(candidates)
+            for s in [s for s in ss if s != sink]:
+                candidates.append(
+                    evaluate_candidate(graph, sink, s, visited.copy(), idx)
+                )
+        if not candidates:
+            candidates.append((0, sink, graph, []))
+        _, chosen_sink, chosen_subgraph, visited = min(candidates, key=lambda x: x[0])
         partitions[chosen_sink] = chosen_subgraph
         sinks.remove(chosen_sink)
 

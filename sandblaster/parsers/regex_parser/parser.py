@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, Tuple
 
-from sandblaster.parsers.regex_parser.opcode import OpCode
+from sandblaster.parsers.regex_parser.opcode import OpCode, Special
 from sandblaster.parsers.regex_parser.state import State
 
 Op = Tuple[str, Any]
@@ -31,30 +31,31 @@ class RegexBytecodeParser:
         while i < len(data):
             idx = i - (HEADER_MAGIC_SIZE + HEADER_LENGTH_SIZE)
             raw = data[i]
-
-            match raw:
+            opcode = raw & 0x0F
+            match opcode:
                 case OpCode.CHAR:
                     char = chr(data[i + 1])
                     self.instructions[idx] = (State.CHR, re.escape(char))
                     i += 2
-                case OpCode.START:
-                    self.instructions[idx] = (State.CHR, "^")
+                case OpCode.SPECIAL:
+                    high = (raw >> 4) & 0x07
+                    self.instructions[idx] = (State.CHR, Special.MAPPING[high])
                     i += 1
-                case OpCode.END:
-                    self.instructions[idx] = (State.CHR, "$")
-                    i += 1
-                case OpCode.ANY:
-                    self.instructions[idx] = (State.CHR, ".")
-                    i += 1
-                case x if (x & 0xF) == OpCode.MATCH:
+                case OpCode.MATCH:
                     self.instructions[idx] = (State.MATCH, None)
                     i += 1
-                case x if x == OpCode.JMP_AHEAD or (x & 0xF) == OpCode.JMP_BEHIND:
+                case OpCode.R_PAR:
+                    self.instructions[idx] = (State.CHR, ")")
+                    i += 1
+                case OpCode.L_PAR:
+                    self.instructions[idx] = (State.CHR, "(")
+                    i += 1
+                case (OpCode.JMP_AHEAD | OpCode.JMP_BEHIND):
                     offset = data[i + 1] | (data[i + 2] << 8)
                     self.instructions[idx] = (State.JMP, offset)
                     i += 3
-                case x if (x & 0xF) == OpCode.CLASS:
-                    count = x >> 4
+                case (OpCode.CLASS | OpCode.CLASS_ANY):
+                    count = raw >> 4
                     values = []
                     start = i + 1
                     for j in range(count):
@@ -83,6 +84,8 @@ class RegexBytecodeParser:
                             value += f"{chr(lo)}"
 
                     value += "]"
+                    if opcode == OpCode.CLASS_ANY:
+                        value += "*"
                     self.instructions[idx] = (State.CHR, value)
                     i += 1 + 2 * count
                 case _:

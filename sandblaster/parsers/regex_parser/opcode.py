@@ -1,12 +1,21 @@
-from enum import IntEnum
-
-
-class OpCode(IntEnum):
+class OpCode:
+    ANY_STR = [0x00, 0x04, 0x08, 0x0C]
     CHAR = 0x02
-    START = 0x19
-    END = 0x29
-    ANY = 0x09
     MATCH = 0x05
-    JMP_BEHIND = 0x0A
-    JMP_AHEAD = 0x2F
+    R_PAR = 0x06
+    L_PAR = 0x07
+    SPECIAL = 0x09
     CLASS = 0x0B
+    CLASS_ANY = 0x0D
+    JMP_BEHIND = 0x0A
+    JMP_AHEAD = 0x0F
+    IDK = [0x01, 0x03, 0x0E]
+
+
+class Special:
+    ANY = 0x00
+    START = 0x01
+    END = 0x02
+    ANY_STAR = 0x03
+
+    MAPPING = {ANY: ".", START: "^", END: "$", ANY_STAR: ".*"}
